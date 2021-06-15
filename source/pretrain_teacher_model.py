@@ -75,6 +75,11 @@ def main(args):
     logging.info("param size = %fMB", count_parameters_in_MB(net))
     logging.info('-----------------------------------------------')
 
+    # define optimizer and lr scheduler
+    optimizer = SGD(net.get_parameters(), args.lr, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=True)
+    lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
+
+
 	  # save initial parameters
     logging.info('Saving initial parameters......')
     save_path = os.path.join(args.save_root, 'initial_model.pth.tar')
@@ -84,6 +89,9 @@ def main(args):
 		  'prec@1': 0.0,
 		  'prec@5': 0.0,
 	  }, save_path)
+
+    # define loss function
+    mcc_loss = MinimumClassConfusionLoss(temperature=args.temperature)
 
 if __name__ == '__main__':
     architecture_names = sorted(
