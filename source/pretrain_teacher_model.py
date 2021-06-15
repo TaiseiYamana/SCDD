@@ -64,15 +64,26 @@ def main(args):
     source_train_iter = ForeverDataIterator(source_train_loader)
     target_train_iter = ForeverDataIterator(target_train_loader)
 
+    num_classes = len(source_train_loader.dataset.classes)
+
 	  # create model
-	logging.info('----------- Network Initialization --------------')
-  logging.info(''=> using pre-trained model '{}'".format(args.arch))
-  backbone = models.__dict__[args.arch](pretrained=True)
-  num_classes = train_source_dataset.num_classes
-  net = ImageClassifier(backbone, num_classes, bottleneck_dim=args.bottleneck_dim).to(device)
-	logging.info('%s', net)
-	logging.info("param size = %fMB", count_parameters_in_MB(net))
-	logging.info('-----------------------------------------------')
+    logging.info('----------- Network Initialization --------------')
+    logging.info('=> using pre-trained model {}'.format(args.arch))
+    backbone = models.__dict__[args.arch](pretrained=True)
+    net = ImageClassifier(backbone, num_classes, bottleneck_dim=args.bottleneck_dim).to(device)
+    logging.info('%s', net)
+    logging.info("param size = %fMB", count_parameters_in_MB(net))
+    logging.info('-----------------------------------------------')
+
+	  # save initial parameters
+    logging.info('Saving initial parameters......')
+    save_path = os.path.join(args.save_root, 'initial_model.pth.tar')
+    torch.save({
+		  'epoch': 0,
+		  'net': net.state_dict(),
+		  'prec@1': 0.0,
+		  'prec@5': 0.0,
+	  }, save_path)
 
 if __name__ == '__main__':
     architecture_names = sorted(
