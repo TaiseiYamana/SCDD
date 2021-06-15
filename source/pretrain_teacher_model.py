@@ -68,15 +68,15 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='pretrain Teacher net')
     # root path
-    parser.add_argument('--save_root', type=str, default='./results', help='models and logs are saved here')
+    parser.add_argument('--save_root', type=str, default='./results/PT', help='models and logs are saved here')
     parser.add_argument('--img_root', type=str, default='./datasets', help='path name of image dataset')
     parser.add_argument('--note', type=str, default='pt_of31_A2W_r50', help='note for this run') #office31_source_pretrain
     # dataset parameters
     parser.add_argument('-d', '--dataset', metavar='DATA', default='Office31',
                         help='dataset: ' + ' | '.join(dataset_names) +
                              ' (default: Office31)')
-    parser.add_argument('-s', '--source', help='source domain(s)')
-    parser.add_argument('-t', '--target', help='target domain(s)')
+    parser.add_argument('-s', '--source', default = 'A', help='source domain(s)')
+    parser.add_argument('-t', '--target', default = 'W', help='target domain(s)')
     # model parameters
     parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
                         choices=architecture_names,
@@ -103,11 +103,13 @@ if __name__ == '__main__':
     parser.add_argument("--phase", type=str, default='train', choices=['train', 'test', 'analysis'],
                         help="When phase is 'test', only test the model."
                              "When phase is 'analysis', only analysis the model.")
+    # others
+    parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
 
-    args.save_root = os.path.join(args.save_root, args.note)#./results/DA/pt_of31_A_r50
-    args.img_root = os.path.join(args.img_root, args.dataset)#./datasets/DA/Office31
-    create_exp_dir(args.save_root)
+    args.save_root = os.path.join(args.save_root, args.note)#./results/pt_of31_A_r50
+    args.img_root = os.path.join(args.img_root, args.dataset)#./datasets/Office31
+    create_exp_dir(args.save_root) #save-rootの作成
 
     log_format = '%(message)s'
     logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=log_format)
