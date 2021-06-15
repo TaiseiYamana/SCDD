@@ -43,6 +43,8 @@ from common.utils.data import ForeverDataIterator
 #from common.utils.logger import CompleteLogger
 #from common.utils.analysis import collect_feature, tsne, a_distance
 
+from DALoader import *
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def main(args):
@@ -54,6 +56,23 @@ def main(args):
 		    cudnn.benchmark = True
     logging.info("args = %s", args)
 
+	  # create dataset & dataloader
+    _, source_train_loader = eval(args.dataset + '_loader')(root = args.img_root, task = args.source, batch_size = args.batch_size, num_workers = args.workers, train = True)
+    _, source_val_loader = eval(args.dataset + '_loader')(root = args.img_root, task = args.source, batch_size = args.batch_size, num_workers = args.workers, train = False)
+    _, target_train_loader = eval(args.dataset + '_loader')(root = args.img_root, task = args.target, batch_size = args.batch_size, num_workers = args.workers, train = True)
+    _, target_val_loader = eval(args.dataset + '_loader')(root = args.img_root, task = args.target, batch_size = args.batch_size, num_workers = args.workers, train = False)
+    source_train_iter = ForeverDataIterator(source_train_loader)
+    target_train_iter = ForeverDataIterator(target_train_loader)
+
+	  # create model
+	logging.info('----------- Network Initialization --------------')
+  logging.info(''=> using pre-trained model '{}'".format(args.arch))
+  backbone = models.__dict__[args.arch](pretrained=True)
+  num_classes = train_source_dataset.num_classes
+  net = ImageClassifier(backbone, num_classes, bottleneck_dim=args.bottleneck_dim).to(device)
+	logging.info('%s', net)
+	logging.info("param size = %fMB", count_parameters_in_MB(net))
+	logging.info('-----------------------------------------------')
 
 if __name__ == '__main__':
     architecture_names = sorted(
