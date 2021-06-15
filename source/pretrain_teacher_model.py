@@ -76,7 +76,7 @@ def main(args):
     logging.info('-----------------------------------------------')
 
     # define optimizer and lr scheduler
-    optimizer = SGD(net.get_parameters(), args.lr, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=True)
+    optimizer = SGD(net.get_parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
 
@@ -92,6 +92,140 @@ def main(args):
 
     # define loss function
     mcc_loss = MinimumClassConfusionLoss(temperature=args.temperature)
+    cls_loss = torch.nn.CrossEntropyLoss()
+    if args.cuda:
+		  mcc_loss = mcc_loss.to(device)
+		  cls_loss = cls_loss.to(device)
+
+    best_top1= 0.0    
+    best_top5 = 0.0
+    for epoch in range(1, args.epoch+1):
+		  # train one epoch
+		  epoch_start_time = time.time()
+		  train(source_train_iter, net, optimizer, lr_scheduler, criterion, epoch)
+
+		  # evaluate on testing set
+		  logging.info('Testing the models......')
+		  s_test_top1, s_test_top5 = test(source_val_loader, net, criterion, phase = 'Source')
+		  t_test_top1, t_test_top5 = test(target_val_loader, net, criterion, phase = 'Target')
+
+		  # save model
+		  is_best = False
+		  if t_test_top1 > best_top1:
+        best_top1 = t_test_top1
+        best_top5 = t_test_top5
+        is_best = True
+      logging.info('Saving models......')
+      save_checkpoint({
+			  'epoch': epoch,
+			  'net': net.state_dict(),
+			  'prec@1': t_test_top1,
+			  'prec@5': t_test_top5,
+		  }, is_best, args.save_root)
+
+		  
+# train one epoch
+	for epoch in range(1, args.epochs+1):
+		#adjust_lr(optimizer, epoch)
+
+		# train one epoch
+		epoch_start_time = time.time()
+		train(source_train_iter, net, optimizer, lr_scheduler, , epoch)
+
+		# evaluate on testing set
+		logging.info('Testing the models......')
+		s_test_top1, s_test_top5 = test(source_val_loader, net, criterion, phase = 'Source')
+		t_test_top1, t_test_top5 = test(target_val_loader, net, criterion, phase = 'Target')
+
+		epoch_duration = time.time() - epoch_start_time
+		logging.info('Epoch time: {}s'.format(int(epoch_duration)))
+
+		# save model
+		is_best = False
+		if t_test_top1 > best_top1:
+			best_top1 = t_test_top1
+			best_top5 = t_test_top5
+			is_best = True
+		logging.info('Saving models......')
+		save_checkpoint({
+			'epoch': epoch,
+			'net': net.state_dict(),
+			'prec@1': t_test_top1,
+			'prec@5': t_test_top5,
+		}, is_best, args.save_root)
+
+def train(train_source_iter, net, optimizer, lr_scheduler, criterion, epoch):
+	batch_time = AverageMeter()
+	data_time  = AverageMeter()
+	losses     = AverageMeter()
+	top1       = AverageMeter()
+	top5       = AverageMeter()
+
+	net.train()
+
+	end = time.time()
+	for i in range(args.iters_per_epoch):
+		img, target = next(train_source_iter)
+		data_time.update(time.time() - end)
+
+		if args.cuda:
+			img = img.cuda()
+			target = target.cuda()
+
+		out = net(img)
+		loss = criterion(out, target)
+
+		prec1, prec5 = accuracy(out, target, topk=(1,5))
+		losses.update(loss.item(), img.size(0))
+		top1.update(prec1.item(), img.size(0))
+		top5.update(prec5.item(), img.size(0))
+
+		optimizer.zero_grad()
+		loss.backward()
+		optimizer.step()
+		lr_scheduler.step()
+
+		batch_time.update(time.time() - end)
+		end = time.time()
+
+		if i % args.print_freq == 0:
+			log_str = ('Epoch[{0}]:[{1:03}/{2:03}] '
+					   'Time:{batch_time.val:.4f} '
+					   'Data:{data_time.val:.4f}  '
+					   'loss:{losses.val:.4f}({losses.avg:.4f})  '
+					   'prec@1:{top1.val:.2f}({top1.avg:.2f})  '
+					   'prec@5:{top5.val:.2f}({top5.avg:.2f})'.format(
+					   epoch, i, args.iters_per_epoch, batch_time=batch_time, data_time=data_time,
+					   losses=losses, top1=top1, top5=top5))
+			logging.info(log_str)
+
+
+def test(test_loader, net, criterion, phase):
+	losses = AverageMeter()
+	top1   = AverageMeter()
+	top5   = AverageMeter()
+
+	net.eval()
+
+	end = time.time()
+	for i, (img, target) in enumerate(test_loader, start=1):
+		if args.cuda:
+			img = img.cuda()
+			target = target.cuda()
+
+		with torch.no_grad():
+			out = net(img)
+			loss = criterion(out, target)
+
+		prec1, prec5 = accuracy(out, target, topk=(1,5))
+		losses.update(loss.item(), img.size(0))
+		top1.update(prec1.item(), img.size(0))
+		top5.update(prec5.item(), img.size(0))
+
+	f_l = [losses.avg, top1.avg, top5.avg]
+	logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
+
+	return top1.avg, top5.avg
 
 if __name__ == '__main__':
     architecture_names = sorted(
