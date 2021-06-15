@@ -105,12 +105,12 @@ def main(args):
     for epoch in range(1, args.epochs+1):
 		    # train one epoch
 		    epoch_start_time = time.time()
-		    train(source_train_iter, net, optimizer, lr_scheduler, criterion, epoch)
+		    train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args)
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    s_test_top1, s_test_top5 = test(source_val_loader, net, cls, phase = 'Source')
-		    t_test_top1, t_test_top5 = test(target_val_loader, net, cls, phase = 'Target')
+		    s_test_top1, s_test_top5 = test(source_val_loader, net, cls, args, phase = 'Source')
+		    t_test_top1, t_test_top5 = test(target_val_loader, net, cls, args, phase = 'Target')
 
 		    # save model
 		    is_best = False
@@ -134,8 +134,8 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 	top1       = AverageMeter()
 	top5       = AverageMeter()
 
-	source_iter = iter['source']
-	target_iter = iter['target']
+	source_iter = iters['source']
+	target_iter = iters['target']
 
 	net.train()
 
@@ -150,7 +150,6 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 			source_img = source_img.cuda()
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
-			target_label = target_label.cuda()
 
 		source_out, _= net(source_img)
 		target_out, _= net(target_img)
@@ -178,7 +177,7 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 					   'Time:{batch_time.val:.4f} '
 					   'Data:{data_time.val:.4f}  '
 					   'Cls:{cls_losses.val:.4f}({cls_losses.avg:.4f})  '
-					   'MCC:{mcc_losses.val:.4f}({da_losses.avg:.4f})  '
+					   'MCC:{mcc_losses.val:.4f}({mcc_losses.avg:.4f})  '
 					   'prec@1:{top1.val:.2f}({top1.avg:.2f})  '
 					   'prec@5:{top5.val:.2f}({top5.avg:.2f})'.format(
 					   epoch, i, args.iters_per_epoch, batch_time=batch_time, data_time=data_time,
@@ -186,7 +185,7 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 			logging.info(log_str)
 
 
-def test(test_loader, net, cls, phase, args):
+def test(test_loader, net, cls, args, phase):
 	losses = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
