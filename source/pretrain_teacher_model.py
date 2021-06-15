@@ -94,8 +94,11 @@ def main(args):
     mcc_loss = MinimumClassConfusionLoss(temperature=args.temperature)
     cls_loss = torch.nn.CrossEntropyLoss()
     if args.cuda:
-		  mcc_loss = mcc_loss.to(device)
-		  cls_loss = cls_loss.to(device)
+		  mcc = mcc_loss.to(device)
+		  cls = cls_loss.to(device)
+
+    # define dict
+    iters = {'target':target_train_iter, 'source':source_train_iter}
 
     best_top1= 0.0    
     best_top5 = 0.0
@@ -130,7 +133,7 @@ def main(args):
 
 		# train one epoch
 		epoch_start_time = time.time()
-		train(source_train_iter, net, optimizer, lr_scheduler, , epoch)
+		train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch,args)
 
 		# evaluate on testing set
 		logging.info('Testing the models......')
@@ -154,31 +157,44 @@ def main(args):
 			'prec@5': t_test_top5,
 		}, is_best, args.save_root)
 
-def train(train_source_iter, net, optimizer, lr_scheduler, criterion, epoch):
+def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 	batch_time = AverageMeter()
 	data_time  = AverageMeter()
-	losses     = AverageMeter()
+	cls_losses = AverageMeter()
+	mcc_losses  = AverageMeter()
 	top1       = AverageMeter()
 	top5       = AverageMeter()
+
+	source_iter = iter['source']
+	target_iter = iter['target']
 
 	net.train()
 
 	end = time.time()
 	for i in range(args.iters_per_epoch):
-		img, target = next(train_source_iter)
+		source_img, source_label = next(source_iter)
+		target_img, _ = next(target_iter)
+
 		data_time.update(time.time() - end)
 
 		if args.cuda:
-			img = img.cuda()
-			target = target.cuda()
+			source_img = source_img.cuda()
+			source_label = source_label.cuda()
+			target_img = target_img.cuda()
+			target_label = target_label.cuda()
 
-		out = net(img)
-		loss = criterion(out, target)
+		source_out, _= net(source_img)
+		target_out, _= net(target_img)
 
-		prec1, prec5 = accuracy(out, target, topk=(1,5))
-		losses.update(loss.item(), img.size(0))
-		top1.update(prec1.item(), img.size(0))
-		top5.update(prec5.item(), img.size(0))
+		cls_loss = cls(source_out, source_label)
+    mcc_loss = mcc(target_out)
+		loss = cls_loss + mcc_loss * args.trade_off 
+    
+		prec1, prec5 = accuracy(source_out, source_label, topk=(1,5))
+		cls_losses.update(cls_loss.item(), source_img.size(0))
+		mcc_losses.update(mcc_loss.item(), target_img.size(0))
+		top1.update(prec1.item(), source_img.size(0))
+		top5.update(prec5.item(), source_img.size(0))
 
 		optimizer.zero_grad()
 		loss.backward()
@@ -192,15 +208,16 @@ def train(train_source_iter, net, optimizer, lr_scheduler, criterion, epoch):
 			log_str = ('Epoch[{0}]:[{1:03}/{2:03}] '
 					   'Time:{batch_time.val:.4f} '
 					   'Data:{data_time.val:.4f}  '
-					   'loss:{losses.val:.4f}({losses.avg:.4f})  '
+					   'Cls:{cls_losses.val:.4f}({cls_losses.avg:.4f})  '
+					   'MCC:{mcc_losses.val:.4f}({da_losses.avg:.4f})  '
 					   'prec@1:{top1.val:.2f}({top1.avg:.2f})  '
 					   'prec@5:{top5.val:.2f}({top5.avg:.2f})'.format(
 					   epoch, i, args.iters_per_epoch, batch_time=batch_time, data_time=data_time,
-					   losses=losses, top1=top1, top5=top5))
+					   cls_losses=cls_losses, mcc_losses=mcc_losses, top1=top1, top5=top5))
 			logging.info(log_str)
 
 
-def test(test_loader, net, criterion, phase):
+def test(test_loader, net, cls, phase, args):
 	losses = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
@@ -214,8 +231,8 @@ def test(test_loader, net, criterion, phase):
 			target = target.cuda()
 
 		with torch.no_grad():
-			out = net(img)
-			loss = criterion(out, target)
+			out, _ = net(img)
+			loss = cls(out, target)
 
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
 		losses.update(loss.item(), img.size(0))
