@@ -94,68 +94,37 @@ def main(args):
     mcc_loss = MinimumClassConfusionLoss(temperature=args.temperature)
     cls_loss = torch.nn.CrossEntropyLoss()
     if args.cuda:
-		  mcc = mcc_loss.to(device)
-		  cls = cls_loss.to(device)
+		    mcc = mcc_loss.to(device)
+		    cls = cls_loss.to(device)
 
     # define dict
     iters = {'target':target_train_iter, 'source':source_train_iter}
 
     best_top1= 0.0    
     best_top5 = 0.0
-    for epoch in range(1, args.epoch+1):
-		  # train one epoch
-		  epoch_start_time = time.time()
-		  train(source_train_iter, net, optimizer, lr_scheduler, criterion, epoch)
+    for epoch in range(1, args.epochs+1):
+		    # train one epoch
+		    epoch_start_time = time.time()
+		    train(source_train_iter, net, optimizer, lr_scheduler, criterion, epoch)
 
-		  # evaluate on testing set
-		  logging.info('Testing the models......')
-		  s_test_top1, s_test_top5 = test(source_val_loader, net, criterion, phase = 'Source')
-		  t_test_top1, t_test_top5 = test(target_val_loader, net, criterion, phase = 'Target')
+		    # evaluate on testing set
+		    logging.info('Testing the models......')
+		    s_test_top1, s_test_top5 = test(source_val_loader, net, cls, phase = 'Source')
+		    t_test_top1, t_test_top5 = test(target_val_loader, net, cls, phase = 'Target')
 
-		  # save model
-		  is_best = False
-		  if t_test_top1 > best_top1:
-        best_top1 = t_test_top1
-        best_top5 = t_test_top5
-        is_best = True
-      logging.info('Saving models......')
-      save_checkpoint({
-			  'epoch': epoch,
-			  'net': net.state_dict(),
-			  'prec@1': t_test_top1,
-			  'prec@5': t_test_top5,
-		  }, is_best, args.save_root)
-
-		  
-# train one epoch
-	for epoch in range(1, args.epochs+1):
-		#adjust_lr(optimizer, epoch)
-
-		# train one epoch
-		epoch_start_time = time.time()
-		train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch,args)
-
-		# evaluate on testing set
-		logging.info('Testing the models......')
-		s_test_top1, s_test_top5 = test(source_val_loader, net, criterion, phase = 'Source')
-		t_test_top1, t_test_top5 = test(target_val_loader, net, criterion, phase = 'Target')
-
-		epoch_duration = time.time() - epoch_start_time
-		logging.info('Epoch time: {}s'.format(int(epoch_duration)))
-
-		# save model
-		is_best = False
-		if t_test_top1 > best_top1:
-			best_top1 = t_test_top1
-			best_top5 = t_test_top5
-			is_best = True
-		logging.info('Saving models......')
-		save_checkpoint({
-			'epoch': epoch,
-			'net': net.state_dict(),
-			'prec@1': t_test_top1,
-			'prec@5': t_test_top5,
-		}, is_best, args.save_root)
+		    # save model
+		    is_best = False
+		    if t_test_top1 > best_top1:
+		    	best_top1 = t_test_top1
+		    	best_top5 = t_test_top5
+		    	is_best = True
+		    logging.info('Saving models......')
+		    save_checkpoint({
+          'epoch': epoch,
+          'net': net.state_dict(),
+          'prec@1': t_test_top1,
+          'prec@5': t_test_top5,
+          }, is_best, args.save_root)
 
 def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 	batch_time = AverageMeter()
@@ -187,7 +156,7 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 		target_out, _= net(target_img)
 
 		cls_loss = cls(source_out, source_label)
-    mcc_loss = mcc(target_out)
+		mcc_loss = mcc(target_out)
 		loss = cls_loss + mcc_loss * args.trade_off 
     
 		prec1, prec5 = accuracy(source_out, source_label, topk=(1,5))
