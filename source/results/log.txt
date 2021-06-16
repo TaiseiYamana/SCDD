@@ -1,1 +1,0 @@
-args = Namespace(dataset='Office31', img_root='/content', note='pt_of31_A2W_r50', save_root='./results')
