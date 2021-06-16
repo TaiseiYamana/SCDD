@@ -248,7 +248,7 @@ if __name__ == '__main__':
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 64)')
     parser.add_argument('--lr', '--learning-rate', default=0.1, type=float, help='initial learning rate')
-    parser.add_argument('--lr-gamma', default=0.0003, type=float, help='parameter for lr scheduler')
+    parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
