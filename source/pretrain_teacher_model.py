@@ -85,6 +85,24 @@ def main(args):
 		    mcc = mcc_loss.to(device)
 		    cls = cls_loss.to(device)
 
+    if args.phase == 'analysis': 
+        if args.model_param != None:
+            # load model paramater
+            checkpoint = torch.load(args.model_param)
+            load_pretrained_model(net, checkpoint['net'])
+        # extract features from both domains
+        feature_extractor = nn.Sequential(classifier.backbone, classifier.bottleneck).to(device)
+        source_feature = collect_feature(source_train_loader, feature_extractor, device)
+        target_feature = collect_feature(target_train_loader, feature_extractor, device)
+        # plot t-SNE
+        tSNE_filename = os.path.join(logger.visualize_directory, 'TSNE.png')
+        tsne.visualize(source_feature, target_feature, tSNE_filename)
+        print("Saving t-SNE to", tSNE_filename)
+        # calculate A-distance, which is a measure for distribution discrepancy
+        A_distance = a_distance.calculate(source_feature, target_feature, device)
+        print("A-distance =", A_distance)
+        return
+
     # define dict
     iters = {'target':target_train_iter, 'source':source_train_iter}
 
@@ -230,9 +248,7 @@ if __name__ == '__main__':
                              ' (default: resnet18)')
     parser.add_argument('--bottleneck-dim', default=256, type=int,
                         help='Dimension of bottleneck')
-    parser.add_argument('--temperature', default=2.0, type=float, help='parameter temperature scaling')
-    parser.add_argument('--trade-off', default=1., type=float,
-                        help='the trade-off hyper-parameter for transfer loss')
+    parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')                       
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 64)')
     parser.add_argument('--lr', '--learning-rate', default=0.1, type=float, help='initial learning rate')
@@ -248,6 +264,10 @@ if __name__ == '__main__':
     parser.add_argument("--phase", type=str, default='train', choices=['train', 'test', 'analysis'],
                         help="When phase is 'test', only test the model."
                              "When phase is 'analysis', only analysis the model.")
+    # mcc parameters
+    parser.add_argument('--temperature', default=2.0, type=float, help='parameter temperature scaling')
+    parser.add_argument('--trade-off', default=1., type=float,
+                        help='the trade-off hyper-parameter for transfer loss')                         
     # others
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
