@@ -1,38 +1,22 @@
 # Distillation zoo
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import division
+import argparse
 import os
 import sys
 import time
 import logging
-import argparse
 import numpy as np
-from itertools import chain
-
-# dalib
 import random
-import time
-import warnings
-import sys
-import argparse
-import shutil
-import os.path as osp
 
 import torch
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
 from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
-from torch.utils.data import DataLoader
-import torchvision.transforms as T
-import torch.nn.functional as F
+#from torch.utils.data import DataLoader
+#import torchvision.transforms as T
+#import torch.nn.functional as F
 
 sys.path.append('..')
-from utils import AverageMeter, accuracy, transform_time
-from utils import load_pretrained_model, save_checkpoint
-from utils import create_exp_dir, count_parameters_in_MB
-
 from dalib.adaptation.mcc import MinimumClassConfusionLoss, ImageClassifier
 import common.vision.datasets as datasets
 import common.vision.models as models
@@ -42,6 +26,9 @@ from common.utils.data import ForeverDataIterator
 #from common.utils.meter import AverageMeter, ProgressMeter
 #from common.utils.logger import CompleteLogger
 #from common.utils.analysis import collect_feature, tsne, a_distance
+from utils import AverageMeter, accuracy
+from utils import load_pretrained_model, save_checkpoint
+from utils import create_exp_dir, count_parameters_in_MB
 
 from DALoader import *
 
