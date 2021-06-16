@@ -25,7 +25,7 @@ from common.utils.data import ForeverDataIterator
 #from common.utils.metric import accuracy, ConfusionMatrix
 #from common.utils.meter import AverageMeter, ProgressMeter
 #from common.utils.logger import CompleteLogger
-#from common.utils.analysis import collect_feature, tsne, a_distance
+from common.utils.analysis import collect_feature, tsne, a_distance
 
 from utils import AverageMeter, accuracy
 from utils import load_pretrained_model, save_checkpoint
@@ -91,11 +91,11 @@ def main(args):
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
         # extract features from both domains
-        feature_extractor = nn.Sequential(classifier.backbone, classifier.bottleneck).to(device)
+        feature_extractor = nn.Sequential(net.backbone, net.bottleneck).to(device)
         source_feature = collect_feature(source_train_loader, feature_extractor, device)
         target_feature = collect_feature(target_train_loader, feature_extractor, device)
         # plot t-SNE
-        tSNE_filename = os.path.join(logger.visualize_directory, 'TSNE.png')
+        tSNE_filename = os.path.join(args.save_root, 'TSNE.png')
         tsne.visualize(source_feature, target_feature, tSNE_filename)
         print("Saving t-SNE to", tSNE_filename)
         # calculate A-distance, which is a measure for distribution discrepancy
