@@ -109,6 +109,7 @@ def main(args):
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
         _ , _ = test(target_val_loader, net, cls, args, phase = 'Target')
+        return
 	
 		
     # define dict
