@@ -103,6 +103,14 @@ def main(args):
         print("A-distance =", A_distance)
         return
 
+    if args.phase == 'test': 
+        if args.model_param != None:
+            # load model paramater
+            checkpoint = torch.load(args.model_param)
+            load_pretrained_model(net, checkpoint['net'])
+        _ , _ = test(target_val_loader, net, cls, args, phase = 'Target')
+	
+		
     # define dict
     iters = {'target':target_train_iter, 'source':source_train_iter}
 
@@ -250,14 +258,14 @@ if __name__ == '__main__':
                         help='Dimension of bottleneck')
     parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')                       
     # training parameters
-    parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 64)')
-    parser.add_argument('--lr', '--learning-rate', default=0.1, type=float, help='initial learning rate')
+    parser.add_argument('-b', '--batch-size', default=36, type=int, help='mini-batch size (default: 64)')
+    parser.add_argument('--lr', '--learning-rate', default=0.005, type=float, help='initial learning rate')
     parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
-    parser.add_argument('--epochs', default=10, type=int, help='number of total epochs to run')
+    parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
     parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
     parser.add_argument('-p', '--print-freq', default=50, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
