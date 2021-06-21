@@ -76,7 +76,7 @@ def main(args):
     #sbackbone = models.__dict__[args.s_arch](pretrained=True)
     #snet = ImageClassifier(sbackbone, num_classes, bottleneck_dim=args.s_bottleneck_dim).to(device)
     snet = alexnet(pretrained=True)
-    snet.classifier[6] = nn.Linear(4096, n_classes)
+    snet.classifier[6] = nn.Linear(4096, num_classes)
     torch.nn.init.normal_(snet.classifier[6].weight, mean=0, std=5e-3)
     snet.classifier[6].bias.data.fill_(0.01)
     logging.info('%s', snet)
