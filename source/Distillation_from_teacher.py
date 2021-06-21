@@ -31,7 +31,7 @@ from utils import AverageMeter, accuracy
 from utils import load_pretrained_model, save_checkpoint
 from utils import create_exp_dir, count_parameters_in_MB
 
-from kd_losses import SoftTarget
+from kd_losses import *
 
 from DALoader import *
 
@@ -63,10 +63,10 @@ def main(args):
     tbackbone = models.__dict__[args.t_arch](pretrained=True)
     tnet = ImageClassifier(tbackbone, num_classes, bottleneck_dim=args.t_bottleneck_dim).to(device)
     checkpoint = torch.load(args.t_model_param)
-	load_pretrained_model(tnet, checkpoint['net'])
-	tnet.eval()
-	for param in tnet.parameters():
-		param.requires_grad = False
+    load_pretrained_model(tnet, checkpoint['net'])
+    tnet.eval()
+    for param in tnet.parameters():
+		    param.requires_grad = False
     logging.info('%s', tnet)
     logging.info("param size = %fMB", count_parameters_in_MB(tnet))
 
@@ -196,7 +196,7 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 		cls_loss = cls(s_source_out, source_label)
 		mcc_loss = mcc(s_target_out)
 		kd_loss = st(s_target_out, t_target_out)
-		loss = cls_loss + mcc_loss * args.lambda + kd_loss * args.mu
+		loss = cls_loss + mcc_loss * args.lam + kd_loss * args.mu
 
 		prec1, prec5 = accuracy(source_out, source_label, topk=(1,5))
 		cls_losses.update(cls_loss.item(), source_img.size(0))
@@ -310,7 +310,7 @@ if __name__ == '__main__':
     # loss parameters
     parser.add_argument('--mcc_temp', default=2.0, type=float, help='parameter mcc temperature scaling')
     parser.add_argument('--st_temp', default=4.0, type=float, help='parameter soft target temperature scaling')
-    parser.add_argument('--lambda', default=1., type=float,
+    parser.add_argument('--lam', default=1., type=float,
                         help='the trade-off hyper-parameter for mcc loss')
     parser.add_argument('--mu', default=0.9, type=float,
                         help='the trade-off hyper-parameter for soft target loss')
