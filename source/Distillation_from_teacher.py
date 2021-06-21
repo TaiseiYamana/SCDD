@@ -156,7 +156,7 @@ def main(args):
 		    logging.info('Saving models......')
 		    save_checkpoint({
           'epoch': epoch,
-          'net': net.state_dict(),
+          'net': snet.state_dict(),
           'prec@1': t_test_top1,
           'prec@5': t_test_top5,
           }, is_best, args.save_root)
