@@ -108,6 +108,7 @@ def main(args):
             # load model paramater
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
+            print("top1acc:{:.2f}".format(checkpoint['prec@1']))
         _ , _ = test(target_val_loader, net, cls, args, phase = 'Target')
         return
 	
