@@ -79,6 +79,7 @@ def main(args):
     snet.classifier[6] = nn.Linear(4096, num_classes)
     torch.nn.init.normal_(snet.classifier[6].weight, mean=0, std=5e-3)
     snet.classifier[6].bias.data.fill_(0.01)
+    snet = snet.to(device)
     logging.info('%s', snet)
     logging.info("param size = %fMB", count_parameters_in_MB(snet))
     logging.info('-----------------------------------------------')
