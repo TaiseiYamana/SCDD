@@ -1,4 +1,5 @@
 # Office31
+#A→W
 CUDA_VISIBLE_DEVICES=0 python3 pretrain_teacher_model.py --save_root '/content/drive/MyDrive/results/PT' \
                                                          --img_root '/content' \
                                                          --note 'pt_of31_A2W_r50' \
@@ -11,6 +12,7 @@ CUDA_VISIBLE_DEVICES=0 python3 pretrain_teacher_model.py --save_root '/content/d
                                                          -i 500 \
                                                          --seed 2 \
                                                          --temperature 2.5
+#A→D                                                         
 CUDA_VISIBLE_DEVICES=0 python3 pretrain_teacher_model.py --save_root '/content/drive/MyDrive/results/PT' \
                                                          --img_root '/content' \
                                                          --note 'pt_of31_A2D_r50' \
@@ -23,6 +25,7 @@ CUDA_VISIBLE_DEVICES=0 python3 pretrain_teacher_model.py --save_root '/content/d
                                                          -i 500 \
                                                          --seed 2 \
                                                          --temperature 2.5
+#W→A                                                         
 CUDA_VISIBLE_DEVICES=0 python3 pretrain_teacher_model.py --save_root '/content/drive/MyDrive/results/PT' \
                                                          --img_root '/content' \
                                                          --note 'pt_of31_W2A_r50' \
@@ -35,6 +38,7 @@ CUDA_VISIBLE_DEVICES=0 python3 pretrain_teacher_model.py --save_root '/content/d
                                                          -i 500 \
                                                          --seed 2 \
                                                          --temperature 2.5
+#W→D                                                         
 CUDA_VISIBLE_DEVICES=0 python3 pretrain_teacher_model.py --save_root '/content/drive/MyDrive/results/PT' \
                                                          --img_root '/content' \
                                                          --note 'pt_of31_W2D_r50' \
@@ -47,6 +51,7 @@ CUDA_VISIBLE_DEVICES=0 python3 pretrain_teacher_model.py --save_root '/content/d
                                                          -i 500 \
                                                          --seed 2 \
                                                          --temperature 2.5
+#D→A                                                         
 CUDA_VISIBLE_DEVICES=0 python3 pretrain_teacher_model.py --save_root '/content/drive/MyDrive/results/PT' \
                                                          --img_root '/content' \
                                                          --note 'pt_of31_D2A_r50' \
@@ -59,6 +64,7 @@ CUDA_VISIBLE_DEVICES=0 python3 pretrain_teacher_model.py --save_root '/content/d
                                                          -i 500 \
                                                          --seed 2 \
                                                          --temperature 2.5
+#D→W                                                         
 CUDA_VISIBLE_DEVICES=0 python3 pretrain_teacher_model.py --save_root '/content/drive/MyDrive/results/PT' \
                                                          --img_root '/content' \
                                                          --note 'pt_of31_D2W_r50' \
