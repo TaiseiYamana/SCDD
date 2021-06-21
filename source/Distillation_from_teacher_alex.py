@@ -84,7 +84,12 @@ def main(args):
     logging.info('-----------------------------------------------')
 
     # define optimizer and lr scheduler
-    optimizer = SGD(snet.get_parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
+    optimizer = SGD([
+        {'params': snet.features.parameters()},
+        {'params': snet.classifier[:6].parameters()},
+        # fc8 -> 7th element (index 6) in the Sequential block
+        {'params': snet.classifier[6].parameters(), 'lr': 10 * args.lr}
+    ], args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
 
@@ -195,8 +200,8 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
 
-		s_source_out, _= snet(source_img)
-		s_target_out, _= snet(target_img)
+		s_source_out = snet(source_img)
+		s_target_out = snet(target_img)
 		t_target_out, _= tnet(target_img)
 
 		cls_loss = cls(s_source_out, source_label)
@@ -247,7 +252,7 @@ def test(test_loader, net, cls, args, phase):
 			target = target.cuda()
 
 		with torch.no_grad():
-			out, _ = net(img)
+			out  = net(img)
 			loss = cls(out, target)
 
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
