@@ -84,7 +84,7 @@ CUDA_VISIBLE_DEVICES=0 python3 Distillation_from_teacher_alex.py --save_root '/c
                                       --seed 2 \
                                       --mcc_temp 2.5 \
                                       --st_temp 4.0
-#D→                                      
+#D→W                                      
 CUDA_VISIBLE_DEVICES=0 python3 Distillation_from_teacher_alex.py --save_root '/content/drive/MyDrive/results/MobileDA' \
                                       --img_root '/content' \
                                       --note 'mda_of31_D2W_r502alex' \
