@@ -88,7 +88,7 @@ def main(args):
     save_path = os.path.join(args.save_root, 'initial_model.pth.tar')
     torch.save({
 		  'epoch': 0,
-		  'net': net.state_dict(),
+		  'net': snet.state_dict(),
 		  'prec@1': 0.0,
 		  'prec@5': 0.0,
 	  }, save_path)
@@ -127,7 +127,7 @@ def main(args):
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
             print("top1acc:{:.2f}".format(checkpoint['prec@1']))
-        _ , _ = test(target_val_loader, net, cls, args, phase = 'Target')
+        _ , _ = test(target_val_loader, snet, cls, args, phase = 'Target')
         return
 
 
@@ -140,12 +140,12 @@ def main(args):
     for epoch in range(1, args.epochs+1):
 		    # train one epoch
 		    epoch_start_time = time.time()
-		    train(iters, net, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
+		    train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    s_test_top1, s_test_top5 = test(source_val_loader, net, cls, args, phase = 'Source')
-		    t_test_top1, t_test_top5 = test(target_val_loader, net, cls, args, phase = 'Target')
+		    s_test_top1, s_test_top5 = test(source_val_loader, snet, cls, args, phase = 'Source')
+		    t_test_top1, t_test_top5 = test(target_val_loader, snet, cls, args, phase = 'Target')
 
 		    # save model
 		    is_best = False
@@ -166,6 +166,7 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 	data_time  = AverageMeter()
 	cls_losses = AverageMeter()
 	mcc_losses  = AverageMeter()
+	kd_losses  = AverageMeter()
 	top1       = AverageMeter()
 	top5       = AverageMeter()
 
@@ -175,7 +176,7 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 	snet = nets['snet']
 	tnet = nets['tnet']
 
-	net.train()
+	snet.train()
 
 	end = time.time()
 	for i in range(args.iters_per_epoch):
@@ -198,7 +199,7 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 		kd_loss = st(s_target_out, t_target_out)
 		loss = cls_loss + mcc_loss * args.lam + kd_loss * args.mu
 
-		prec1, prec5 = accuracy(source_out, source_label, topk=(1,5))
+		prec1, prec5 = accuracy(s_source_out, source_label, topk=(1,5))
 		cls_losses.update(cls_loss.item(), source_img.size(0))
 		mcc_losses.update(mcc_loss.item(), target_img.size(0))
 		kd_losses.update(kd_loss.item(), target_img.size(0))
