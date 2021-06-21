@@ -260,7 +260,7 @@ if __name__ == '__main__':
                         help='Dimension of bottleneck')
     parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')                       
     # training parameters
-    parser.add_argument('-b', '--batch-size', default=36, type=int, help='mini-batch size (default: 64)')
+    parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.005, type=float, help='initial learning rate')
     parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
