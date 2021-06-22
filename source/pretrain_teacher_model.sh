@@ -148,7 +148,7 @@ CUDA_VISIBLE_DEVICES=0 python3 pretrain_teacher_model.py --save_root '/content/d
 CUDA_VISIBLE_DEVICES=0 python3 pretrain_teacher_model.py --save_root '/content/drive/MyDrive/results/PT' \
                                                          --img_root '/content' \
                                                          --note 'pt_of31_D2W_r34' \
-                                                         -a 'resnet50' \
+                                                         -a 'resnet34' \
                                                          --bottleneck-dim 512 \
                                                          -d Office31 \
                                                          -s D \
