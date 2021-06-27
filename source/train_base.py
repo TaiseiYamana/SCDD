@@ -157,7 +157,6 @@ def train(iters, net, optimizer, lr_scheduler, cls, epoch, args):
 	end = time.time()
 	for i in range(args.iters_per_epoch):
 		source_img, source_label = next(source_iter)
-		target_img, _ = next(target_iter)
 
 		data_time.update(time.time() - end)
 
