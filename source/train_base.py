@@ -17,7 +17,6 @@ from torch.optim.lr_scheduler import LambdaLR
 #import torch.nn.functional as F
 
 sys.path.append('..')
-from dalib.adaptation.mcc import MinimumClassConfusionLoss
 from common.modules.classifier import Classifier
 import common.vision.datasets as datasets
 import common.vision.models as models
@@ -265,11 +264,7 @@ if __name__ == '__main__':
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
     parser.add_argument("--phase", type=str, default='train', choices=['train', 'test', 'analysis'],
                         help="When phase is 'test', only test the model."
-                             "When phase is 'analysis', only analysis the model.")
-    # mcc parameters
-    parser.add_argument('--temperature', default=2.0, type=float, help='parameter temperature scaling')
-    parser.add_argument('--trade-off', default=1., type=float,
-                        help='the trade-off hyper-parameter for transfer loss')                         
+                             "When phase is 'analysis', only analysis the model.")                        
     # others
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
