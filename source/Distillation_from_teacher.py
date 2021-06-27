@@ -146,6 +146,9 @@ def main(args):
 		    logging.info('Testing the models......')
 		    s_test_top1, s_test_top5 = test(source_val_loader, snet, cls, args, phase = 'Source')
 		    t_test_top1, t_test_top5 = test(target_val_loader, snet, cls, args, phase = 'Target')
+		
+		    epoch_duration = time.time() - epoch_start_time
+		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
 
 		    # save model
 		    is_best = False
