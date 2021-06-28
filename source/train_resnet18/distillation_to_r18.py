@@ -20,6 +20,7 @@ sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss, ImageClassifier
 import common.vision.datasets as datasets
 import common.vision.models as models
+from common.modules.classifier import Classifier
 #from common.vision.transforms import ResizeImage
 from common.utils.data import ForeverDataIterator
 #from common.utils.metric import accuracy, ConfusionMatrix
