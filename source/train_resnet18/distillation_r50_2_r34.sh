@@ -5,7 +5,7 @@ CUDA_VISIBLE_DEVICES=0 python3 distillation_from_teacher.py --save_root '/conten
                                       --note 'of31_A2W' \
                                       --t_arch 'resnet50' \
                                       --t-bottleneck-dim 1024 \
-                                      --t-model-param '/content/drive/MyDrive/results/pt_of31_A2W_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/PT/pt_of31_A2W_r50/model_best.pth.tar' \
                                       --s_arch 'resnet34' \
                                       --s-bottleneck-dim 512 \
                                       -d Office31 \
@@ -22,7 +22,7 @@ CUDA_VISIBLE_DEVICES=0 python3 distillation_from_teacher.py --save_root '/conten
                                       --note 'of31_A2D' \
                                       --t_arch 'resnet50' \
                                       --t-bottleneck-dim 1024 \
-                                      --t-model-param '/content/drive/MyDrive/results/pt_of31_A2D_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/PT/pt_of31_A2D_r50/model_best.pth.tar' \
                                       --s_arch 'resnet34' \
                                       --s-bottleneck-dim 512 \
                                       -d Office31 \
@@ -39,7 +39,7 @@ CUDA_VISIBLE_DEVICES=0 python3 distillation_from_teacher.py --save_root '/conten
                                       --note 'of31_W2A' \
                                       --t_arch 'resnet50' \
                                       --t-bottleneck-dim 1024 \
-                                      --t-model-param '/content/drive/MyDrive/results/pt_of31_W2A_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/PT/pt_of31_W2A_r50/model_best.pth.tar' \
                                       --s_arch 'resnet34' \
                                       --s-bottleneck-dim 512 \
                                       -d Office31 \
@@ -56,7 +56,7 @@ CUDA_VISIBLE_DEVICES=0 python3 distillation_from_teacher.py --save_root '/conten
                                       --note 'of31_W2D' \
                                       --t_arch 'resnet50' \
                                       --t-bottleneck-dim 1024 \
-                                      --t-model-param '/content/drive/MyDrive/results/pt_of31_W2D_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/PT/pt_of31_W2D_r50/model_best.pth.tar' \
                                       --s_arch 'resnet34' \
                                       --s-bottleneck-dim 512 \
                                       -d Office31 \
@@ -73,7 +73,7 @@ CUDA_VISIBLE_DEVICES=0 python3 distillation_from_teacher.py --save_root '/conten
                                       --note 'of31_D2A' \
                                       --t_arch 'resnet50' \
                                       --t-bottleneck-dim 1024 \
-                                      --t-model-param '/content/drive/MyDrive/results/pt_of31_D2A_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/PT/pt_of31_D2A_r50/model_best.pth.tar' \
                                       --s_arch 'resnet34' \
                                       --s-bottleneck-dim 512 \
                                       -d Office31 \
@@ -90,7 +90,7 @@ CUDA_VISIBLE_DEVICES=0 python3 distillation_from_teacher.py --save_root '/conten
                                       --note 'of31_D2W' \
                                       --t_arch 'resnet50' \
                                       --t-bottleneck-dim 1024 \
-                                      --t-model-param '/content/drive/MyDrive/results/pt_of31_D2W_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/PT/pt_of31_D2W_r50/model_best.pth.tar' \
                                       --s_arch 'resnet34' \
                                       --s-bottleneck-dim 512 \
                                       -d Office31 \
