@@ -255,7 +255,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr-gamma', default=0.0003, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
-    parser.add_argument('--wd', '--weight-decay', default=5e-3, type=float, help='weight decay (default: 1e-3)')
+    parser.add_argument('--wd', '--weight-decay', default=0.0005, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
     parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
     parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
