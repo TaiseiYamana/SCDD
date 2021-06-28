@@ -16,7 +16,7 @@ from torch.optim.lr_scheduler import LambdaLR
 #import torchvision.transforms as T
 #import torch.nn.functional as F
 
-sys.path.append('..')
+sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss, ImageClassifier
 import common.vision.datasets as datasets
 import common.vision.models as models
