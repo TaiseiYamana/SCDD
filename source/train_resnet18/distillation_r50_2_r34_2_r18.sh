@@ -6,7 +6,7 @@ CUDA_VISIBLE_DEVICES=0 python3 distillation_to_r18.py --save_root '/content/driv
                                       --note 'of31_A2W' \
                                       --t_arch 'resnet34' \
                                       --t-bottleneck-dim 512 \
-                                      --t-model-param '/content/drive/MyDrive/results/ResNet18/r50_2_r34/of31_A2W' \
+                                      --t-model-param '/content/drive/MyDrive/results/ResNet18/r50_2_r34/of31_A2W/model_best.pth.tar' \
                                       --s_arch 'resnet18' \
                                       -d Office31 \
                                       -s A \
@@ -22,7 +22,7 @@ CUDA_VISIBLE_DEVICES=0 python3 distillation_to_r18.py --save_root '/content/driv
                                       --note 'of31_A2D' \
                                       --t_arch 'resnet34' \
                                       --t-bottleneck-dim 512 \
-                                      --t-model-param '/content/drive/MyDrive/results/ResNet18/r50_2_r34/of31_A2D' \
+                                      --t-model-param '/content/drive/MyDrive/results/ResNet18/r50_2_r34/of31_A2D/model_best.pth.tar' \
                                       --s_arch 'resnet18' \
                                       -d Office31 \
                                       -s A \
@@ -38,7 +38,7 @@ CUDA_VISIBLE_DEVICES=0 python3 distillation_to_r18.py --save_root '/content/driv
                                       --note 'of31_W2A' \
                                       --t_arch 'resnet34' \
                                       --t-bottleneck-dim 512 \
-                                      --t-model-param '/content/drive/MyDrive/results/PT/pt_of31_W2A_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/ResNet18/r50_2_r34/of31_W2A/model_best.pth.tar' \
                                       --s_arch 'resnet18' \
                                       -d Office31 \
                                       -s W \
@@ -54,7 +54,7 @@ CUDA_VISIBLE_DEVICES=0 python3 distillation_to_r18.py --save_root '/content/driv
                                       --note 'of31_W2D' \
                                       --t_arch 'resnet34' \
                                       --t-bottleneck-dim 512 \
-                                      --t-model-param '/content/drive/MyDrive/results/PT/pt_of31_W2D_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/ResNet18/r50_2_r34/of31_W2D/model_best.pth.tar' \
                                       --s_arch 'resnet18' \
                                       -d Office31 \
                                       -s W \
@@ -70,7 +70,7 @@ CUDA_VISIBLE_DEVICES=0 python3 distillation_to_r18.py --save_root '/content/driv
                                       --note 'of31_D2A' \
                                       --t_arch 'resnet34' \
                                       --t-bottleneck-dim 512 \
-                                      --t-model-param '/content/drive/MyDrive/results/PT/pt_of31_D2A_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/ResNet18/r50_2_r34/of31_D2A/model_best.pth.tar' \
                                       --s_arch 'resnet18' \
                                       -d Office31 \
                                       -s D \
@@ -86,7 +86,7 @@ CUDA_VISIBLE_DEVICES=0 python3 distillation_to_r18.py --save_root '/content/driv
                                       --note 'of31_D2W' \
                                       --t_arch 'resnet34' \
                                       --t-bottleneck-dim 512 \
-                                      --t-model-param '/content/drive/MyDrive/results/PT/pt_of31_D2W_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/ResNet18/r50_2_r34/of31_D2W/model_best.pth.tar' \
                                       --s_arch 'resnet18' \
                                       -d Office31 \
                                       -s D \
