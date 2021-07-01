@@ -6,19 +6,19 @@ class DeepCoralLoss(nn.Module):
     def __init__(self):
         super(DeepCoralLoss, self).__init__()
 
-    def compute_convariance(self, source: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+    def compute_convariance(self, logits: torch.Tensor) -> torch.Tensor:
         """
         Compute Covariance matrix of the input data
         """
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        n = input_data.size(0)  # batch_size
+        n = logits.size(0)  # batch_size
 
         id_row = torch.ones(n).resize(1, n).to(device=device)
-        sum_column = torch.mm(id_row, input_data)
+        sum_column = torch.mm(id_row, logits)
         mean_column = torch.div(sum_column, n)
         term_mul_2 = torch.mm(mean_column.t(), mean_column)
-        d_t_d = torch.mm(input_data.t(), input_data)
+        d_t_d = torch.mm(logits.t(), logits)
         c = torch.add(d_t_d, (-1 * term_mul_2)) * 1 / (n - 1)
 
         return c        
