@@ -18,7 +18,7 @@ from torch.optim.lr_scheduler import LambdaLR
 
 sys.path.append('..')
 from dalib.adaptation.dcoral import DeepCoralLoss
-#from dalib.adaptation.mcc import MinimumClassConfusionLoss, ImageClassifier
+from dalib.adaptation.mcc import ImageClassifier
 import common.vision.datasets as datasets
 import common.vision.models as models
 #from common.vision.transforms import ResizeImage
@@ -175,7 +175,7 @@ def train(iters, net, optimizer, lr_scheduler, cls, dcoral, epoch, args):
 		target_out, _= net(target_img)
 
 		cls_loss = cls(source_out, source_label)
-		dcoral_loss = dcoral(target_out)
+		dcoral_loss = dcoral(source_out, target_out)
 		loss = cls_loss + dcoral_loss * args.trade_off 
     
 		prec1, prec5 = accuracy(source_out, source_label, topk=(1,5))
