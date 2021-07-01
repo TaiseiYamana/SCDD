@@ -26,8 +26,8 @@ class DeepCoralLoss(nn.Module):
     def forward(self, source_logits: torch.Tensor, target_logits: torch.Tensor) -> torch.Tensor:
         d = source_logits.size(1) # num_classes
         
-        source_c = compute_covariance(source_logits)
-        target_c = compute_covariance(target_logits)
+        source_c = compute_convariance(source_logits)
+        target_c = compute_convariance(target_logits)
 
         dcoral_loss = torch.sum(torch.mul((source_c - target_c), (source_c - target_c)))
         dcoral_loss = dcoral_loss / (4 * d * d)
