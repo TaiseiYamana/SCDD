@@ -33,7 +33,6 @@ from utils import load_pretrained_model, save_checkpoint
 from utils import create_exp_dir, count_parameters_in_MB
 
 from DALoader import *
-from coral import coral
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
