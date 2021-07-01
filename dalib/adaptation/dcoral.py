@@ -15,10 +15,10 @@ class DeepCoralLoss(nn.Module):
         n = logits.size(0)  # batch_size
 
         id_row = torch.ones(n).resize(1, n).to(device=device)
-        sum_column = torch.mm(id_row, self.logits)
+        sum_column = torch.mm(id_row, logits)
         mean_column = torch.div(sum_column, n)
         term_mul_2 = torch.mm(mean_column.t(), mean_column)
-        d_t_d = torch.mm(self.logits.t(), self.logits)
+        d_t_d = torch.mm(logits.t(), logits)
         c = torch.add(d_t_d, (-1 * term_mul_2)) * 1 / (n - 1)
 
         return c        
