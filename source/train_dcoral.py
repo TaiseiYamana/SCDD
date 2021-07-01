@@ -17,7 +17,8 @@ from torch.optim.lr_scheduler import LambdaLR
 #import torch.nn.functional as F
 
 sys.path.append('..')
-from dalib.adaptation.mcc import MinimumClassConfusionLoss, ImageClassifier
+from dalib.adaptation.dcoral import DeepCoralLoss
+#from dalib.adaptation.mcc import MinimumClassConfusionLoss, ImageClassifier
 import common.vision.datasets as datasets
 import common.vision.models as models
 #from common.vision.transforms import ResizeImage
@@ -80,11 +81,11 @@ def main(args):
 	  }, save_path)
 
     # define loss function
-    mcc_loss = MinimumClassConfusionLoss(temperature=args.temperature)
-    cls_loss = torch.nn.CrossEntropyLoss()
+    dcoral = DeepCoralLoss()
+    cls = torch.nn.CrossEntropyLoss()
     if args.cuda:
-		    mcc = mcc_loss.to(device)
-		    cls = cls_loss.to(device)
+        dcoral = dcoral.to(device)
+        cls = cls.to(device)
 
     if args.phase == 'analysis': 
         if args.model_param != None:
@@ -122,7 +123,7 @@ def main(args):
     for epoch in range(1, args.epochs+1):
 		    # train one epoch
 		    epoch_start_time = time.time()
-		    train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args)
+		    train(iters, net, optimizer, lr_scheduler, cls, dcoral, epoch, args)
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
@@ -146,11 +147,11 @@ def main(args):
           'prec@5': t_test_top5,
           }, is_best, args.save_root)
 
-def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
+def train(iters, net, optimizer, lr_scheduler, cls, dcoral, epoch, args):
 	batch_time = AverageMeter()
 	data_time  = AverageMeter()
 	cls_losses = AverageMeter()
-	mcc_losses  = AverageMeter()
+	dcoral_losses  = AverageMeter()
 	top1       = AverageMeter()
 	top5       = AverageMeter()
 
@@ -175,12 +176,12 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 		target_out, _= net(target_img)
 
 		cls_loss = cls(source_out, source_label)
-		mcc_loss = mcc(target_out)
-		loss = cls_loss + mcc_loss * args.trade_off 
+		dcoral_loss = dcoral(target_out)
+		loss = cls_loss + dcoral_loss * args.trade_off 
     
 		prec1, prec5 = accuracy(source_out, source_label, topk=(1,5))
 		cls_losses.update(cls_loss.item(), source_img.size(0))
-		mcc_losses.update(mcc_loss.item(), target_img.size(0))
+		dcoral_losses.update(dcoral_loss.item(), target_img.size(0))
 		top1.update(prec1.item(), source_img.size(0))
 		top5.update(prec5.item(), source_img.size(0))
 
@@ -197,11 +198,11 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 					   'Time:{batch_time.val:.4f} '
 					   'Data:{data_time.val:.4f}  '
 					   'Cls:{cls_losses.val:.4f}({cls_losses.avg:.4f})  '
-					   'MCC:{mcc_losses.val:.4f}({mcc_losses.avg:.4f})  '
+					   'DCORAL:{mcc_losses.val:.4f}({dcoral_losses.avg:.4f})  '
 					   'prec@1:{top1.val:.2f}({top1.avg:.2f})  '
 					   'prec@5:{top5.val:.2f}({top5.avg:.2f})'.format(
 					   epoch, i, args.iters_per_epoch, batch_time=batch_time, data_time=data_time,
-					   cls_losses=cls_losses, mcc_losses=mcc_losses, top1=top1, top5=top5))
+					   cls_losses=cls_losses, dcoral_losses=dcoral_losses, top1=top1, top5=top5))
 			logging.info(log_str)
 
 
