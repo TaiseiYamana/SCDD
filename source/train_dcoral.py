@@ -279,8 +279,7 @@ if __name__ == '__main__':
                         help="When phase is 'test', only test the model."
                              "When phase is 'analysis', only analysis the model.")
     # mcc parameters
-    parser.add_argument('--temperature', default=2.0, type=float, help='parameter temperature scaling')
-    parser.add_argument('--trade-off', default=1., type=float,
+    parser.add_argument('--trade-off', default=0.8, type=float,
                         help='the trade-off hyper-parameter for transfer loss')                         
     # others
     parser.add_argument('--cuda', type=int, default=1)
