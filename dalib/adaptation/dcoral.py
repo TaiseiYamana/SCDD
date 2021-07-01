@@ -29,6 +29,6 @@ class DeepCoralLoss(nn.Module):
         source_c = compute_covariance(source_logits)
         target_c = compute_covariance(target_logits)
 
-        loss = torch.sum(torch.mul((source_c - target_c), (source_c - target_c)))
-        loss = loss / (4 * d * d)
-        return loss
+        dcoral_loss = torch.sum(torch.mul((source_c - target_c), (source_c - target_c)))
+        dcoral_loss = dcoral_loss / (4 * d * d)
+        return dcoral_loss
