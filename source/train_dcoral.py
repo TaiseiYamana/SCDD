@@ -34,7 +34,7 @@ from utils import create_exp_dir, count_parameters_in_MB
 
 from DALoader import *
 
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def main(args):
     np.random.seed(args.seed)
