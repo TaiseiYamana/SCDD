@@ -26,7 +26,8 @@ from kd_losses import *
 import common.vision.datasets as datasets
 from common.utils.data import ForeverDataIterator
 from DALoader import *
-from coral import coral
+from dalib.adaptation.dcoral import DeepCoralLoss
+#from coral import coral
 
 dataset_names = sorted(
         name for name in datasets.__dict__
@@ -85,6 +86,7 @@ logging.getLogger().addHandler(fh)
 
 
 def main():
+	#random.seed(args.seed)
 	np.random.seed(args.seed)
 	torch.manual_seed(args.seed)
 	if args.cuda:
@@ -124,6 +126,7 @@ def main():
 
 	# define loss functions
 	if args.cuda:
+		coral = DeepCoralLoss().cuda()
 		criterion = torch.nn.CrossEntropyLoss().cuda()
 	else:
 		criterion = torch.nn.CrossEntropyLoss()
@@ -145,7 +148,7 @@ def main():
 
 		# train one epoch
 		epoch_start_time = time.time()
-		train(iters, net, optimizer, criterion, lr_scheduler, epoch)
+		train(iters, net, optimizer, criterion, coral, lr_scheduler, epoch)
 
 		# evaluate on testing set
 		logging.info('Testing the models......')
@@ -169,7 +172,7 @@ def main():
 			'prec@5': t_test_top5,
 		}, is_best, args.save_root)
 
-def train(iter, net, optimizer, criterion, lr_scheduler, epoch):
+def train(iter, net, optimizer, criterion, coral, lr_scheduler, epoch):
 	batch_time = AverageMeter()
 	data_time  = AverageMeter()
 	cls_losses = AverageMeter()
