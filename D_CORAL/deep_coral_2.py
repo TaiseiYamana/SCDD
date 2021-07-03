@@ -17,6 +17,7 @@ from torch.optim.lr_scheduler import LambdaLR
 
 from torchvision.models import alexnet, resnet50, resnet34, resnet18
 
+sys.path.append('..')
 from utils import AverageMeter, accuracy, transform_time
 from utils import load_pretrained_model, save_checkpoint
 from utils import create_exp_dir, count_parameters_in_MB
