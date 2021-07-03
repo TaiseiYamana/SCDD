@@ -8,6 +8,7 @@ import logging
 import argparse
 import numpy as np
 from itertools import chain
+import random
 
 import torch
 import torch.nn as nn
@@ -87,10 +88,13 @@ logging.getLogger().addHandler(fh)
 def main():
 	np.random.seed(args.seed)
 	torch.manual_seed(args.seed)
+	random.seed(args.seed)
 	if args.cuda:
 		torch.cuda.manual_seed(args.seed)
-		cudnn.enabled = True
-		cudnn.benchmark = True
+		#cudnn.enabled = True
+		cudnn.benchmark = False
+		cudnn.deterministic = True		
+		
 	logging.info("args = %s", args)
 	logging.info("unparsed_args = %s", unparsed)
 
