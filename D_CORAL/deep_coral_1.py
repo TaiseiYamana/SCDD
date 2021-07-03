@@ -50,7 +50,7 @@ parser.add_argument('--source', default = 'A', help='source domain(s)')
 parser.add_argument('--target', default = 'W', help='target domain(s)')
 
 # training hyper parameters
-parser.add_argument('--print_freq', type=int, default=10, help='frequency of showing training results on console')
+parser.add_argument('--print_freq', type=int, default=50, help='frequency of showing training results on console')
 parser.add_argument('--epochs', type=int, default=30, help='number of total epochs to run')
 parser.add_argument('--batch_size', type=int, default=128, help='The size of batch')
 parser.add_argument('--lr', type=float, default=0.1, help='initial learning rate')
@@ -61,7 +61,7 @@ parser.add_argument('--cuda', type=int, default=1)
 ## added parameters
 parser.add_argument('--lr-gamma', default=0.0003, type=float, help='parameter for lr scheduler')
 parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
-parser.add_argument('-i', '--iters-per-epoch', default=100, type=int,
+parser.add_argument('-i', '--iters-per-epoch', default=200, type=int,
                         help='Number of iterations per epoch')
 parser.add_argument('-j', '--workers', default=2, type=int, metavar='N',help='number of data loading workers (default: 4)')
 
