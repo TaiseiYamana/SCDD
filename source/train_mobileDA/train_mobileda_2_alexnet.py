@@ -17,7 +17,7 @@ from torchvision.models import alexnet
 #import torchvision.transforms as T
 #import torch.nn.functional as F
 
-sys.path.append('..')
+sys.path.append('../..')
 import common.vision.datasets as datasets
 import common.vision.models as models
 from common.modules.classifier import Classifier
