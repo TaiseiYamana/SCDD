@@ -18,9 +18,10 @@ from torchvision.models import alexnet
 #import torch.nn.functional as F
 
 sys.path.append('..')
-from dalib.adaptation.mcc import MinimumClassConfusionLoss, ImageClassifier
 import common.vision.datasets as datasets
 import common.vision.models as models
+from common.modules.classifier import Classifier
+from dalib.adaptation.dcoral import DeepCoralLoss
 #from common.vision.transforms import ResizeImage
 from common.utils.data import ForeverDataIterator
 #from common.utils.metric import accuracy, ConfusionMatrix
@@ -105,12 +106,12 @@ def main(args):
 	  }, save_path)
 
     # define loss function
-    mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
+    coral = DeepCoralLoss()
     st = SoftTarget(args.st_temp)
     cls = torch.nn.CrossEntropyLoss()
 
     if args.cuda:
-		    mcc = mcc.to(device)
+		    coral = coral.to(device)
 		    st = st.to(device)
 		    cls = cls.to(device)
 
@@ -151,7 +152,7 @@ def main(args):
     for epoch in range(1, args.epochs+1):
 		    # train one epoch
 		    epoch_start_time = time.time()
-		    train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
+		    train(iters, nets, optimizer, lr_scheduler, cls, coral, st, epoch, args)
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
@@ -175,11 +176,11 @@ def main(args):
           'prec@5': t_test_top5,
           }, is_best, args.save_root)
 
-def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
+def train(iters, nets, optimizer, lr_scheduler, cls, coral, st, epoch, args):
 	batch_time = AverageMeter()
 	data_time  = AverageMeter()
 	cls_losses = AverageMeter()
-	mcc_losses  = AverageMeter()
+	coral_losses  = AverageMeter()
 	kd_losses  = AverageMeter()
 	top1       = AverageMeter()
 	top5       = AverageMeter()
@@ -209,13 +210,13 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 		t_target_out, _= tnet(target_img)
 
 		cls_loss = cls(s_source_out, source_label)
-		mcc_loss = mcc(s_target_out)
+		coral_loss = coral(s_source_out, s_target_out)
 		kd_loss = st(s_target_out, t_target_out)
-		loss = cls_loss + mcc_loss * args.lam + kd_loss * args.mu
+		loss = cls_loss + coral_loss * args.lam + kd_loss * args.mu
 
 		prec1, prec5 = accuracy(s_source_out, source_label, topk=(1,5))
 		cls_losses.update(cls_loss.item(), source_img.size(0))
-		mcc_losses.update(mcc_loss.item(), target_img.size(0))
+		coral_losses.update(coral_loss.item(), target_img.size(0))
 		kd_losses.update(kd_loss.item(), target_img.size(0))
 		top1.update(prec1.item(), source_img.size(0))
 		top5.update(prec5.item(), source_img.size(0))
@@ -233,12 +234,12 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 					   'Time:{batch_time.val:.4f} '
 					   'Data:{data_time.val:.4f}  '
 					   'Cls:{cls_losses.val:.4f}({cls_losses.avg:.4f})  '
-					   'MCC:{mcc_losses.val:.4f}({mcc_losses.avg:.4f})  '
+					   'D-CORAL:{coral_losses.val:.4f}({coral_losses.avg:.4f})  '
 					   'KD:{kd_losses.val:.4f}({kd_losses.avg:.4f})  '
 					   'prec@1:{top1.val:.2f}({top1.avg:.2f})  '
 					   'prec@5:{top5.val:.2f}({top5.avg:.2f})'.format(
 					   epoch, i, args.iters_per_epoch, batch_time=batch_time, data_time=data_time,
-					   cls_losses=cls_losses, mcc_losses=mcc_losses, kd_losses=kd_losses, top1=top1, top5=top5))
+					   cls_losses=cls_losses, coral_losses=coral_losses, kd_losses=kd_losses, top1=top1, top5=top5))
 			logging.info(log_str)
 
 
