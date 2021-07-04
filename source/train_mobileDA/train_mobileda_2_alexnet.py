@@ -73,7 +73,7 @@ def main(args):
     logging.info("param size = %fMB", count_parameters_in_MB(tnet))
 
     logging.info('Initialize Student Model')
-    logging.info('=> using pre-trained model {}'.format(args.s_arch))
+    logging.info('=> using pre-trained model AlexNet')
     #sbackbone = models.__dict__[args.s_arch](pretrained=True)
     #snet = ImageClassifier(sbackbone, num_classes, bottleneck_dim=args.s_bottleneck_dim).to(device)
     snet = alexnet(pretrained=True)
