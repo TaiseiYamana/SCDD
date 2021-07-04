@@ -1,7 +1,7 @@
 # office-31
 # resnet34→arexnet
 # A→W
-CUDA_VISIBLE_DEVICES=0 python3 Distillation_from_teacher_alex.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
+CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alexnet.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
                                       --img_root '/content' \
                                       --note 'of31_A2W' \
                                       --t_arch 'resnet34' \
