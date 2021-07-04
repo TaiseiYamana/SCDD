@@ -5,7 +5,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_2_alexnet.py --save_root '/content
                                       --img_root '/content' \
                                       --note 'of31_A2W' \
                                       --t_arch 'resnet34' \
-                                      --t-model-param '/content/drive/MyDrive/results/pt_of31_A2W_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/Base/r34/of31_A2W/model_best.pth.tar' \
                                       -d Office31 \
                                       -s A \
                                       -t W \
@@ -18,7 +18,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_2_alexnet.py --save_root '/content
                                       --img_root '/content' \
                                       --note 'of31_A2D' \
                                       --t_arch 'resnet34' \
-                                      --t-model-param '/content/drive/MyDrive/results/pt_of31_A2D_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/Base/r34/of31_A2D/model_best.pth.tar' \
                                       -d Office31 \
                                       -s A \
                                       -t D \
@@ -31,7 +31,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_2_alexnet.py --save_root '/content
                                       --img_root '/content' \
                                       --note 'of31_W2A' \
                                       --t_arch 'resnet34' \
-                                      --t-model-param '/content/drive/MyDrive/results/pt_of31_W2A_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/Base/r34/of31_W2A/model_best.pth.tar' \
                                       -d Office31 \
                                       -s W \
                                       -t A \
@@ -44,7 +44,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_2_alexnet.py --save_root '/content
                                       --img_root '/content' \
                                       --note 'of31_W2D' \
                                       --t_arch 'resnet34' \
-                                      --t-model-param '/content/drive/MyDrive/results/pt_of31_W2D_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/Base/r34/of31_W2D/model_best.pth.tar' \
                                       -d Office31 \
                                       -s W \
                                       -t D \
@@ -57,7 +57,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_2_alexnet.py --save_root '/content
                                       --img_root '/content' \
                                       --note 'of31_D2A' \
                                       --t_arch 'resnet34' \
-                                      --t-model-param '/content/drive/MyDrive/results/pt_of31_D2A_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/Base/r34/of31_D2A/model_best.pth.tar' \
                                       -d Office31 \
                                       -s D \
                                       -t A \
@@ -70,7 +70,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_2_alexnet.py --save_root '/content
                                       --img_root '/content' \
                                       --note 'of31_D2W' \
                                       --t_arch 'resnet34' \
-                                      --t-model-param '/content/drive/MyDrive/results/pt_of31_D2W_r50/model_best.pth.tar' \
+                                      --t-model-param '/content/drive/MyDrive/results/Base/r34/of31_D2W/model_best.pth.tar' \
                                       -d Office31 \
                                       -s D \
                                       -t W \
