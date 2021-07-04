@@ -16,7 +16,7 @@ from torch.optim.lr_scheduler import LambdaLR
 #import torchvision.transforms as T
 #import torch.nn.functional as F
 
-sys.path.append('..')
+sys.path.append('../..')
 from common.modules.classifier import Classifier
 import common.vision.datasets as datasets
 import common.vision.models as models
