@@ -6,7 +6,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content
                                       --note 'of31_A2W' \
                                       --t_arch 'resnet34' \
                                       --t-bottleneck-dim 512 \
-                                      --t-model-param '/content/drive/MyDrive/results/PT/MCC/r34/of31_A2W' \
+                                      --t-model-param '/content/drive/MyDrive/results/PT/MCC/r34/of31_A2W/model_best.pth.tar' \
                                       -d Office31 \
                                       -s A \
                                       -t W \
@@ -21,7 +21,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content
                                       --note 'of31_D2W' \
                                       --t_arch 'resnet34' \
                                       --t-bottleneck-dim 512 \
-                                      --t-model-param '/content/drive/MyDrive/results/PT/MCC/r34/of31_D2W' \
+                                      --t-model-param '/content/drive/MyDrive/results/PT/MCC/r34/of31_D2W/model_best.pth.tar' \
                                       -d Office31 \
                                       -s D \
                                       -t W \
@@ -36,7 +36,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content
                                       --note 'of31_W2D' \
                                       --t_arch 'resnet34' \
                                       --t-bottleneck-dim 512 \
-                                      --t-model-param '/content/drive/MyDrive/results/PT/MCC/r34/of31_W2D' \
+                                      --t-model-param '/content/drive/MyDrive/results/PT/MCC/r34/of31_W2D/model_best.pth.tar' \
                                       -d Office31 \
                                       -s w \
                                       -t D \
@@ -51,7 +51,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content
                                       --note 'of31_A2D' \
                                       --t_arch 'resnet34' \
                                       --t-bottleneck-dim 512 \
-                                      --t-model-param '/content/drive/MyDrive/results/PT/MCC/r34/of31_A2D' \
+                                      --t-model-param '/content/drive/MyDrive/results/PT/MCC/r34/of31_A2D/model_best.pth.tar' \
                                       -d Office31 \
                                       -s A \
                                       -t D \
@@ -66,7 +66,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content
                                       --note 'of31_D2A' \
                                       --t_arch 'resnet34' \
                                       --t-bottleneck-dim 512 \
-                                      --t-model-param '/content/drive/MyDrive/results/PT/MCC/r34/of31_D2A' \
+                                      --t-model-param '/content/drive/MyDrive/results/PT/MCC/r34/of31_D2A/model_best.pth.tar' \
                                       -d Office31 \
                                       -s D \
                                       -t A \
@@ -81,7 +81,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content
                                       --note 'of31_W2A' \
                                       --t_arch 'resnet34' \
                                       --t-bottleneck-dim 512 \
-                                      --t-model-param '/content/drive/MyDrive/results/PT/MCC/r34/of31_W2A' \
+                                      --t-model-param '/content/drive/MyDrive/results/PT/MCC/r34/of31_W2A/model_best.pth.tar' \
                                       -d Office31 \
                                       -s W \
                                       -t A \
