@@ -107,7 +107,7 @@ def main(args):
 
     # define loss function
     coral = DeepCoralLoss()
-    st = SoftTarget(args.st_temp)
+    st = SoftTarget(args.temp)
     cls = torch.nn.CrossEntropyLoss()
 
     if args.cuda:
@@ -324,10 +324,9 @@ if __name__ == '__main__':
                         help="When phase is 'test', only test the model."
                              "When phase is 'analysis', only analysis the model.")
     # loss parameters
-    parser.add_argument('--mcc_temp', default=2.0, type=float, help='parameter mcc temperature scaling')
-    parser.add_argument('--st_temp', default=4.0, type=float, help='parameter soft target temperature scaling')
-    parser.add_argument('--lam', default=1., type=float,
-                        help='the trade-off hyper-parameter for mcc loss')
+    parser.add_argument('--temp', default=2.0, type=float, help='parameter soft target temperature scaling')
+    parser.add_argument('--lam', default=0.5, type=float,
+                        help='the trade-off hyper-parameter for d-coral loss')
     parser.add_argument('--mu', default=0.9, type=float,
                         help='the trade-off hyper-parameter for soft target loss')
     # others
