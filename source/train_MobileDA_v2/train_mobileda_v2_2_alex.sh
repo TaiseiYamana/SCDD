@@ -1,7 +1,7 @@
 # office-31
 # resnet34→arexnet
 # A→W
-CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alexnet.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
+CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
                                       --img_root '/content' \
                                       --note 'of31_A2W' \
                                       --t_arch 'resnet34' \
@@ -16,7 +16,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alexnet.py --save_root '/cont
                                       --mcc_temp 2.5 \
                                       --st_temp 4.0
 # D→W
-CUDA_VISIBLE_DEVICES=0 python3 Distillation_from_teacher_alex.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
+CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
                                       --img_root '/content' \
                                       --note 'of31_D2W' \
                                       --t_arch 'resnet34' \
@@ -31,7 +31,7 @@ CUDA_VISIBLE_DEVICES=0 python3 Distillation_from_teacher_alex.py --save_root '/c
                                       --mcc_temp 2.5 \
                                       --st_temp 4.0 
 # W→D
-CUDA_VISIBLE_DEVICES=0 python3 Distillation_from_teacher_alex.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
+CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
                                       --img_root '/content' \
                                       --note 'of31_W2D' \
                                       --t_arch 'resnet34' \
@@ -46,7 +46,7 @@ CUDA_VISIBLE_DEVICES=0 python3 Distillation_from_teacher_alex.py --save_root '/c
                                       --mcc_temp 2.5 \
                                       --st_temp 4.0      
 # A→D
-CUDA_VISIBLE_DEVICES=0 python3 Distillation_from_teacher_alex.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
+CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
                                       --img_root '/content' \
                                       --note 'of31_A2D' \
                                       --t_arch 'resnet34' \
@@ -61,7 +61,7 @@ CUDA_VISIBLE_DEVICES=0 python3 Distillation_from_teacher_alex.py --save_root '/c
                                       --mcc_temp 2.5 \
                                       --st_temp 4.0     
 # D→A
-CUDA_VISIBLE_DEVICES=0 python3 Distillation_from_teacher_alex.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
+CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
                                       --img_root '/content' \
                                       --note 'of31_D2A' \
                                       --t_arch 'resnet34' \
@@ -76,7 +76,7 @@ CUDA_VISIBLE_DEVICES=0 python3 Distillation_from_teacher_alex.py --save_root '/c
                                       --mcc_temp 2.5 \
                                       --st_temp 4.0
 # W→A
-CUDA_VISIBLE_DEVICES=0 python3 Distillation_from_teacher_alex.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
+CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r34_2_arex' \
                                       --img_root '/content' \
                                       --note 'of31_W2A' \
                                       --t_arch 'resnet34' \
