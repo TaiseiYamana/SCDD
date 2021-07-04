@@ -17,7 +17,7 @@ from torchvision.models import alexnet
 #import torchvision.transforms as T
 #import torch.nn.functional as F
 
-sys.path.append('..')
+sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss, ImageClassifier
 import common.vision.datasets as datasets
 import common.vision.models as models
@@ -316,7 +316,7 @@ if __name__ == '__main__':
                         help="When phase is 'test', only test the model."
                              "When phase is 'analysis', only analysis the model.")
     # loss parameters
-    parser.add_argument('--mcc_temp', default=2.0, type=float, help='parameter mcc temperature scaling')
+    parser.add_argument('--mcc_temp', default=2.5, type=float, help='parameter mcc temperature scaling')
     parser.add_argument('--st_temp', default=2.0, type=float, help='parameter soft target temperature scaling')
     parser.add_argument('--lam', default=1., type=float,
                         help='the trade-off hyper-parameter for mcc loss')
