@@ -293,28 +293,19 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--source', default = 'A', help='source domain(s)')
     parser.add_argument('-t', '--target', default = 'W', help='target domain(s)')
     # model parameters
-    parser.add_argument('--t_arch', metavar='ARCH', default='resnet50',
+    parser.add_argument('--t_arch', metavar='ARCH', default='resnet34',
                         choices=architecture_names,
                         help='backbone architecture: ' +
                              ' | '.join(architecture_names) +
-                             ' (default: resnet50)')
-    parser.add_argument('--s_arch', metavar='ARCH', default='resnet18',
-                        choices=architecture_names,
-                        help='backbone architecture: ' +
-                             ' | '.join(architecture_names) +
-                             ' (default: resnet18)')
-    parser.add_argument('--t-bottleneck-dim', default=1024, type=int,
-                        help='Dimension of bottleneck')
-    parser.add_argument('--s-bottleneck-dim', default=256, type=int,
-                        help='Dimension of bottleneck')
+                             ' (default: resnet34)')
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
     # training parameters
-    parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
-    parser.add_argument('--lr', '--learning-rate', default=0.005, type=float, help='initial learning rate')
-    parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
+    parser.add_argument('-b', '--batch-size', default=128, type=int, help='mini-batch size (default: 32)')
+    parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
+    parser.add_argument('--lr-gamma', default=0.0003, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
-    parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
+    parser.add_argument('--wd', '--weight-decay', default=5e-4, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
     parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
     parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
