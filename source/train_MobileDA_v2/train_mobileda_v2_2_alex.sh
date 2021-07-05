@@ -38,7 +38,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content
                                       --t-bottleneck-dim 512 \
                                       --t-model-param '/content/drive/MyDrive/results/PT/MCC/r34/of31_W2D/model_best.pth.tar' \
                                       -d Office31 \
-                                      -s w \
+                                      -s W \
                                       -t D \
                                       --epochs 20 \
                                       -i 500 \
