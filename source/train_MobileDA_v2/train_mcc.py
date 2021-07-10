@@ -12,19 +12,12 @@ import torch.nn as nn
 import torch.backends.cudnn as cudnn
 from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
-#from torch.utils.data import DataLoader
-#import torchvision.transforms as T
-#import torch.nn.functional as F
 
 sys.path.append('..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
 import common.vision.datasets as datasets
 import common.vision.models as models
-#from common.vision.transforms import ResizeImage
 from common.utils.data import ForeverDataIterator
-#from common.utils.metric import accuracy, ConfusionMatrix
-#from common.utils.meter import AverageMeter, ProgressMeter
-#from common.utils.logger import CompleteLogger
 from common.utils.analysis import collect_feature, tsne, a_distance
 
 from utils import AverageMeter, accuracy
