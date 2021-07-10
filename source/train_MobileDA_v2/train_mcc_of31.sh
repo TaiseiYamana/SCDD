@@ -1,9 +1,9 @@
 # Office31
 # resnet50
 # A→W
-CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50' \
+CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/of31/r50' \
                                                          --img_root '/content' \
-                                                         --note 'A2W_r50' \
+                                                         --note 'A2W' \
                                                          -a 'resnet50' \
                                                          -d Office31 \
                                                          -s A \
@@ -14,9 +14,9 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                                          --temperature 2.5
                                                         
 # D→W
-CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50' \
+CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/of31/r50' \
                                                          --img_root '/content' \
-                                                         --note 'D2W_r50' \
+                                                         --note 'D2W' \
                                                          -a 'resnet50' \
                                                          -d Office31 \
                                                          -s D \
@@ -26,9 +26,9 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                                          --seed 2 \
                                                          --temperature 2.5
 # W→D
-CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50' \
+CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/of31/r50' \
                                                          --img_root '/content' \
-                                                         --note 'W2D_r50' \
+                                                         --note 'W2D' \
                                                          -a 'resnet50' \
                                                          -d Office31 \
                                                          -s W \
@@ -38,9 +38,9 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                                          --seed 2 \
                                                          --temperature 2.5
 # A→D
-CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50' \
+CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/of31/r50' \
                                                          --img_root '/content' \
-                                                         --note 'A2D_r50' \
+                                                         --note 'A2D' \
                                                          -a 'resnet50' \
                                                          -d Office31 \
                                                          -s A \
@@ -50,9 +50,9 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                                          --seed 2 \
                                                          --temperature 2.5
 # D→A
-CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50' \
+CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/of31/r50' \
                                                          --img_root '/content' \
-                                                         --note 'D2A_r50' \
+                                                         --note 'D2A' \
                                                          -a 'resnet50' \
                                                          -d Office31 \
                                                          -s D \
@@ -62,9 +62,9 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                                          --seed 2 \
                                                          --temperature 2.5 
 # W→A
-CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50' \
+CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/of31/r50' \
                                                          --img_root '/content' \
-                                                         --note 'W2A_r50' \
+                                                         --note 'W2A' \
                                                          -a 'resnet50' \
                                                          -d Office31 \
                                                          -s W \
