@@ -8,7 +8,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                                          -d Office31 \
                                                          -s A \
                                                          -t W \
-                                                         --epochs 15 \
+                                                         --epochs 20 \
                                                          -i 500 \
                                                          --seed 2 \
                                                          --temperature 2.5
@@ -21,7 +21,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                                          -d Office31 \
                                                          -s D \
                                                          -t W \
-                                                         --epochs 15 \
+                                                         --epochs 20 \
                                                          -i 500 \
                                                          --seed 2 \
                                                          --temperature 2.5
@@ -33,7 +33,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                                          -d Office31 \
                                                          -s W \
                                                          -t D \
-                                                         --epochs 15 \
+                                                         --epochs 20 \
                                                          -i 500 \
                                                          --seed 2 \
                                                          --temperature 2.5
@@ -45,7 +45,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                                          -d Office31 \
                                                          -s A \
                                                          -t D \
-                                                         --epochs 15 \
+                                                         --epochs 20 \
                                                          -i 500 \
                                                          --seed 2 \
                                                          --temperature 2.5
@@ -69,7 +69,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                                          -d Office31 \
                                                          -s W \
                                                          -t A \
-                                                         --epochs  \
+                                                         --epochs 20 \
                                                          -i 500 \
                                                          --seed 2 \
                                                          --temperature 2.5                                                         
