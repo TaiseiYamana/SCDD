@@ -18,7 +18,7 @@ from torchvision.models import alexnet
 #import torch.nn.functional as F
 
 sys.path.append('../..')
-from dalib.adaptation.mcc import MinimumClassConfusionLoss, ImageClassifier
+from dalib.adaptation.mcc import MinimumClassConfusionLoss
 import common.vision.datasets as datasets
 import common.vision.models as models
 #from common.vision.transforms import ResizeImage
@@ -62,7 +62,7 @@ def main(args):
     logging.info('Initialize Teacher Model')
     logging.info('=> using pre-trained model {}'.format(args.t_arch))
     tbackbone = models.__dict__[args.t_arch](pretrained=True)
-    tnet = ImageClassifier(tbackbone, num_classes, bottleneck_dim=args.t_bottleneck_dim).to(device)
+    tnet = models.classifier(tbackbone, num_classes).to(device)
     checkpoint = torch.load(args.t_model_param)
     load_pretrained_model(tnet, checkpoint['net'])
     tnet.eval()
@@ -297,8 +297,6 @@ if __name__ == '__main__':
                         help='backbone architecture: ' +
                              ' | '.join(architecture_names) +
                              ' (default: resnet50)')
-    parser.add_argument('--t-bottleneck-dim', default=1024, type=int,
-                        help='Dimension of bottleneck')
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
     # training parameters
     parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
