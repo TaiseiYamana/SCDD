@@ -16,7 +16,8 @@ from torch.optim.lr_scheduler import LambdaLR
 #import torchvision.transforms as T
 #import torch.nn.functional as F
 
-sys.path.append('../..')
+sys.path.append('..')
+from dalib.adaptation.mcc import MinimumClassConfusionLoss
 import common.vision.datasets as datasets
 import common.vision.models as models
 #from common.vision.transforms import ResizeImage
@@ -57,7 +58,7 @@ def main(args):
     logging.info('----------- Network Initialization --------------')
     logging.info('=> using pre-trained model {}'.format(args.arch))
     backbone = models.__dict__[args.arch](pretrained=True)
-    net = models.Classifier(backbone, num_classes).to(device)
+    net = modules.classifier(backbone, num_classes).to(device)
     logging.info('%s', net)
     logging.info("param size = %fMB", count_parameters_in_MB(net))
     logging.info('-----------------------------------------------')
@@ -78,8 +79,10 @@ def main(args):
 	  }, save_path)
 
     # define loss function
+    mcc_loss = MinimumClassConfusionLoss(temperature=args.temperature)
     cls_loss = torch.nn.CrossEntropyLoss()
     if args.cuda:
+		    mcc = mcc_loss.to(device)
 		    cls = cls_loss.to(device)
 
     if args.phase == 'analysis': 
@@ -118,7 +121,7 @@ def main(args):
     for epoch in range(1, args.epochs+1):
 		    # train one epoch
 		    epoch_start_time = time.time()
-		    train(iters, net, optimizer, lr_scheduler, cls, epoch, args)
+		    train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args)
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
@@ -142,38 +145,46 @@ def main(args):
           'prec@5': t_test_top5,
           }, is_best, args.save_root)
 
-def train(iters, net, optimizer, lr_scheduler, cls, epoch, args):
+def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 	batch_time = AverageMeter()
 	data_time  = AverageMeter()
 	cls_losses = AverageMeter()
+	mcc_losses  = AverageMeter()
 	top1       = AverageMeter()
 	top5       = AverageMeter()
 
 	source_iter = iters['source']
+	target_iter = iters['target']
 
 	net.train()
 
 	end = time.time()
 	for i in range(args.iters_per_epoch):
 		source_img, source_label = next(source_iter)
+		target_img, _ = next(target_iter)
 
 		data_time.update(time.time() - end)
 
 		if args.cuda:
 			source_img = source_img.cuda()
 			source_label = source_label.cuda()
+			target_img = target_img.cuda()
 
 		source_out, _= net(source_img)
+		target_out, _= net(target_img)
 
 		cls_loss = cls(source_out, source_label)
+		mcc_loss = mcc(target_out)
+		loss = cls_loss + mcc_loss * args.trade_off 
     
 		prec1, prec5 = accuracy(source_out, source_label, topk=(1,5))
 		cls_losses.update(cls_loss.item(), source_img.size(0))
+		mcc_losses.update(mcc_loss.item(), target_img.size(0))
 		top1.update(prec1.item(), source_img.size(0))
 		top5.update(prec5.item(), source_img.size(0))
 
 		optimizer.zero_grad()
-		cls_loss.backward()
+		loss.backward()
 		optimizer.step()
 		lr_scheduler.step()
 
@@ -185,10 +196,11 @@ def train(iters, net, optimizer, lr_scheduler, cls, epoch, args):
 					   'Time:{batch_time.val:.4f} '
 					   'Data:{data_time.val:.4f}  '
 					   'Cls:{cls_losses.val:.4f}({cls_losses.avg:.4f})  '
+					   'MCC:{mcc_losses.val:.4f}({mcc_losses.avg:.4f})  '
 					   'prec@1:{top1.val:.2f}({top1.avg:.2f})  '
 					   'prec@5:{top5.val:.2f}({top5.avg:.2f})'.format(
 					   epoch, i, args.iters_per_epoch, batch_time=batch_time, data_time=data_time,
-					   cls_losses=cls_losses, top1=top1, top5=top5))
+					   cls_losses=cls_losses, mcc_losses=mcc_losses, top1=top1, top5=top5))
 			logging.info(log_str)
 
 
@@ -250,11 +262,11 @@ if __name__ == '__main__':
     parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')                       
     # training parameters
     parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
-    parser.add_argument('--lr', '--learning-rate', default=0.001, type=float, help='initial learning rate')
-    parser.add_argument('--lr-gamma', default=0.0003, type=float, help='parameter for lr scheduler')
+    parser.add_argument('--lr', '--learning-rate', default=0.005, type=float, help='initial learning rate')
+    parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
-    parser.add_argument('--wd', '--weight-decay', default=0.0005, type=float, help='weight decay (default: 1e-3)')
+    parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
     parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
     parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
@@ -262,7 +274,11 @@ if __name__ == '__main__':
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
     parser.add_argument("--phase", type=str, default='train', choices=['train', 'test', 'analysis'],
                         help="When phase is 'test', only test the model."
-                             "When phase is 'analysis', only analysis the model.")                        
+                             "When phase is 'analysis', only analysis the model.")
+    # mcc parameters
+    parser.add_argument('--temperature', default=2.0, type=float, help='parameter temperature scaling')
+    parser.add_argument('--trade-off', default=1., type=float,
+                        help='the trade-off hyper-parameter for transfer loss')                         
     # others
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
