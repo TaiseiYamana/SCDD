@@ -17,7 +17,7 @@ from torch.optim.lr_scheduler import LambdaLR
 #import torch.nn.functional as F
 
 sys.path.append('..')
-from dalib.adaptation.mcc import MinimumClassConfusionLoss
+from dalib.adaptation.mcc import MinimumClassConfusionLoss,ImageClassifier
 import common.vision.datasets as datasets
 import common.vision.models as models
 #from common.vision.transforms import ResizeImage
@@ -58,7 +58,7 @@ def main(args):
     logging.info('----------- Network Initialization --------------')
     logging.info('=> using pre-trained model {}'.format(args.arch))
     backbone = models.__dict__[args.arch](pretrained=True)
-    net = modules.classifier(backbone, num_classes, bottleneck_dim=args.bottleneck_dim).to(device)
+    net = ImageClassifier(backbone, num_classes, bottleneck_dim=args.bottleneck_dim).to(device)
     logging.info('%s', net)
     logging.info("param size = %fMB", count_parameters_in_MB(net))
     logging.info('-----------------------------------------------')
@@ -296,11 +296,3 @@ if __name__ == '__main__':
     logging.getLogger().addHandler(fh)
 
     main(args)
-
-
-
-
-
-
-
-
