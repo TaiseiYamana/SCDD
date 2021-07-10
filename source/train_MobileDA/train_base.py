@@ -17,7 +17,6 @@ from torch.optim.lr_scheduler import LambdaLR
 #import torch.nn.functional as F
 
 sys.path.append('../..')
-from common.modules.classifier import Classifier
 import common.vision.datasets as datasets
 import common.vision.models as models
 #from common.vision.transforms import ResizeImage
@@ -58,7 +57,7 @@ def main(args):
     logging.info('----------- Network Initialization --------------')
     logging.info('=> using pre-trained model {}'.format(args.arch))
     backbone = models.__dict__[args.arch](pretrained=True)
-    net = Classifier(backbone, num_classes).to(device)
+    net = datasets.Classifier(backbone, num_classes).to(device)
     logging.info('%s', net)
     logging.info("param size = %fMB", count_parameters_in_MB(net))
     logging.info('-----------------------------------------------')
