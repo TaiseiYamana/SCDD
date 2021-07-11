@@ -131,12 +131,11 @@ def main(args):
 		    	best_top5 = t_test_top5
 		    	is_best = True
 		    logging.info('Saving models......')
-		    save_checkpoint({
-          'epoch': epoch,
-          'net': net.state_dict(),
-          'prec@1': t_test_top1,
-          'prec@5': t_test_top5,
-          }, is_best, args.save_root)
+		    save_checkpoint({'epoch': epoch,
+          			　　　　　　　　　　'net': snet.state_dict(),
+          			　　　　　　　　　　'prec@1': t_test_top1,
+          			　　　　　　　　　　'prec@5': t_test_top5,}, 
+			    	　　　　　　　　　　is_best, args.save_root)
 			
     # print experiment result
     checkpoint = torch.load(args.save_root)		
