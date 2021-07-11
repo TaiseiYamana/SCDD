@@ -164,6 +164,10 @@ def main(args):
           			　　　　　　　　　　'prec@1': t_test_top1,
           			　　　　　　　　　　'prec@5': t_test_top5,}, 
 			    	　　　　　　　　　　is_best, args.save_root)
+    # print experiment result
+    checkpoint = torch.load(args.save_root)		
+    logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))			
+			
 
 def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 	batch_time = AverageMeter()
