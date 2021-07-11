@@ -1,5 +1,5 @@
 # office-31
-# resnet34→arexnet
+# resnet50→arexnet
 # A→W
 CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_alex.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_arex/of31' \
                                                            --img_root '/content' \
