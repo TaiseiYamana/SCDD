@@ -18,6 +18,7 @@ sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
 import common.vision.datasets as datasets
 import common.vision.models as models
+import common.modules as modules
 from common.utils.data import ForeverDataIterator
 from common.utils.analysis import collect_feature, tsne, a_distance
 
@@ -55,7 +56,7 @@ def main(args):
     logging.info('Initialize Teacher Model')
     logging.info('=> using pre-trained model {}'.format(args.t_arch))
     tbackbone = models.__dict__[args.t_arch](pretrained=True)
-    tnet = models.classifier(tbackbone, num_classes).to(device)
+    tnet = models.Classifier(tbackbone, num_classes).to(device)
     checkpoint = torch.load(args.t_model_param)
     load_pretrained_model(tnet, checkpoint['net'])
     tnet.eval()

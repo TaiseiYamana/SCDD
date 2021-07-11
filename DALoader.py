@@ -128,7 +128,7 @@ def OfficeHome_loader(root, task, batch_size, num_workers, train:bool):
             transforms.Normalize(mean=mean_std[task]['mean'],
                                  std=mean_std[task]['std'])
         ])
-      dataset = datasets.officecaltech.OfficeCaltech(root=root, task=task, download=True, transform=data_transform)
+      dataset = datasets.officehome.OfficeHome(root=root, task=task, download=True, transform=data_transform)
       dataset_loader = DataLoader(dataset, batch_size=batch_size,shuffle=True, num_workers=num_workers, drop_last=True)
     else:
       data_transform = transforms.Compose([
@@ -168,7 +168,7 @@ def VisDA2017_loader(root, task, batch_size, num_workers, train:bool):
             transforms.Normalize(mean=mean_std[task]['mean'],
                                  std=mean_std[task]['std'])
         ])
-      dataset = datasets.officechome.OfficeCaltech(root=root, task=task, download=True, transform=data_transform)
+      dataset = datasets.visda2017.VisDA2017(root=root, task=task, download=True, transform=data_transform)
       dataset_loader = DataLoader(dataset, batch_size=batch_size,shuffle=True, num_workers=num_workers, drop_last=True)
     else:
       data_transform = transforms.Compose([
@@ -179,7 +179,7 @@ def VisDA2017_loader(root, task, batch_size, num_workers, train:bool):
             transforms.Normalize(mean=mean_std[task]['mean'],
                                  std=mean_std[task]['std'])
         ])
-      dataset = datasets.officehome.OfficeHome(root=root, task=task, download=True, transform=data_transform)
+      dataset = datasets.visda2017.VisDA2017(root=root, task=task, download=True, transform=data_transform)
       dataset_loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     return dataset,dataset_loader

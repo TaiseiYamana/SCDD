@@ -17,6 +17,7 @@ sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
 import common.vision.datasets as datasets
 import common.vision.models as models
+import common.modules as modules
 from common.utils.data import ForeverDataIterator
 from common.utils.analysis import collect_feature, tsne, a_distance
 
@@ -51,7 +52,7 @@ def main(args):
     logging.info('----------- Network Initialization --------------')
     logging.info('=> using pre-trained model {}'.format(args.arch))
     backbone = models.__dict__[args.arch](pretrained=True)
-    net = modules.classifier(backbone, num_classes).to(device)
+    net = modules.Classifier(backbone, num_classes).to(device)
     logging.info('%s', net)
     logging.info("param size = %fMB", count_parameters_in_MB(net))
     logging.info('-----------------------------------------------')
