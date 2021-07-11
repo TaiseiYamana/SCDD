@@ -49,7 +49,7 @@ def Office31_loader(root, task, batch_size, num_workers, train:bool):
 
     return dataset,dataset_loader
 
-def OfficeCaltech_loader(root, task, batch_size, train:bool):
+def OfficeCaltech_loader(root, task, batch_size, num_workers, train:bool):
     # Computed with compute_mean_std.py
     mean_std = {
         'A': {
@@ -96,7 +96,7 @@ def OfficeCaltech_loader(root, task, batch_size, train:bool):
     return dataset,dataset_loader
 
 
-def OfficeHome_loader(root, task, batch_size, train:bool):
+def OfficeHome_loader(root, task, batch_size, num_workers, train:bool):
 
     # Computed with compute_mean_std.py
     mean_std = {
@@ -144,7 +144,7 @@ def OfficeHome_loader(root, task, batch_size, train:bool):
 
     return dataset,dataset_loader
 
-def VisDA2017_loader(root, task, batch_size, train:bool):
+def VisDA2017_loader(root, task, batch_size, num_workers, train:bool):
 
     # Computed with compute_mean_std.py
     mean_std = {
@@ -184,7 +184,7 @@ def VisDA2017_loader(root, task, batch_size, train:bool):
 
     return dataset,dataset_loader
 
-def DomainNet_loader(root, task, batch_size, train:bool):
+def DomainNet_loader(root, task, batch_size, num_workers, train:bool):
 
     # Computed with compute_mean_std.py
     mean_std = {
