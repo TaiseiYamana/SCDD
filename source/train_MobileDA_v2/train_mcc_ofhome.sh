@@ -5,7 +5,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             --img_root '/content' \
                                             --note 'Ar2Cl' \
                                             -a 'resnet50' \
-                                            -d Officehome \
+                                            -d OfficeHome \
                                             -s Ar \
                                             -t Cl \
                                             --epochs 20 \
@@ -17,7 +17,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             --img_root '/content' \
                                             --note 'Ar2Pr' \
                                             -a 'resnet50' \
-                                            -d Officehome \
+                                            -d OfficeHome \
                                             -s Ar \
                                             -t Pr \
                                             --epochs 20 \
@@ -29,7 +29,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             --img_root '/content' \
                                             --note 'Ar2Rw' \
                                             -a 'resnet50' \
-                                            -d Officehome \
+                                            -d OfficeHome \
                                             -s Ar \
                                             -t Rw \
                                             --epochs 20 \
@@ -41,7 +41,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             --img_root '/content' \
                                             --note 'Cl2Ar' \
                                             -a 'resnet50' \
-                                            -d Officehome \
+                                            -d OfficeHome \
                                             -s Cl \
                                             -t Ar \
                                             --epochs 20 \
@@ -53,7 +53,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             --img_root '/content' \
                                             --note 'Cl2Pr' \
                                             -a 'resnet50' \
-                                            -d Officehome \
+                                            -d OfficeHome \
                                             -s Cl \
                                             -t Pr \
                                             --epochs 20 \
@@ -65,7 +65,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             --img_root '/content' \
                                             --note 'Cl2Rw' \
                                             -a 'resnet50' \
-                                            -d Officehome \
+                                            -d OfficeHome \
                                             -s Cl \
                                             -t Rw \
                                             --epochs 20 \
@@ -77,7 +77,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             --img_root '/content' \
                                             --note 'Pr2Ar' \
                                             -a 'resnet50' \
-                                            -d Officehome \
+                                            -d OfficeHome \
                                             -s Pr \
                                             -t Ar \
                                             --epochs 20 \
@@ -89,7 +89,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             --img_root '/content' \
                                             --note 'Pr2Cl' \
                                             -a 'resnet50' \
-                                            -d Officehome \
+                                            -d OfficeHome \
                                             -s Pr \
                                             -t Cl \
                                             --epochs 20 \
@@ -101,7 +101,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             --img_root '/content' \
                                             --note 'Pr2Rw' \
                                             -a 'resnet50' \
-                                            -d Officehome \
+                                            -d OfficeHome \
                                             -s Pr \
                                             -t Rw \
                                             --epochs 20 \
@@ -113,7 +113,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             --img_root '/content' \
                                             --note 'Rw2Ar' \
                                             -a 'resnet50' \
-                                            -d Officehome \
+                                            -d OfficeHome \
                                             -s Rw \
                                             -t Ar \
                                             --epochs 20 \
@@ -125,7 +125,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             --img_root '/content' \
                                             --note 'Rw2Cl' \
                                             -a 'resnet50' \
-                                            -d Officehome \
+                                            -d OfficeHome \
                                             -s Rw \
                                             -t Cl \
                                             --epochs 20 \
@@ -137,7 +137,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             --img_root '/content' \
                                             --note 'Rw2Pr' \
                                             -a 'resnet50' \
-                                            -d Officehome \
+                                            -d OfficeHome \
                                             -s Rw \
                                             -t Pr \
                                             --epochs 20 \
