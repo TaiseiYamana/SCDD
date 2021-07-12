@@ -128,7 +128,7 @@ def main(args):
           		            is_best, args.save_root)
 			
     # print experiment result
-    checkpoint = torch.load(args.save_root)		
+    checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))		
     logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))			
 
 def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
