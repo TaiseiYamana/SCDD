@@ -7,7 +7,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Ar2Cl/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Ar \
                                                            -t Cl \
                                                            --epochs 20 \
@@ -22,7 +22,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Ar2Pr/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Ar \
                                                            -t Pr \
                                                            --epochs 20 \
@@ -37,7 +37,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Ar2Rw/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Ar \
                                                            -t Rw \
                                                            --epochs 20 \
@@ -52,7 +52,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Cl2Ar/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Cl \
                                                            -t Ar \
                                                            --epochs 20 \
@@ -67,7 +67,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Cl2Pr/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Cl \
                                                            -t Pr \
                                                            --epochs 20 \
@@ -82,7 +82,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Cl2Rw/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Cl \
                                                            -t Rw \
                                                            --epochs 20 \
@@ -97,7 +97,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Pr2Ar/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Pr \
                                                            -t Ar \
                                                            --epochs 20 \
@@ -112,7 +112,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Pr2Cl/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Pr \
                                                            -t Cl \
                                                            --epochs 20 \
@@ -127,7 +127,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Pr2Rw/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Pr \
                                                            -t Rw \
                                                            --epochs 20 \
@@ -142,7 +142,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Rw2Ar/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Rw \
                                                            -t Ar \
                                                            --epochs 20 \
@@ -157,7 +157,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Rw2Cl/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Rw \
                                                            -t Cl \
                                                            --epochs 20 \
@@ -172,7 +172,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Rw2Pr/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Rw \
                                                            -t Pr \
                                                            --epochs 20 \
@@ -189,7 +189,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet34' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Ar2Cl/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Ar \
                                                            -t Cl \
                                                            --epochs 20 \
@@ -204,7 +204,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet34' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Ar2Pr/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Ar \
                                                            -t Pr \
                                                            --epochs 20 \
@@ -219,7 +219,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet34' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Ar2Rw/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Ar \
                                                            -t Rw \
                                                            --epochs 20 \
@@ -234,7 +234,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet34' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Cl2Ar/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Cl \
                                                            -t Ar \
                                                            --epochs 20 \
@@ -249,7 +249,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet34' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Cl2Pr/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Cl \
                                                            -t Pr \
                                                            --epochs 20 \
@@ -264,7 +264,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet34' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Cl2Rw/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Cl \
                                                            -t Rw \
                                                            --epochs 20 \
@@ -279,7 +279,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet34' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Pr2Ar/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Pr \
                                                            -t Ar \
                                                            --epochs 20 \
@@ -294,7 +294,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet34' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Pr2Cl/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Pr \
                                                            -t Cl \
                                                            --epochs 20 \
@@ -309,7 +309,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet34' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Pr2Rw/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Pr \
                                                            -t Rw \
                                                            --epochs 20 \
@@ -324,7 +324,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet34' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Rw2Ar/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Rw \
                                                            -t Ar \
                                                            --epochs 20 \
@@ -339,7 +339,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet34' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Rw2Cl/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Rw \
                                                            -t Cl \
                                                            --epochs 20 \
@@ -354,7 +354,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet50' \
                                                            --s_arch 'resnet34' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome/Rw2Pr/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Rw \
                                                            -t Pr \
                                                            --epochs 20 \
@@ -370,7 +370,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet34' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/ofhome/Ar2Cl/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Ar \
                                                            -t Cl \
                                                            --epochs 20 \
@@ -385,7 +385,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet34' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/ofhome/Ar2Pr/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Ar \
                                                            -t Pr \
                                                            --epochs 20 \
@@ -400,7 +400,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet34' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/ofhome/Ar2Rw/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Ar \
                                                            -t Rw \
                                                            --epochs 20 \
@@ -415,7 +415,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet34' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/ofhome/Cl2Ar/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Cl \
                                                            -t Ar \
                                                            --epochs 20 \
@@ -430,7 +430,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet34' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/ofhome/Cl2Pr/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Cl \
                                                            -t Pr \
                                                            --epochs 20 \
@@ -445,7 +445,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet34' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/ofhome/Cl2Rw/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Cl \
                                                            -t Rw \
                                                            --epochs 20 \
@@ -460,7 +460,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet34' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/ofhome/Pr2Ar/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Pr \
                                                            -t Ar \
                                                            --epochs 20 \
@@ -475,7 +475,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet34' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/ofhome/Pr2Cl/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Pr \
                                                            -t Cl \
                                                            --epochs 20 \
@@ -490,7 +490,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet34' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/ofhome/Pr2Rw/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Pr \
                                                            -t Rw \
                                                            --epochs 20 \
@@ -505,7 +505,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet34' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/ofhome/Rw2Ar/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Rw \
                                                            -t Ar \
                                                            --epochs 20 \
@@ -520,7 +520,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet34' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/ofhome/Rw2Cl/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Rw \
                                                            -t Cl \
                                                            --epochs 20 \
@@ -535,7 +535,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/
                                                            --t_arch 'resnet34' \
                                                            --s_arch 'resnet18' \
                                                            --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/ofhome/Rw2Pr/model_best.pth.tar' \
-                                                           -d Officehome \
+                                                           -d OfficeHome \
                                                            -s Rw \
                                                            -t Pr \
                                                            --epochs 20 \
