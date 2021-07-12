@@ -155,7 +155,7 @@ def main(args):
           		            'prec@5': t_test_top5,}, 
           		            is_best, args.save_root)
     # print experiment result
-    checkpoint = torch.load(args.save_root)		
+    checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))				
     logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))			
 			
 
