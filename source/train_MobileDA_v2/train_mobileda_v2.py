@@ -74,12 +74,7 @@ def main(args):
     logging.info('-----------------------------------------------')
 
     # define optimizer and lr scheduler
-    optimizer = SGD([
-        {'params': snet.features.parameters()},
-        {'params': snet.classifier[:6].parameters()},
-        # fc8 -> 7th element (index 6) in the Sequential block
-        {'params': snet.classifier[6].parameters(), 'lr': 10 * args.lr}
-    ], args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
+    optimizer = SGD(snet.get_parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
     # define loss function
