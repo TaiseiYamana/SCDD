@@ -85,17 +85,6 @@ def main(args):
     ], args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
-
-	  # save initial parameters
-    logging.info('Saving initial parameters......')
-    save_path = os.path.join(args.save_root, 'initial_model.pth.tar')
-    torch.save({
-		  'epoch': 0,
-		  'net': snet.state_dict(),
-		  'prec@1': 0.0,
-		  'prec@5': 0.0,
-	  }, save_path)
-
     # define loss function
     mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
     st = SoftTarget(args.st_temp)
@@ -161,10 +150,10 @@ def main(args):
 		    	is_best = True
 		    logging.info('Saving models......')
 		    save_checkpoint({'epoch': epoch,
-          			　　　　　　　　　　'net': snet.state_dict(),
-          			　　　　　　　　　　'prec@1': t_test_top1,
-          			　　　　　　　　　　'prec@5': t_test_top5,}, 
-			    	　　　　　　　　　　is_best, args.save_root)
+          		            'net': snet.state_dict(),
+          		            'prec@1': t_test_top1,
+          		            'prec@5': t_test_top5,}, 
+          		            is_best, args.save_root)
     # print experiment result
     checkpoint = torch.load(args.save_root)		
     logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))			
