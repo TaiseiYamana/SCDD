@@ -10,7 +10,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -t Cl \
                                             --epochs 30 \
                                             -i 500 \
-                                            --seed 2 \
+                                            --seed 0 \
                                             --temperature 2.5                                           
 # Ar→Pr
 CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome' \
@@ -22,7 +22,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -t Pr \
                                             --epochs 30 \
                                             -i 500 \
-                                            --seed 2 \
+                                            --seed 0 \
                                             --temperature 2.5
 # Ar→Rw
 CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome' \
@@ -34,7 +34,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -t Rw \
                                             --epochs 30 \
                                             -i 500 \
-                                            --seed 2 \
+                                            --seed 0 \
                                             --temperature 2.5
 # Cl→Ar
 CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome' \
@@ -46,7 +46,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -t Ar \
                                             --epochs 30 \
                                             -i 500 \
-                                            --seed 2 \
+                                            --seed 0 \
                                             --temperature 2.5
 # Cl→Pr
 CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome' \
@@ -58,7 +58,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -t Pr \
                                             --epochs 30 \
                                             -i 500 \
-                                            --seed 2 \
+                                            --seed 0 \
                                             --temperature 2.5
 # Cl→Rw
 CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome' \
@@ -70,7 +70,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -t Rw \
                                             --epochs 30 \
                                             -i 500 \
-                                            --seed 2 \
+                                            --seed 0 \
                                             --temperature 2.5
 # Pr→Ar
 CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome' \
@@ -82,7 +82,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -t Ar \
                                             --epochs 30 \
                                             -i 500 \
-                                            --seed 2 \
+                                            --seed 0 \
                                             --temperature 2.5
 # Pr→Cl
 CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome' \
@@ -94,7 +94,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -t Cl \
                                             --epochs 30 \
                                             -i 500 \
-                                            --seed 2 \
+                                            --seed 0 \
                                             --temperature 2.5
 # Pr→Rw
 CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome' \
@@ -106,7 +106,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -t Rw \
                                             --epochs 30 \
                                             -i 500 \
-                                            --seed 2 \
+                                            --seed 0 \
                                             --temperature 2.5
 # Rw→Ar
 CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome' \
@@ -118,7 +118,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -t Ar \
                                             --epochs 30 \
                                             -i 500 \
-                                            --seed 2 \
+                                            --seed 0 \
                                             --temperature 2.5
 # Rw→Cl
 CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome' \
@@ -130,7 +130,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -t Cl \
                                             --epochs 30 \
                                             -i 500 \
-                                            --seed 2 \
+                                            --seed 0 \
                                             --temperature 2.5
 # Rw→Pr
 CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50/ofhome' \
@@ -142,5 +142,5 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -t Pr \
                                             --epochs 30 \
                                             -i 500 \
-                                            --seed 2 \
+                                            --seed 0 \
                                             --temperature 2.5
