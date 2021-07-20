@@ -58,7 +58,7 @@ def main(args):
     ])
 
 	  # create dataset & dataloader
-    dataset = datasets.__dict__[args.data]
+    dataset = datasets.__dict__[args.dataset]
     source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
