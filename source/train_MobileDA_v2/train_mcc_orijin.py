@@ -42,16 +42,7 @@ def main(args):
 
     # Data loading code
     normalize = T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    if args.center_crop:
-        train_transform = T.Compose([
-            ResizeImage(256),
-            T.CenterCrop(224),
-            T.RandomHorizontalFlip(),
-            T.ToTensor(),
-            normalize
-        ])
-    else:
-        train_transform = T.Compose([
+    train_transform = T.Compose([
             ResizeImage(256),
             T.RandomResizedCrop(224),
             T.RandomHorizontalFlip(),
