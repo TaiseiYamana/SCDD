@@ -38,13 +38,45 @@ def main(args):
 		    cudnn.benchmark = True
     logging.info("args = %s", args)
 
+    # Data loading code
+    normalize = T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    if args.center_crop:
+        train_transform = T.Compose([
+            ResizeImage(256),
+            T.CenterCrop(224),
+            T.RandomHorizontalFlip(),
+            T.ToTensor(),
+            normalize
+        ])
+    else:
+        train_transform = T.Compose([
+            ResizeImage(256),
+            T.RandomResizedCrop(224),
+            T.RandomHorizontalFlip(),
+            T.ToTensor(),
+            normalize
+        ])
+    val_transform = T.Compose([
+        ResizeImage(256),
+        T.CenterCrop(224),
+        T.ToTensor(),
+        normalize
+    ])
+
 	  # create dataset & dataloader
-    _, source_train_loader = eval(args.dataset + '_loader')(root = args.img_root, task = args.source, batch_size = args.batch_size, num_workers = args.workers, train = True)
-    _, source_val_loader = eval(args.dataset + '_loader')(root = args.img_root, task = args.source, batch_size = args.batch_size, num_workers = args.workers, train = False)
-    _, target_train_loader = eval(args.dataset + '_loader')(root = args.img_root, task = args.target, batch_size = args.batch_size, num_workers = args.workers, train = True)
-    _, target_val_loader = eval(args.dataset + '_loader')(root = args.img_root, task = args.target, batch_size = args.batch_size, num_workers = args.workers, train = False)
+    dataset = datasets.__dict__[args.data]
+    source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
+    source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
+                                     shuffle=True, num_workers=args.workers, drop_last=True)
+    target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
+    target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
+                                     shuffle=True, num_workers=args.workers, drop_last=True)
+    val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
+
     source_train_iter = ForeverDataIterator(source_train_loader)
     target_train_iter = ForeverDataIterator(target_train_loader)
+
 
     num_classes = len(source_train_loader.dataset.classes)
 
