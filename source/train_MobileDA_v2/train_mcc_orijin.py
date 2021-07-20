@@ -66,8 +66,8 @@ def main(args):
     target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
+    target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
+    target_val_loader = DataLoader(target_val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
     target_train_iter = ForeverDataIterator(target_train_loader)
