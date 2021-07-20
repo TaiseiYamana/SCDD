@@ -12,6 +12,8 @@ import torch.nn as nn
 import torch.backends.cudnn as cudnn
 from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
+import torchvision.transforms as T
+import torch.nn.functional as F
 
 sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss, ImageClassifier
