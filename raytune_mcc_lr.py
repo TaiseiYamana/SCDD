@@ -198,7 +198,7 @@ def train_mcc(config):
     lr_scheduler = LambdaLR(optimizer, lambda x: config['lr'] * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
     # define loss function
-    mcc_loss = MinimumClassConfusionLoss(temperature=config['temperature'])
+    mcc_loss = MinimumClassConfusionLoss(temperature=config['tempreture'])
     cls_loss = torch.nn.CrossEntropyLoss()
     
     if torch.cuda.is_available():
@@ -229,6 +229,7 @@ def main():
     analysis = tune.run(train_mcc, 
                     config=config, 
                     scheduler = scheduler, 
+                    search_alg = search_alg,
                     num_samples=args.num_samples, 
                     resources_per_trial={'cpu': 4, 'gpu': 1})
 
