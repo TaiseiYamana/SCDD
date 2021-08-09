@@ -257,7 +257,7 @@ def test(test_loader, net, cls, args, phase):
 			target = target.cuda()
 
 		with torch.no_grad():
-			out  = net(img)
+			out, _  = net(img)
 			loss = cls(out, target)
 
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
