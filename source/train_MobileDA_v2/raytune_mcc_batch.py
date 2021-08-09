@@ -219,7 +219,7 @@ def main():
                     scheduler = scheduler, 
                     num_samples=args.num_samples, 
                     progress_reporter = reporter,
-                    resources_per_trial={'cpu':4, 'gpu': 1})
+                    resources_per_trial={'gpu': 1})
 
     ax = None  # This plots everything on the same plot
     for d in dfs.values():
