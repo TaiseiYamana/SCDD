@@ -98,7 +98,7 @@ def train(net, iters, loss_functions, optimizer, lr_scheduler):
     target_iter = iters['target']
     
     cls = loss_functions['cls']
-    mcc = loss_functions['mcc']   
+    mcc = loss_functions['mcc']
     
     for i in range(args.iters_per_epoch):
         source_img, source_label = next(source_iter)
@@ -109,34 +109,36 @@ def train(net, iters, loss_functions, optimizer, lr_scheduler):
             source_label = source_label.to(device)
             target_img = target_img.to(device)
            
-    optimizer.zero_grad()
+        optimizer.zero_grad()
     
-    source_out, _= net(source_img)
-    target_out, _= net(target_img)
+        source_out, _= net(source_img)
+        target_out, _= net(target_img)
     
-    cls_loss = cls(source_out, source_label)
-    mcc_loss = mcc(target_out)
-    loss = cls_loss + mcc_loss * args.trade_off 
-    
-    loss.backward()    
-    loptimizer.step()
-    lr_scheduler.step()
+        cls_loss = cls(source_out, source_label)
+        mcc_loss = mcc(target_out)
+        loss = cls_loss + mcc_loss * args.trade_off 
+	
+        loss.backward()    
+        loptimizer.step()
+        lr_scheduler.step()
 
-def test(net, test_loader, cls, args, phase):
-	net.eval()
+def test(net, test_loader, cls):
+    net.eval()
+
+    top1 = AverageMeter()
   
-	for i, (img, target) in enumerate(test_loader, start=1):
-		if torch.cuda.is_available():
-			img = img.to(divece)
-			target = target.to(divece)
+    for i, (img, label) in enumerate(test_loader, start=1):
+	if torch.cuda.is_available():
+	    img = img.to(divece)
+	    label = label.to(divece)
 
-		with torch.no_grad():
-			out, _ = net(img)
-			loss = cls(out, target)
+            with torch.no_grad():
+                out, _ = net(img)
+                prec1, _ = accuracy(out, label, topk=(1,5))
 
-		prec1, _ = accuracy(out, target, topk=(1,5))
-
-	return top1.avg
+                top1.update(prec1.item(), img.size(0))
+		
+    return top1.avg
 
 def train_mcc(config):
     np.random.seed(args.seed)
@@ -198,8 +200,8 @@ def train_mcc(config):
     loss_functions = {'cls':cls, 'mcc':mcc}
 
     for epoch in range(1, args.epochs+1):
-		    train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args)
-		    t_test_top1 = test(target_val_loader, net, cls, args, phase = 'Target')
+		    train(iters, net, optimizer, lr_scheduler, loss_functions)
+		    t_test_top1 = test(target_val_loader, net, cls)
 		    tune.report(mean_accuracy=t_test_top1)
         
 main():
