@@ -128,15 +128,14 @@ def test(net, test_loader, cls):
     top1 = AverageMeter()
   
     for i, (img, label) in enumerate(test_loader, start=1):
-	if torch.cuda.is_available():
-	    img = img.to(divece)
-	    label = label.to(divece)
+        if torch.cuda.is_available():
+	          img = img.to(divece)
+	          label = label.to(divece)
 
-            with torch.no_grad():
-                out, _ = net(img)
-                prec1, _ = accuracy(out, label, topk=(1,5))
-
-                top1.update(prec1.item(), img.size(0))
+        with torch.no_grad():
+            out, _ = net(img)
+            prec1, _ = accuracy(out, label, topk=(1,5))
+            top1.update(prec1.item(), img.size(0))
 		
     return top1.avg
 
