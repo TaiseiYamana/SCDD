@@ -103,7 +103,7 @@ def train(model, iters, loss_functions, optimizer, lr_scheduler):
     cls = loss_functions['cls']
     mcc = loss_functions['mcc']
     
-    for i in range(args.iter_per_epoch):
+    for i in range(args.iters_per_epoch):
         source_img, source_label = next(source_iter)
         target_img, _ = next(target_iter)
         
