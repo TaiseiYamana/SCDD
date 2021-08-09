@@ -69,7 +69,7 @@ parser.add_argument('--seed', default=1, type=int, help='seed for initializing t
 # mcc parameters
 #parser.add_argument('--temperature', default=2.0, type=float, help='parameter temperature scaling')
 #parser.add_argument('--trade-off', default=1., type=float,
-                        help='the trade-off hyper-parameter for transfer loss')  
+                        #help='the trade-off hyper-parameter for transfer loss')  
 # number of epoch
 parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
 parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
