@@ -14,6 +14,7 @@ import torch.nn as nn
 import torch.backends.cudnn as cudnn
 from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
+import torchvision.transforms as T
 
 # ray tune
 from ray import tune
@@ -28,7 +29,6 @@ import common.vision.datasets as datasets
 import common.vision.models as models
 import common.modules as modules
 from common.utils.data import ForeverDataIterator
-from common.utils.analysis import collect_feature, tsne, a_distance
 
 from utils import AverageMeter, accuracy
 from utils import load_pretrained_model, save_checkpoint
