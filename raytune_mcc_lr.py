@@ -220,7 +220,7 @@ def main():
     dataset = datasets.__dict__[args.dataset]
     dataset(root=args.img_root, task=args.source, download=True, transform=None)
 	
-    config = {"lr": tune.loguniform(1e-4, 1e-2),"tempreture": tune.quniform(2.0,1.0,0.5),"trade_off": tune.quniform(0.5,1.0,0.1)}
+    config = {"lr": tune.loguniform(1e-4, 1e-2),"tempreture": tune.quniform(2.0,10.0,0.5),"trade_off": tune.quniform(0.5,1.0,0.1)}
 
     scheduler = ASHAScheduler(metric="loss",mode="min")
     #reporter = CLIReporter(metric_columns =["mean_accuracy"])
