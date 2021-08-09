@@ -12,14 +12,17 @@ import torch.nn as nn
 import torch.backends.cudnn as cudnn
 from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
-from torchvision.models import alexnet
+from torch.utils.data import DataLoader
+import torchvision.transforms as T
 
 sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
+
 import common.vision.datasets as datasets
 import common.vision.models as models
 import common.modules as modules
 from common.utils.data import ForeverDataIterator
+from common.vision.transforms import ResizeImage
 from common.utils.analysis import collect_feature, tsne, a_distance
 
 from utils import AverageMeter, accuracy
@@ -28,7 +31,6 @@ from utils import create_exp_dir, count_parameters_in_MB
 
 from kd_losses import *
 
-from DALoader import *
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -41,11 +43,34 @@ def main(args):
 		    cudnn.benchmark = True
     logging.info("args = %s", args)
 
-	  # create dataset & dataloader
-    _, source_train_loader = eval(args.dataset + '_loader')(root = args.img_root, task = args.source, batch_size = args.batch_size, num_workers = args.workers, train = True)
-    _, source_val_loader = eval(args.dataset + '_loader')(root = args.img_root, task = args.source, batch_size = args.batch_size, num_workers = args.workers, train = False)
-    _, target_train_loader = eval(args.dataset + '_loader')(root = args.img_root, task = args.target, batch_size = args.batch_size, num_workers = args.workers, train = True)
-    _, target_val_loader = eval(args.dataset + '_loader')(root = args.img_root, task = args.target, batch_size = args.batch_size, num_workers = args.workers, train = False)
+    # augumentation
+    normalize = T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    train_transform = T.Compose([
+            ResizeImage(256),
+            T.RandomResizedCrop(224),
+            T.RandomHorizontalFlip(),
+            T.ToTensor(),
+            normalize
+        ])
+    val_transform = T.Compose([
+        ResizeImage(256),
+        T.CenterCrop(224),
+        T.ToTensor(),
+        normalize
+    ])
+
+    # create dataset & dataloader
+    dataset = datasets.__dict__[args.dataset]
+    source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
+    target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
+    target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
+    
+    source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
+                                     shuffle=True, num_workers=args.workers, drop_last=True)
+    target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
+                                     shuffle=True, num_workers=args.workers, drop_last=True)
+    target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
+
     source_train_iter = ForeverDataIterator(source_train_loader)
     target_train_iter = ForeverDataIterator(target_train_loader)
 
@@ -56,7 +81,7 @@ def main(args):
     logging.info('Initialize Teacher Model')
     logging.info('=> using pre-trained model {}'.format(args.t_arch))
     tbackbone = models.__dict__[args.t_arch](pretrained=True)
-    tnet = models.Classifier(tbackbone, num_classes).to(device)
+    tnet = modules.Classifier(tbackbone, num_classes).to(device)
     checkpoint = torch.load(args.t_model_param)
     load_pretrained_model(tnet, checkpoint['net'])
     tnet.eval()
@@ -68,7 +93,7 @@ def main(args):
     logging.info('Initialize Student Model')
     logging.info('=> using pre-trained model {}'.format(args.s_arch))
     sbackbone = models.__dict__[args.s_arch](pretrained=True)
-    snet = models.Classifier(sbackbone, num_classes).to(device)
+    snet = modules.Classifierr(sbackbone, num_classes).to(device)
     logging.info('%s', snet)
     logging.info("param size = %fMB", count_parameters_in_MB(snet))
     logging.info('-----------------------------------------------')
