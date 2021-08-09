@@ -62,9 +62,9 @@ def main(args):
     target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
     target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
     
-    source_train_loader = DataLoader(source_train_dataset, batch_size=config["batch_size"],
+    source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_train_loader = DataLoader(target_train_dataset, batch_size=config["batch_size"],
+    target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
@@ -272,7 +272,7 @@ if __name__ == '__main__':
                              ' (default: resnet18)')
     parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')                       
     # training parameters
-    parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
+    parser.add_argument('-b', '--batch-size', default=128, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.005, type=float, help='initial learning rate')
     parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
