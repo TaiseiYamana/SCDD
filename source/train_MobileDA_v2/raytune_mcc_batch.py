@@ -1,13 +1,3 @@
-# import library
-# jeneral
-import argparse
-import os
-import sys
-import time
-import logging
-import numpy as np
-import random
-
 # pytorch
 import torch
 import torch.nn as nn
@@ -18,8 +8,8 @@ import torchvision.transforms as T
 
 # ray tune
 from ray import tune
-from ray.tune import CLIReporter
 from ray.tune.schedulers import ASHAScheduler
+from ray.tune import CLIReporter
 
 # local
 sys.path.append('../..')
@@ -32,10 +22,6 @@ import common.modules as modules
 from common.utils.data import ForeverDataIterator
 
 from utils import AverageMeter, accuracy
-from utils import load_pretrained_model, save_checkpoint
-from utils import create_exp_dir, count_parameters_in_MB
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # args
 architecture_names = sorted(
@@ -48,7 +34,6 @@ dataset_names = sorted(
 
 parser = argparse.ArgumentParser(description='pretrain Teacher net')
 # root path
-#parser.add_argument('--save_root', type=str, default='./results/PT', help='models and logs are saved here')
 parser.add_argument('--img_root', type=str, default='./datasets', help='path name of image dataset')
 parser.add_argument('--note', type=str, default='pt_of31_A2W_r50', help='note for this run') #office31_source_pretrain
 # dataset parameters
@@ -62,11 +47,10 @@ parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
                         choices=architecture_names,
                         help='backbone architecture: ' +
                              ' | '.join(architecture_names) +
-                             ' (default: resnet18)')
-parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')                       
+                             ' (default: resnet18)')                  
 # training parameters
 #parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
-#parser.add_argument('--lr', '--learning-rate', default=0.005, type=float, help='initial learning rate')
+parser.add_argument('--lr', '--learning-rate', default=1e-2, type=float, help='initial learning rate')
 parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
 parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
 parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
@@ -92,21 +76,19 @@ parser.add_argument('--cuda', type=int, default=1)
 parser.add_argument("--num_samples", type=int, default=10)
 
 args = parser.parse_args()
-
-#args.save_root = os.path.join(args.save_root, args.note)#./results/pt_of31_A_r50
 args.img_root = os.path.join(args.img_root, args.dataset)#./datasets/Office31
-#create_exp_dir(args.save_root) #save-rootの作成
 
-def train(net, iters, loss_functions, optimizer, lr_scheduler):
-    net.train()
-    
+def train(model, iters, loss_functions, optimizer, lr_scheduler):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.train()
+
     source_iter = iters['source']
     target_iter = iters['target']
     
     cls = loss_functions['cls']
     mcc = loss_functions['mcc']
     
-    for i in range(args.iters_per_epoch):
+    for i in range(args_iter_per_epoch):
         source_img, source_label = next(source_iter)
         target_img, _ = next(target_iter)
         
@@ -117,43 +99,38 @@ def train(net, iters, loss_functions, optimizer, lr_scheduler):
            
         optimizer.zero_grad()
     
-        source_out, _= net(source_img)
-        target_out, _= net(target_img)
+        source_out, _= model(source_img)
+        target_out, _= model(target_img)
     
         cls_loss = cls(source_out, source_label)
         mcc_loss = mcc(target_out)
-        loss = cls_loss + mcc_loss * args.trade_off 
+        loss = cls_loss + mcc_loss * args_trade_off 
 	
         loss.backward()    
-        loptimizer.step()
+        optimizer.step()
         lr_scheduler.step()
 
-def test(net, test_loader, cls):
-    net.eval()
 
-    top1 = AverageMeter()
-  
-    for i, (img, label) in enumerate(test_loader, start=1):
-        if torch.cuda.is_available():
-	          img = img.to(divece)
-	          label = label.to(divece)
+def test(model, test_loader):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.eval()
 
-        with torch.no_grad():
-            out, _ = net(img)
-            prec1, _ = accuracy(out, label, topk=(1,5))
-            top1.update(prec1.item(), img.size(0))
+    acc = AverageMeter()
+    with torch.no_grad():
+        for i, (img, label) in enumerate(test_loader, start=1):
+            if torch.cuda.is_available():
+	              img = img.to(device)
+	              label = label.to(device)
+
+            out, _ = model(img)
+            prec, _ = accuracy(out, label, topk=(1,5))
+            acc.update(prec.item(), img.size(0))
 		
-    return top1.avg
+    return acc.avg
 
 def train_mcc(config):
-    np.random.seed(args.seed)
-    torch.manual_seed(args.seed)
-    if args.cuda:
-		    torch.cuda.manual_seed(args.seed)
-		    cudnn.enabled = True
-		    cudnn.benchmark = True
-    logging.info("args = %s", args)
-    
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     # augumentation
     normalize = T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     train_transform = T.Compose([
@@ -169,60 +146,70 @@ def train_mcc(config):
         T.ToTensor(),
         normalize
     ])
-    
+
     # dataset,dataloader
-    dataset = datasets.__dict__[args.dataset]
-    source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
-    target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
-    target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
+    dataset = datasets.__dict__[args_dataset]
+    source_train_dataset = dataset(root=args_img_root, task=args_source, download=True, transform=train_transform)
+    target_train_dataset = dataset(root=args_img_root, task=args_target, download=True, transform=train_transform)
+    target_val_dataset = dataset(root=args_img_root, task=args_target, download=True, transform=val_transform)
     
     source_train_loader = DataLoader(source_train_dataset, batch_size=config["batch_size"],
-                                     shuffle=True, num_workers=args.workers, drop_last=True)
+                                     shuffle=True, num_workers=args_workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=config["batch_size"],
-                                     shuffle=True, num_workers=args.workers, drop_last=True)
-    target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
+                                     shuffle=True, num_workers=args_workers, drop_last=True)
+    target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=4)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
     target_train_iter = ForeverDataIterator(target_train_loader)
 
+    num_classes = len(source_train_loader.dataset.classes)
+
     # define model
-    backbone = models.__dict__[args.arch](pretrained=True)
-    net = modules.Classifier(backbone, num_classes).to(device)
-    
+    backbone = models.__dict__['resnet50'](pretrained=True)
+    model = modules.Classifier(backbone, num_classes).to(device)
+    model.to(device)
+
     # define optimizer and lr scheduler
-    optimizer = SGD(net.get_parameters(), config["lr"], momentum=args.momentum, weight_decay=args.wd, nesterov=True)
-    lr_scheduler = LambdaLR(optimizer, lambda x: config["lr"] * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
+    optimizer = SGD(model.get_parameters(), lr = args_lr, momentum=0.9, weight_decay=1e-3, nesterov=True)
+    lr_scheduler = LambdaLR(optimizer, lambda x: args_lr* (1. + args_lr_gamma * float(x)) ** (-args_lr_decay))
 
     # define loss function
-    mcc_loss = MinimumClassConfusionLoss(temperature=args.temperature)
+    mcc_loss = MinimumClassConfusionLoss(temperature=args_tempreature)
     cls_loss = torch.nn.CrossEntropyLoss()
-    if args.cuda:
+    
+    if torch.cuda.is_available():
 		    mcc = mcc_loss.to(device)
 		    cls = cls_loss.to(device)
-
-     # define dict
+      
+    # define dict
     iters = {'target':target_train_iter, 'source':source_train_iter}
     loss_functions = {'cls':cls, 'mcc':mcc}
 
-    for epoch in range(1, args.epochs+1):
-		    train(iters, net, optimizer, lr_scheduler, loss_functions)
-		    t_test_top1 = test(target_val_loader, net, cls)
-		    tune.report(mean_accuracy=t_test_top1)
+    for epoch in range(1,args_epochs+1):
+        train(model, iters, loss_functions, optimizer, lr_scheduler)
+        target_test_acc = test(model, target_val_loader)
+
+        # Send the current training result back to Tune
+        tune.report(mean_accuracy=target_test_acc)
         
 def main():
-    config = {"lr": tune.loguniform(1e-4, 1e-1),
-              "batch_size": tune.choice([32, 64, 128])}
+    config = {"batch_size": tune.grid_search([32, 64, 128])}
+
     scheduler = ASHAScheduler(metric="mean_accuracy",mode="max")
     reporter = CLIReporter(metric_columns =["mean_accuracy"])
-    analysis = tune.run(train_mcc,
-                        num_samples = args.num_samples, 
-                        scheduler = scheduler, 
-                        config = config, 
-                        progress_reporter = reporter, 
-                        resources_per_trial = {"gpu": 1})
+    #search_alg = BayesOptSearch(metric="mean_loss", mode="min")
+
+    analysis = tune.run(train_mcc, 
+                    config=config, 
+                    scheduler = scheduler, 
+                    num_samples=args_num_samples, 
+                    progress_reporter = reporter,
+                    resources_per_trial={'cpu':4, 'gpu': 1})
+
     ax = None  # This plots everything on the same plot
     for d in dfs.values():
         ax = d.mean_accuracy.plot(ax=ax, legend=False)
+	
     best_trial = result.get_best_trial("mean_accuracy", "max", "last")
     print("Best trial config: {}".format(best_trial.config))
     print("Best trial final validation acc: {}".format(best_trial.last_result["mean_accuracy"]))
