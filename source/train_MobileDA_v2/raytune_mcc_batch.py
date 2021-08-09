@@ -91,8 +91,8 @@ def train(model, iters, loss_functions, optimizer, lr_scheduler):
     torch.manual_seed(args.seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed(args.seed)
-        cudnn.enabled = True
-        cudnn.benchmark = True
+        #cudnn.enabled = True
+        #cudnn.benchmark = True
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.train()
