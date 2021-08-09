@@ -203,7 +203,7 @@ def train_mcc(config):
 		    t_test_top1 = test(target_val_loader, net, cls)
 		    tune.report(mean_accuracy=t_test_top1)
         
-main():
+def main():
     config = {"lr": tune.loguniform(1e-4, 1e-1),
               "batch_size": tune.choice([32, 64, 128])}
     scheduler = ASHAScheduler(metric="mean_accuracy",mode="max")
