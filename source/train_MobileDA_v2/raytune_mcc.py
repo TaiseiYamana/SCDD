@@ -15,6 +15,11 @@ import torch.backends.cudnn as cudnn
 from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
 
+# ray tune
+from ray import tune
+from ray.tune import CLIReporter
+from ray.tune.schedulers import ASHAScheduler
+
 # local
 sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
@@ -83,7 +88,7 @@ parser.add_argument('-p', '--print-freq', default=50, type=int, help='print freq
 parser.add_argument('--cuda', type=int, default=1)
 
 # ray tune config
-parser.add_argument("num_samples", type=int, default = 10)
+parser.add_argument("--num_samples", type=int, default=10)
 
 args = parser.parse_args()
 
