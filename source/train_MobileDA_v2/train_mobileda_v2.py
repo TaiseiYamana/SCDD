@@ -93,7 +93,7 @@ def main(args):
     logging.info('Initialize Student Model')
     logging.info('=> using pre-trained model {}'.format(args.s_arch))
     sbackbone = models.__dict__[args.s_arch](pretrained=True)
-    snet = modules.Classifierr(sbackbone, num_classes).to(device)
+    snet = modules.Classifier(sbackbone, num_classes).to(device)
     logging.info('%s', snet)
     logging.info("param size = %fMB", count_parameters_in_MB(snet))
     logging.info('-----------------------------------------------')
