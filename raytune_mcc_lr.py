@@ -58,13 +58,8 @@ parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
                              ' | '.join(architecture_names) +
                              ' (default: resnet18)')                  
 # training parameters
-<<<<<<< HEAD
-parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
-parser.add_argument('--lr', '--learning-rate', default=1e-2, type=float, help='initial learning rate')
-=======
 parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
 #parser.add_argument('--lr', '--learning-rate', default=1e-2, type=float, help='initial learning rate')
->>>>>>> 90d5967a22cf7053d81ae539b7373993d0faebee
 parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
 parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
 parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
