@@ -207,6 +207,9 @@ def train_mcc(config):
         tune.report(mean_accuracy=target_test_acc)
         
 def main():
+    dataset = datasets.__dict__[args.dataset]
+    dataset(root=args.img_root, task=args.source, download=True, transform=None)
+	
     config = {"batch_size": tune.grid_search([32, 64, 128])}
 
     scheduler = ASHAScheduler(metric="mean_accuracy",mode="max")
