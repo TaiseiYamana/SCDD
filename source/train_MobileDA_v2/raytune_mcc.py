@@ -42,7 +42,7 @@ dataset_names = sorted(
 
 parser = argparse.ArgumentParser(description='pretrain Teacher net')
 # root path
-parser.add_argument('--save_root', type=str, default='./results/PT', help='models and logs are saved here')
+#parser.add_argument('--save_root', type=str, default='./results/PT', help='models and logs are saved here')
 parser.add_argument('--img_root', type=str, default='./datasets', help='path name of image dataset')
 parser.add_argument('--note', type=str, default='pt_of31_A2W_r50', help='note for this run') #office31_source_pretrain
 # dataset parameters
@@ -87,9 +87,9 @@ parser.add_argument("num_samples", type=int, default = 10)
 
 args = parser.parse_args()
 
-args.save_root = os.path.join(args.save_root, args.note)#./results/pt_of31_A_r50
+#args.save_root = os.path.join(args.save_root, args.note)#./results/pt_of31_A_r50
 args.img_root = os.path.join(args.img_root, args.dataset)#./datasets/Office31
-create_exp_dir(args.save_root) #save-rootの作成
+#create_exp_dir(args.save_root) #save-rootの作成
 
 def train(net, iters, loss_functions, optimizer, lr_scheduler):
     net.train()
