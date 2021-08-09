@@ -8,8 +8,8 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -d OfficeHome \
                                             -s Ar \
                                             -t Cl \
-                                            --epochs 30 \
-                                            -i 500 \
+                                            --epochs 15 \
+                                            -i 300 \
                                             --seed 0 \
                                             --temperature 2.5                                           
 # Ar→Pr
@@ -20,8 +20,8 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -d OfficeHome \
                                             -s Ar \
                                             -t Pr \
-                                            --epochs 30 \
-                                            -i 500 \
+                                            --epochs 15 \
+                                            -i 300 \
                                             --seed 0 \
                                             --temperature 2.5
 # Ar→Rw
@@ -32,8 +32,8 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -d OfficeHome \
                                             -s Ar \
                                             -t Rw \
-                                            --epochs 30 \
-                                            -i 500 \
+                                            --epochs 15 \
+                                            -i 300 \
                                             --seed 0 \
                                             --temperature 2.5
 # Cl→Ar
@@ -44,8 +44,8 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -d OfficeHome \
                                             -s Cl \
                                             -t Ar \
-                                            --epochs 30 \
-                                            -i 500 \
+                                            --epochs 15 \
+                                            -i 300 \
                                             --seed 0 \
                                             --temperature 2.5
 # Cl→Pr
@@ -56,8 +56,8 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -d OfficeHome \
                                             -s Cl \
                                             -t Pr \
-                                            --epochs 30 \
-                                            -i 500 \
+                                            --epochs 15 \
+                                            -i 300 \
                                             --seed 0 \
                                             --temperature 2.5
 # Cl→Rw
@@ -68,8 +68,8 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -d OfficeHome \
                                             -s Cl \
                                             -t Rw \
-                                            --epochs 30 \
-                                            -i 500 \
+                                            --epochs 15 \
+                                            -i 300 \
                                             --seed 0 \
                                             --temperature 2.5
 # Pr→Ar
@@ -80,8 +80,8 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -d OfficeHome \
                                             -s Pr \
                                             -t Ar \
-                                            --epochs 30 \
-                                            -i 500 \
+                                            --epochs 15 \
+                                            -i 300 \
                                             --seed 0 \
                                             --temperature 2.5
 # Pr→Cl
@@ -92,8 +92,8 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -d OfficeHome \
                                             -s Pr \
                                             -t Cl \
-                                            --epochs 30 \
-                                            -i 500 \
+                                            --epochs 15 \
+                                            -i 300 \
                                             --seed 0 \
                                             --temperature 2.5
 # Pr→Rw
@@ -104,8 +104,8 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -d OfficeHome \
                                             -s Pr \
                                             -t Rw \
-                                            --epochs 30 \
-                                            -i 500 \
+                                            --epochs 15 \
+                                            -i 300 \
                                             --seed 0 \
                                             --temperature 2.5
 # Rw→Ar
@@ -116,8 +116,8 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -d OfficeHome \
                                             -s Rw \
                                             -t Ar \
-                                            --epochs 30 \
-                                            -i 500 \
+                                            --epochs 15 \
+                                            -i 300 \
                                             --seed 0 \
                                             --temperature 2.5
 # Rw→Cl
@@ -128,8 +128,8 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -d OfficeHome \
                                             -s Rw \
                                             -t Cl \
-                                            --epochs 30 \
-                                            -i 500 \
+                                            --epochs 15 \
+                                            -i 300 \
                                             --seed 0 \
                                             --temperature 2.5
 # Rw→Pr
@@ -140,7 +140,7 @@ CUDA_VISIBLE_DEVICES=0 python3 train_mcc.py --save_root '/content/drive/MyDrive/
                                             -d OfficeHome \
                                             -s Rw \
                                             -t Pr \
-                                            --epochs 30 \
-                                            -i 500 \
+                                            --epochs 15 \
+                                            -i 300 \
                                             --seed 0 \
                                             --temperature 2.5
