@@ -103,7 +103,7 @@ def train(model, iters, loss_functions, optimizer, lr_scheduler):
     cls = loss_functions['cls']
     mcc = loss_functions['mcc']
     
-    for i in range(args_iter_per_epoch):
+    for i in range(args.iter_per_epoch):
         source_img, source_label = next(source_iter)
         target_img, _ = next(target_iter)
         
@@ -119,7 +119,7 @@ def train(model, iters, loss_functions, optimizer, lr_scheduler):
     
         cls_loss = cls(source_out, source_label)
         mcc_loss = mcc(target_out)
-        loss = cls_loss + mcc_loss * args_trade_off 
+        loss = cls_loss + mcc_loss * args.trade_off 
 	
         loss.backward()    
         optimizer.step()
@@ -164,15 +164,15 @@ def train_mcc(config):
 
     # dataset,dataloader
     dataset = datasets.__dict__[args_dataset]
-    source_train_dataset = dataset(root=args_img_root, task=args_source, download=True, transform=train_transform)
-    target_train_dataset = dataset(root=args_img_root, task=args_target, download=True, transform=train_transform)
-    target_val_dataset = dataset(root=args_img_root, task=args_target, download=True, transform=val_transform)
+    source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
+    target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
+    target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
     
     source_train_loader = DataLoader(source_train_dataset, batch_size=config["batch_size"],
-                                     shuffle=True, num_workers=args_workers, drop_last=True)
+                                     shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=config["batch_size"],
-                                     shuffle=True, num_workers=args_workers, drop_last=True)
-    target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=4)
+                                     shuffle=True, num_workers=args.workers, drop_last=True)
+    target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
     target_train_iter = ForeverDataIterator(target_train_loader)
@@ -180,16 +180,16 @@ def train_mcc(config):
     num_classes = len(source_train_loader.dataset.classes)
 
     # define model
-    backbone = models.__dict__['resnet50'](pretrained=True)
+    backbone = models.__dict__[args.arch](pretrained=True)
     model = modules.Classifier(backbone, num_classes).to(device)
     model.to(device)
 
     # define optimizer and lr scheduler
-    optimizer = SGD(model.get_parameters(), lr = args_lr, momentum=0.9, weight_decay=1e-3, nesterov=True)
-    lr_scheduler = LambdaLR(optimizer, lambda x: args_lr* (1. + args_lr_gamma * float(x)) ** (-args_lr_decay))
+    optimizer = SGD(model.get_parameters(), lr = args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
+    lr_scheduler = LambdaLR(optimizer, lambda x: args.lr* (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
     # define loss function
-    mcc_loss = MinimumClassConfusionLoss(temperature=args_tempreature)
+    mcc_loss = MinimumClassConfusionLoss(temperature=args.tempreature)
     cls_loss = torch.nn.CrossEntropyLoss()
     
     if torch.cuda.is_available():
@@ -200,7 +200,7 @@ def train_mcc(config):
     iters = {'target':target_train_iter, 'source':source_train_iter}
     loss_functions = {'cls':cls, 'mcc':mcc}
 
-    for epoch in range(1,args_epochs+1):
+    for epoch in range(1,args.epochs+1):
         train(model, iters, loss_functions, optimizer, lr_scheduler)
         target_test_acc = test(model, target_val_loader)
 
