@@ -19,6 +19,7 @@ import torchvision.transforms as T
 from ray import tune
 from ray.tune.schedulers import ASHAScheduler
 from ray.tune import CLIReporter
+from ray.tune.suggest.bayesopt import BayesOptSearch
 
 # local
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
