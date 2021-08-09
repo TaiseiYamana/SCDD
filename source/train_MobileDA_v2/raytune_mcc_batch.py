@@ -217,7 +217,7 @@ def main():
     analysis = tune.run(train_mcc, 
                     config=config, 
                     scheduler = scheduler, 
-                    num_samples=args_num_samples, 
+                    num_samples=args.num_samples, 
                     progress_reporter = reporter,
                     resources_per_trial={'cpu':4, 'gpu': 1})
 
