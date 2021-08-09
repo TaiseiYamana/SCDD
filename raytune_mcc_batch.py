@@ -20,7 +20,6 @@ from ray.tune.schedulers import ASHAScheduler
 from ray.tune import CLIReporter
 
 # local
-sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
 
 import common.vision.datasets as datasets
