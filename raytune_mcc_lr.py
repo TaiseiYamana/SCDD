@@ -58,8 +58,13 @@ parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
                              ' | '.join(architecture_names) +
                              ' (default: resnet18)')                  
 # training parameters
+<<<<<<< HEAD
 parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
 parser.add_argument('--lr', '--learning-rate', default=1e-2, type=float, help='initial learning rate')
+=======
+parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
+#parser.add_argument('--lr', '--learning-rate', default=1e-2, type=float, help='initial learning rate')
+>>>>>>> 90d5967a22cf7053d81ae539b7373993d0faebee
 parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
 parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
 parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
@@ -67,8 +72,8 @@ parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='we
 parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
 parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
 # mcc parameters
-parser.add_argument('--temperature', default=2.0, type=float, help='parameter temperature scaling')
-parser.add_argument('--trade-off', default=1., type=float,
+#parser.add_argument('--temperature', default=2.0, type=float, help='parameter temperature scaling')
+#parser.add_argument('--trade-off', default=1., type=float,
                         help='the trade-off hyper-parameter for transfer loss')  
 # number of epoch
 parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
@@ -119,7 +124,7 @@ def train(model, iters, loss_functions, optimizer, lr_scheduler, config):
     
         cls_loss = cls(source_out, source_label)
         mcc_loss = mcc(target_out)
-        loss = cls_loss + mcc_loss * config['trade_off']
+        loss = cls_loss + mcc_loss * round(config['trade_off'], -1)
         
         losses.update(loss.item(), source_img.size(0))
 	
@@ -198,7 +203,7 @@ def train_mcc(config):
     lr_scheduler = LambdaLR(optimizer, lambda x: config['lr'] * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
     # define loss function
-    mcc_loss = MinimumClassConfusionLoss(temperature=config['tempreture'])
+    mcc_loss = MinimumClassConfusionLoss(temperature=round(config['tempreture'],-1))
     cls_loss = torch.nn.CrossEntropyLoss()
     
     if torch.cuda.is_available():
