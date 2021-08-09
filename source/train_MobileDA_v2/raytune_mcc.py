@@ -27,7 +27,7 @@ from dalib.adaptation.mcc import MinimumClassConfusionLoss
 
 import common.vision.datasets as datasets
 import common.vision.models as models
-from common.vision.transforms import 
+from common.vision.transforms import ResizeImage
 import common.modules as modules
 from common.utils.data import ForeverDataIterator
 
