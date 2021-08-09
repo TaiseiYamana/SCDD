@@ -1,3 +1,11 @@
+# Distillation zoo
+import argparse
+import os
+import sys
+import numpy as np
+import random
+
+
 # pytorch
 import torch
 import torch.nn as nn
@@ -79,6 +87,13 @@ args = parser.parse_args()
 args.img_root = os.path.join(args.img_root, args.dataset)#./datasets/Office31
 
 def train(model, iters, loss_functions, optimizer, lr_scheduler):
+    np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(args.seed)
+        cudnn.enabled = True
+        cudnn.benchmark = True
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.train()
 
