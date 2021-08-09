@@ -162,7 +162,7 @@ def train_mcc(config):
     ])
 
     # dataset,dataloader
-    dataset = datasets.__dict__[args_dataset]
+    dataset = datasets.__dict__[args.dataset]
     source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
     target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
     target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
