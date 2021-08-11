@@ -271,7 +271,7 @@ if __name__ == '__main__':
                              ' (default: resnet18)')
     parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')                       
     # training parameters
-    parser.add_argument('-b', '--batch-size', default=128, type=int, help='mini-batch size (default: 32)')
+    parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.005, type=float, help='initial learning rate')
     parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
@@ -279,8 +279,8 @@ if __name__ == '__main__':
     parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
     parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
-    parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
-    parser.add_argument('-p', '--print-freq', default=50, type=int, help='print frequency (default: 50)')
+    parser.add_argument('-i', '--iters-per-epoch', default=1000, type=int, help='Number of iterations per epoch')
+    parser.add_argument('-p', '--print-freq', default=100, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
     parser.add_argument("--phase", type=str, default='train', choices=['train', 'test', 'analysis'],
                         help="When phase is 'test', only test the model."
