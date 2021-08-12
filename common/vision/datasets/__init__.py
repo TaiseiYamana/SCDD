@@ -11,5 +11,7 @@ from .stanford_dogs import StanfordDogs
 from .coco70 import COCO70
 from .oxfordpet import OxfordIIITPet
 
+from .imageclef import ImageCLEF
+
 __all__ = ['ImageList', 'Office31', 'OfficeHome', "VisDA2017", "OfficeCaltech", "DomainNet",
-           "Aircraft", "cub200", "StanfordCars", "StanfordDogs", "COCO70", "OxfordIIITPet"]
+           "Aircraft", "cub200", "StanfordCars", "StanfordDogs", "COCO70", "OxfordIIITPet","ImageCLEF"]
