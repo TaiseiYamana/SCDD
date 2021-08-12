@@ -1,4 +1,3 @@
-# Distillation zoo
 import argparse
 import os
 import sys
