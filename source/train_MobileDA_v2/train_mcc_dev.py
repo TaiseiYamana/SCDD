@@ -152,8 +152,8 @@ def main(args):
 		    	best_top1 = t_test_top1
 		    	best_top5 = t_test_top5
 		    	is_best = True
-        else:
-            stopping_counter++
+		    else:
+		    	stopping_counter　+= 1
 
 		    logging.info('Saving models......')
 		    save_checkpoint({'epoch': epoch,
@@ -162,9 +162,9 @@ def main(args):
           		            'prec@5': t_test_top5,}, 
           		            is_best, args.save_root)
             
-            if stopping_counter == 5:
-                logging.info('Planned　Stopping Training')
-                break
+        if stopping_counter == 5:
+            logging.info('Planned　Stopping Training')
+            break
 			
     # print experiment result
     checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))		
