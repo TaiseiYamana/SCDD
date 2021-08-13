@@ -152,8 +152,8 @@ def main(args):
 		    	best_top1 = t_test_top1
 		    	best_top5 = t_test_top5
 		    	is_best = True
-            else:
-                stopping_counter++
+        else:
+            stopping_counter++
 
 		    logging.info('Saving models......')
 		    save_checkpoint({'epoch': epoch,
