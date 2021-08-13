@@ -60,14 +60,15 @@ def main(args):
     # create dataset & dataloader
     dataset = datasets.__dict__[args.dataset]
 
-    if args.dataset == "ImageCLEF":
-        source_train_dataset = dataset(root=ImageCLEF_root, task=args.source, transform=train_transform)
-        target_train_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=train_transform)
-        target_val_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=val_transform)
-    else:
-        source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
-        target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
-        target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
+    if args.dataset == "ImageCLEF" {
+    source_train_dataset = dataset(root=ImageCLEF_root, task=args.source, transform=train_transform)
+    target_train_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=train_transform)
+    target_val_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=val_transform)
+    }else{
+    source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
+    target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
+    target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
+    }
     
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
@@ -133,6 +134,7 @@ def main(args):
 
     best_top1= 0.0    
     best_top5 = 0.0
+    stopping_counter = 0
     for epoch in range(1, args.epochs+1):
 		    # train one epoch
 		    epoch_start_time = time.time()
@@ -151,12 +153,19 @@ def main(args):
 		    	best_top1 = t_test_top1
 		    	best_top5 = t_test_top5
 		    	is_best = True
+            else:
+                stopping_counter++
+
 		    logging.info('Saving models......')
 		    save_checkpoint({'epoch': epoch,
           		            'net': net.state_dict(),
           		            'prec@1': t_test_top1,
           		            'prec@5': t_test_top5,}, 
           		            is_best, args.save_root)
+            
+            if stopping_counter == 5:
+                logging.info('Planned　Stopping Training')
+                break
 			
     # print experiment result
     checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))		
