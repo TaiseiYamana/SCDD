@@ -155,6 +155,8 @@ def main(args):
 
     best_top1= 0.0
     best_top5 = 0.0
+    stopping_counter = 0
+    
     for epoch in range(1, args.epochs+1):
 		    # train one epoch
 		    epoch_start_time = time.time()
