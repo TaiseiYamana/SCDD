@@ -439,4 +439,151 @@
                                                            -i 500 \
                                                            --b 64 \
                                                            --mcc_temp 2.5 \
-                                                           --st_temp 4.0                                                                
+                                                           --st_temp 4.0
+# B->C
+# r50->r18
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_dev.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r18/imageclefda_2' \
+                                                           --img_root '/content' \
+                                                           --note 'B2C' \
+                                                           --t_arch 'resnet50' \
+                                                           --s_arch 'resnet18' \
+                                                           --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/imageclefda_2/B2C/model_best.pth.tar' \
+                                                           -d ImageCLEF \
+                                                           -s B \
+                                                           -t C \
+                                                           --epochs 30 \
+                                                           --lr 0.01 \
+                                                           -i 500 \
+                                                           --b 64 \
+                                                           --mcc_temp 2.5 \
+                                                           --st_temp 4.0                                 
+# r50->r34
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_dev.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/imageclefda_2' \
+                                                           --img_root '/content' \
+                                                           --note 'B2C' \
+                                                           --t_arch 'resnet50' \
+                                                           --s_arch 'resnet34' \
+                                                           --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/imageclefda_2/B2C/model_best.pth.tar' \
+                                                           -d ImageCLEF \
+                                                           -s B \
+                                                           -t C \
+                                                           --epochs 30 \
+                                                           --lr 0.01 \
+                                                           -i 500 \
+                                                           --b 64 \
+                                                           --mcc_temp 2.5 \
+                                                           --st_temp 4.0
+# (r50)->r34->18
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_dev.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34_2_r18/imageclefda_2' \
+                                                           --img_root '/content' \
+                                                           --note 'B2C' \
+                                                           --t_arch 'resnet34' \
+                                                           --s_arch 'resnet18' \
+                                                           --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/imageclefda_2/B2C/model_best.pth.tar' \
+                                                           -d ImageCLEF \
+                                                           -s B \
+                                                           -t C \
+                                                           --epochs 30 \
+                                                           --lr 0.01 \
+                                                           -i 500 \
+                                                           --b 64 \
+                                                           --mcc_temp 2.5 \
+                                                           --st_temp 4.0
+# B->I
+# r50->r18
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_dev.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r18/imageclefda_2' \
+                                                           --img_root '/content' \
+                                                           --note 'B2I' \
+                                                           --t_arch 'resnet50' \
+                                                           --s_arch 'resnet18' \
+                                                           --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/imageclefda_2/B2I/model_best.pth.tar' \
+                                                           -d ImageCLEF \
+                                                           -s B \
+                                                           -t I \
+                                                           --epochs 30 \
+                                                           --lr 0.01 \
+                                                           -i 500 \
+                                                           --b 64 \
+                                                           --mcc_temp 2.5 \
+                                                           --st_temp 4.0                                 
+# r50->r34
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_dev.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/imageclefda_2' \
+                                                           --img_root '/content' \
+                                                           --note 'B2I' \
+                                                           --t_arch 'resnet50' \
+                                                           --s_arch 'resnet34' \
+                                                           --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/imageclefda_2/B2I/model_best.pth.tar' \
+                                                           -d ImageCLEF \
+                                                           -s B \
+                                                           -t I \
+                                                           --epochs 30 \
+                                                           --lr 0.01 \
+                                                           -i 500 \
+                                                           --b 64 \
+                                                           --mcc_temp 2.5 \
+                                                           --st_temp 4.0
+# (r50)->r34->18
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_dev.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34_2_r18/imageclefda_2' \
+                                                           --img_root '/content' \
+                                                           --note 'B2I' \
+                                                           --t_arch 'resnet34' \
+                                                           --s_arch 'resnet18' \
+                                                           --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/imageclefda_2/B2I/model_best.pth.tar' \
+                                                           -d ImageCLEF \
+                                                           -s B \
+                                                           -t I \
+                                                           --epochs 30 \
+                                                           --lr 0.01 \
+                                                           -i 500 \
+                                                           --b 64 \
+                                                           --mcc_temp 2.5 \
+                                                           --st_temp 4.0                                                      
+# B->P
+# r50->r18
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_dev.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r18/imageclefda_2' \
+                                                           --img_root '/content' \
+                                                           --note 'B2P' \
+                                                           --t_arch 'resnet50' \
+                                                           --s_arch 'resnet18' \
+                                                           --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/imageclefda_2/B2P/model_best.pth.tar' \
+                                                           -d ImageCLEF \
+                                                           -s B \
+                                                           -t P \
+                                                           --epochs 30 \
+                                                           --lr 0.01 \
+                                                           -i 500 \
+                                                           --b 64 \
+                                                           --mcc_temp 2.5 \
+                                                           --st_temp 4.0                                 
+# r50->r34
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_dev.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/imageclefda_2' \
+                                                           --img_root '/content' \
+                                                           --note 'B2P' \
+                                                           --t_arch 'resnet50' \
+                                                           --s_arch 'resnet34' \
+                                                           --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50/imageclefda_2/B2P/model_best.pth.tar' \
+                                                           -d ImageCLEF \
+                                                           -s B \
+                                                           -t P \
+                                                           --epochs 30 \
+                                                           --lr 0.01 \
+                                                           -i 500 \
+                                                           --b 64 \
+                                                           --mcc_temp 2.5 \
+                                                           --st_temp 4.0
+# (r50)->r34->18
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_dev.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34_2_r18/imageclefda_2' \
+                                                           --img_root '/content' \
+                                                           --note 'B2P' \
+                                                           --t_arch 'resnet34' \
+                                                           --s_arch 'resnet18' \
+                                                           --t-model-param '/content/drive/MyDrive/results/MobileDA_v2/r50_2_r34/imageclefda_2/B2P/model_best.pth.tar' \
+                                                           -d ImageCLEF \
+                                                           -s B \
+                                                           -t P \
+                                                           --epochs 30 \
+                                                           --lr 0.01 \
+                                                           -i 500 \
+                                                           --b 64 \
+                                                           --mcc_temp 2.5 \
+                                                           --st_temp 4.0                                                           
