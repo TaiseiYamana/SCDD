@@ -60,6 +60,10 @@ def main(args):
         normalize
     ])
 
+
+    # create dataset & dataloader
+    dataset = datasets.__dict__[args.dataset]
+    
     # create dataset & dataloader
     if args.dataset == "ImageCLEF":
         source_train_dataset = dataset(root=ImageCLEF_root, task=args.source, transform=train_transform)
