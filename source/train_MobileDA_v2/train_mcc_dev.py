@@ -152,6 +152,7 @@ def main(args):
 		    	best_top1 = t_test_top1
 		    	best_top5 = t_test_top5
 		    	is_best = True
+		    	stopping_counter = 0
 		    else:
 		    	stopping_counter += 1
           
