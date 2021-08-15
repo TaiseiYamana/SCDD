@@ -232,8 +232,8 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
 
-		s_source_out, _ = snet(source_img)
-		s_target_out, _ = snet(target_img)
+		s_source_out = snet(source_img)
+		s_target_out = snet(target_img)
 		t_target_out, _= tnet(target_img)
 
 		cls_loss = cls(s_source_out, source_label)
@@ -284,7 +284,7 @@ def test(test_loader, net, cls, args, phase):
 			target = target.cuda()
 
 		with torch.no_grad():
-			out, _  = net(img)
+			out  = net(img)
 			loss = cls(out, target)
 
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
