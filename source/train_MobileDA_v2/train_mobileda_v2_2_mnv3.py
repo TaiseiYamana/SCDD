@@ -324,12 +324,7 @@ if __name__ == '__main__':
                         choices=architecture_names,
                         help='backbone architecture: ' +
                              ' | '.join(architecture_names) +
-                             ' (default: resnet50)')
-    parser.add_argument('--s_arch', metavar='ARCH', default='resnet18',
-                        choices=architecture_names,
-                        help='backbone architecture: ' +
-                             ' | '.join(architecture_names) +
-                             ' (default: resnet18)')    
+                             ' (default: resnet50)')   
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
