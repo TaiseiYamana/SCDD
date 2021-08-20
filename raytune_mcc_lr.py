@@ -42,6 +42,7 @@ dataset_names = sorted(
         if not name.startswith("__") and callable(datasets.__dict__[name]))
 
 parser = argparse.ArgumentParser(description='pretrain Teacher net')
+
 # root path
 parser.add_argument('--img_root', type=str, default='./datasets', help='path name of image dataset')
 parser.add_argument('--note', type=str, default='pt_of31_A2W_r50', help='note for this run') #office31_source_pretrain
@@ -131,7 +132,7 @@ def train(model, iters, loss_functions, optimizer, lr_scheduler, config):
         optimizer.step()
         lr_scheduler.step()
         
-    tune.report(loss=losses)
+    tune.report(loss=losses.ave)
 
 
 def test(model, test_loader):
