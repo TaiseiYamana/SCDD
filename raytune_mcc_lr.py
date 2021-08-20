@@ -87,6 +87,10 @@ parser.add_argument("--num_samples", type=int, default=10)
 args = parser.parse_args()
 args.img_root = os.path.join(args.img_root, args.dataset)#./datasets/Office31
 
+ImageCLEF_root = "/content/drive/MyDrive/datasets/ImageCLEF"
+
+np.random.seed(args.seed)
+torch.manual_seed(args.seed)
 if torch.cuda.is_available():
     cudnn.enabled = True
     cudnn.benchmark = True
@@ -119,7 +123,7 @@ def train(model, iters, loss_functions, optimizer, lr_scheduler, config):
     
         cls_loss = cls(source_out, source_label)
         mcc_loss = mcc(target_out)
-        loss = cls_loss + mcc_loss * round(config['trade_off'], -1)
+        loss = cls_loss + mcc_loss * config['trade_off']
         
         losses.update(loss.item(), source_img.size(0))
 	
@@ -172,10 +176,14 @@ def train_mcc(config):
     ])
 
     # dataset,dataloader
-    dataset = datasets.__dict__[args.dataset]
-    source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
-    target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
-    target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
+    if args.dataset == "ImageCLEF":
+        source_train_dataset = dataset(root=ImageCLEF_root, task=args.source, transform=train_transform)
+        target_train_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=train_transform)
+        target_val_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=val_transform)
+    else:
+        source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
+        target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
+        target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
     
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
@@ -194,11 +202,11 @@ def train_mcc(config):
     model.to(device)
 
     # define optimizer and lr scheduler
-    optimizer = SGD(model.get_parameters(), lr = config['lr'], momentum=args.momentum, weight_decay=args.wd, nesterov=True)
+    optimizer = SGD(model.get_parameters(base_lr=config['lr']), lr = config['lr'], momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x: config['lr'] * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
     # define loss function
-    mcc_loss = MinimumClassConfusionLoss(temperature=round(config['tempreture'],-1))
+    mcc_loss = MinimumClassConfusionLoss(temperature=config['tempreture'])
     cls_loss = torch.nn.CrossEntropyLoss()
     
     if torch.cuda.is_available():
@@ -210,21 +218,22 @@ def train_mcc(config):
     loss_functions = {'cls':cls, 'mcc':mcc}
 
     for epoch in range(1,args.epochs+1):
-        train(model, iters, loss_functions, optimizer, lr_scheduler,config)
+        train(model, iters, loss_functions, optimizer, lr_scheduler, config)
         target_test_acc = test(model, target_val_loader)
 
         # Send the current training result back to Tune
-        tune.report(loss=loss)
+        tune.report(accuracy=target_test_acc)
         
 def main():
     dataset = datasets.__dict__[args.dataset]
     dataset(root=args.img_root, task=args.source, download=True, transform=None)
 	
-    config = {"lr": tune.loguniform(1e-4, 1e-2),"tempreture": tune.quniform(2.0,10.0,0.5),"trade_off": tune.quniform(0.5,1.0,0.1)}
+    config = {  "lr": tune.loguniform(1e-4, 1e-2),
+                "tempreture": tune.quniform(2.0, 10.0, 0.5),
+                "trade_off": tune.quniform(0.5, 1.0, 0.1)}
 
-    scheduler = ASHAScheduler(metric="loss",mode="min")
-    #reporter = CLIReporter(metric_columns =["mean_accuracy"])
-    search_alg = BayesOptSearch(metric="loss", mode="min")
+    scheduler = ASHAScheduler(metric="accuracy",mode="max")
+    search_alg = BayesOptSearch(metric="accuracy", mode="max")
 
     analysis = tune.run(train_mcc, 
                     config=config, 
@@ -237,9 +246,9 @@ def main():
     for d in dfs.values():
         ax = d.mean_accuracy.plot(ax=ax, legend=False)
 	
-    best_trial = result.get_best_trial("mean_accuracy", "max", "last")
+    best_trial = result.get_best_trial("accuracy", "max", "last")
     print("Best trial config: {}".format(best_trial.config))
-    print("Best trial final validation acc: {}".format(best_trial.last_result["mean_accuracy"]))
+    print("Best trial final validation acc: {}".format(best_trial.last_result["accuracy"]))
 
 if __name__ == "__main__":
     main()
