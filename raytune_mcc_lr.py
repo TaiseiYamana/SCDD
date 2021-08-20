@@ -132,7 +132,7 @@ def train(model, iters, loss_functions, optimizer, lr_scheduler, config):
         optimizer.step()
         lr_scheduler.step()
         
-    tune.report(loss=losses.avg)
+    #tune.report(loss=losses.avg)
 
 
 def test(model, test_loader):
@@ -225,7 +225,7 @@ def train_mcc(config):
         target_test_acc = test(model, target_val_loader)
 
         # Send the current training result back to Tune
-        tune.report(accuracy=target_test_acc)
+        #tune.report(accuracy=target_test_acc)
         
 def main():
     dataset = datasets.__dict__[args.dataset]
