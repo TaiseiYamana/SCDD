@@ -214,7 +214,7 @@ def main():
     config = {"batch_size": tune.grid_search([32, 64, 128])}
 
     scheduler = ASHAScheduler(metric="mean_accuracy",mode="max")
-    reporter = CLIReporter(metric_columns =["mean_accuracy"])
+    reporter = CLIReporter(metric_columns =["accuracy"])
     #search_alg = BayesOptSearch(metric="mean_loss", mode="min")
 
     analysis = tune.run(train_mcc, 

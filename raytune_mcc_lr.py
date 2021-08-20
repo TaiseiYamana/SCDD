@@ -237,12 +237,14 @@ def main():
 
     scheduler = ASHAScheduler(metric="accuracy",mode="max")
     search_alg = BayesOptSearch(metric="accuracy", mode="max")
+    reporter = CLIReporter(metric_columns =["accuracy"])
 
     analysis = tune.run(train_mcc, 
                     config=config, 
                     scheduler = scheduler, 
                     search_alg = search_alg,
                     num_samples=args.num_samples, 
+                    progress_reporter = reporter,
                     resources_per_trial={'cpu': 4, 'gpu': 1})
 
     ax = None  # This plots everything on the same plot
