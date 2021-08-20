@@ -132,7 +132,7 @@ def train(model, iters, loss_functions, optimizer, lr_scheduler, config):
         optimizer.step()
         lr_scheduler.step()
         
-    tune.report(loss=losses.ave)
+    tune.report(loss=losses.avg)
 
 
 def test(model, test_loader):
