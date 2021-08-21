@@ -244,6 +244,8 @@ def main():
                     config=config, 
                     scheduler = scheduler, 
                     search_alg = search_alg,
+                    metric="accuracy",
+                    mode="max",
                     num_samples=args.num_samples, 
                     progress_reporter = reporter,
                     resources_per_trial={'cpu': 4, 'gpu': 1})
