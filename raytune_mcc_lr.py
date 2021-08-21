@@ -225,6 +225,7 @@ def train_mcc(config):
         target_test_acc = test(model, target_val_loader)
 
         # Send the current training result back to Tune
+        print('Prec@1: {:.2f}'.format(target_test_acc))
         tune.report(accuracy=target_test_acc)
         
 def main():
