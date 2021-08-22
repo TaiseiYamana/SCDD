@@ -73,7 +73,7 @@ parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for 
 parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
 parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
 parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
-parser.add_argument('--epochs', default=30, type=int, help='number of total epochs to run')
+parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
 parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
 parser.add_argument('-p', '--print-freq', default=50, type=int, help='print frequency (default: 50)')
 parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
@@ -202,7 +202,7 @@ def train_mdav2(config):
   # define model
   # Teacher model
   tbackbone = models.__dict__[args.t_arch](pretrained=True)
-  tmoel = modules.Classifier(tbackbone, num_classes).to(device)
+  tmodel = modules.Classifier(tbackbone, num_classes).to(device)
   # Student model
   smodel = mobilenet_v3_small(pretrained=True)
   smodel.classifier[3] = nn.Linear(1024, 12)
@@ -246,7 +246,7 @@ def main():
   config = {  "st_temp": tune.quniform(2.0, 20.0, 1),
                 "mu": tune.quniform(0.5, 1.0, 0.1)}
 
-  scheduler = ASHAScheduler(metric="accuracy",mode="max")
+  scheduler = ASHAScheduler(metric="accuracy",mode="max", grace_period=5, reduction_factor=2)
   search_alg = BayesOptSearch(metric="accuracy", mode="max")
   reporter =  CLIReporter(metric_columns =["accuracy","training_iteration"])
 
