@@ -35,6 +35,8 @@ from common.utils.data import ForeverDataIterator
 
 from utils import AverageMeter, accuracy
 
+from kd_losses import *
+
 # args
 architecture_names = sorted(
         name for name in models.__dict__
