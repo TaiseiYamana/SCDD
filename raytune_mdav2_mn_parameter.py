@@ -209,8 +209,8 @@ def train_mdav2(config):
 
   # define optimizer and lr scheduler
   params = [
-                {"params": snet.features.parameters(), "lr": 0.1 * args.lr},
-                {"params": snet.classifier.parameters(), "lr": 1.0 * args.lr}
+                {"params": smodel.features.parameters(), "lr": 0.1 * args.lr},
+                {"params": smodel.classifier.parameters(), "lr": 1.0 * args.lr}
   ]
   optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
   lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
@@ -242,7 +242,7 @@ def main():
     dataset = datasets.__dict__[args.dataset]
     dataset(root=args.img_root, task=args.source, download=True, transform=None)
 	
-  config = {  "st_temp": tune.quniform(2.0, 20.0, 0.5),
+  config = {  "st_temp": tune.quniform(2.0, 20.0, 1),
                 "mu": tune.quniform(0.5, 1.0, 0.1)}
 
   scheduler = ASHAScheduler(metric="accuracy",mode="max")
