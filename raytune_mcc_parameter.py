@@ -205,7 +205,7 @@ def train_mcc(config):
     model.to(device)
 
     # define optimizer and lr scheduler
-    optimizer = SGD(model.get_parameters(base_lr=args.lr, lr = args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
+    optimizer = SGD(model.get_parameters(base_lr=args.lr), lr = args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x: args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
     # define loss function
