@@ -101,169 +101,170 @@ if torch.cuda.is_available():
         cudnn.benchmark = True
 
 def train(models, iters, loss_functions, optimizer, lr_scheduler, config):
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-	tmodel = models['tmodel']
-        smodel = models['smodel']       
-	source_iter = iters['source']
-	target_iter = iters['target']
-        cls = loss_functions['cls']
-        da = loss_functions['da']
-        kd = loss_functions['kd']
+  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  tmodel = models['tmodel']
+  smodel = models['smodel']       
+  source_iter = iters['source']
+  target_iter = iters['target']
+  cls = loss_functions['cls']
+  da = loss_functions['da']
+  kd = loss_functions['kd']
 
-        tmodel.eval
-        smodel.train
+  tmodel.eval()
+  smodel.train()
 
-	for i in range(args.iters_per_epoch):
-		source_img, source_label = next(source_iter)
-		target_img, _ = next(target_iter)
+  for i in range(args.iters_per_epoch):
+    source_img, source_label = next(source_iter)
+    target_img, _ = next(target_iter)
 
-		if torch.cuda.is_available():
-			source_img = source_img.to(device)
-			source_label = source_label.to(device)
-			target_img = target_img.to(device)
+    if torch.cuda.is_available():
+      source_img = source_img.to(device)
+      source_label = source_label.to(device)
+      target_img = target_img.to(device)
 
-                with torch.no_grad():
-		        t_target_out, _ = tmodel(target_img)
+    with torch.no_grad():
+      t_target_out, _ = tmodel(target_img)
 
-		s_source_out = smodel(source_img)
-		s_target_out = smodel(target_img)
+    s_source_out = smodel(source_img)
+    s_target_out = smodel(target_img)
 
-		cls_loss = cls(s_source_out, source_label)
-		da_loss = da(s_target_out)
-		kd_loss = kd(s_target_out, t_target_out)
-		loss = cls_loss + da_loss * args.lam + kd_loss * config.["mu"]
+    cls_loss = cls(s_source_out, source_label)
+    da_loss = da(s_target_out)
+    kd_loss = kd(s_target_out, t_target_out)
+    loss = cls_loss + da_loss * args.lam + kd_loss * config["mu"]
 
-		optimizer.zero_grad()
-		loss.backward()
-		optimizer.step()
-		lr_scheduler.step()
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    lr_scheduler.step()
 
 def test(model, test_loader):
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model.eval()
+  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  model.eval()
 
-        acc = AverageMeter()
-        with torch.no_grad():
-                for i, (img, label) in enumerate(test_loader, start=1):
-                        if torch.cuda.is_available():
-	                        img = img.to(device)
-	                        label = label.to(device)
+  acc = AverageMeter()
+  with torch.no_grad():
+    for i, (img, label) in enumerate(test_loader, start=1):
+      if torch.cuda.is_available():
+	      img = img.to(device)
+	      label = label.to(device)
 
-                        out = model(img)
-                        prec, _ = accuracy(out, label, topk=(1,5))
-                        acc.update(prec.item(), img.size(0))
+      out = model(img)
+      prec, _ = accuracy(out, label, topk=(1,5))
+      acc.update(prec.item(), img.size(0))
 		
-        return acc.avg
+  return acc.avg
 
 def train_mdav2(config):
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-        # augumentation
-        normalize = T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        train_transform = T.Compose([
+  # augumentation
+  normalize = T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+  train_transform = T.Compose([
                 ResizeImage(256),
                 T.RandomResizedCrop(224),
                 T.RandomHorizontalFlip(),
                 T.ToTensor(),
                 normalize
-        ])
-        val_transform = T.Compose([
+  ])
+  val_transform = T.Compose([
                 ResizeImage(256),
                 T.CenterCrop(224),
                 T.ToTensor(),
                 normalize
-        ])
-        # create dataset & dataloader
-        dataset = datasets.__dict__[args.dataset]
+  ])
+  # create dataset & dataloader
+  dataset = datasets.__dict__[args.dataset]
     
-        # dataset,dataloader
-        if args.dataset == "ImageCLEF":
-                source_train_dataset = dataset(root=ImageCLEF_root, task=args.source, transform=train_transform)
-                target_train_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=train_transform)
-                target_val_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=val_transform)
-        else:
-                source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
-                target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
-                target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
+  # dataset,dataloader
+  if args.dataset == "ImageCLEF":
+    source_train_dataset = dataset(root=ImageCLEF_root, task=args.source, transform=train_transform)
+    target_train_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=train_transform)
+    target_val_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=val_transform)
+  else:
+    source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
+    target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
+    target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
     
-        source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
+  source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-        target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
+  target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-        target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
+  target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
-        source_train_iter = ForeverDataIterator(source_train_loader)
-        target_train_iter = ForeverDataIterator(target_train_loader)
+  source_train_iter = ForeverDataIterator(source_train_loader)
+  target_train_iter = ForeverDataIterator(target_train_loader)
 
-        num_classes = len(source_train_loader.dataset.classes)
+  num_classes = len(source_train_loader.dataset.classes)
 
-        # define model
-        # Teacher model
-        tbackbone = models.__dict__[args.t_arch](pretrained=True)
-        tmodel = modules.Classifier(tbackbone, num_classes).to(device)
-        tmodel.to(device)
-        # Student model
-        smodel = mobilenet_v3_small(pretrained=True)
-        smodel.classifier[3] = nn.Linear(1024, 12)
-        smodel = smodel.to(device)
+  # define model
+  # Teacher model
+  tbackbone = models.__dict__[args.t_arch](pretrained=True)
+  tmodel = modules.Classifier(tbackbone, num_classes).to(device)
+  tmodel.to(device)
+  # Student model
+  smodel = mobilenet_v3_small(pretrained=True)
+  smodel.classifier[3] = nn.Linear(1024, 12)
+  smodel = smodel.to(device)
 
-        # define optimizer and lr scheduler
-        params = [
+  # define optimizer and lr scheduler
+  params = [
                 {"params": snet.features.parameters(), "lr": 0.1 * args.lr},
                 {"params": snet.classifier.parameters(), "lr": 1.0 * args.lr}
-        ]
-        optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
-        lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
+  ]
+  optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
+  lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
-        # define loss function
-        cls = torch.nn.CrossEntropyLoss()
-        da = MinimumClassConfusionLoss(temperature=args.mcc_temp)
-        kd = SoftTarget(config['st_temp'])   
-        if torch.cuda.is_available():
-		cls = cls.to(device)
-                da = da.to(device)
-                kd = kd.to(device)
+  # define loss function
+  cls = torch.nn.CrossEntropyLoss()
+  da = MinimumClassConfusionLoss(temperature=args.mcc_temp)
+  kd = SoftTarget(config['st_temp'])   
+  if torch.cuda.is_available():
+    cls = cls.to(device)
+    da = da.to(device)
+    kd = kd.to(device)
         
-        # define dict
-        models = {'tmodel':tmodel,'smodel':smodel}
-        iters = {'target':target_train_iter, 'source':source_train_iter}
-        loss_functions = {'cls':cls, 'da':da, 'kd':kd}
+  # define dict
+  models = {'tmodel':tmodel,'smodel':smodel}
+  iters = {'target':target_train_iter, 'source':source_train_iter}
+  loss_functions = {'cls':cls, 'da':da, 'kd':kd}
 
-        for epoch in range(1,args.epochs+1):
-                train(models, iters, loss_functions, optimizer, lr_scheduler, config)
-                target_test_acc = test(smodel, target_val_loader)
+  for epoch in range(1,args.epochs+1):
+    train(models, iters, loss_functions, optimizer, lr_scheduler, config)
+    target_test_acc = test(smodel, target_val_loader)
 
-        # Send the current training result back to Tune
-                print('Prec@1: {:.2f}'.format(target_test_acc))
-                tune.report(accuracy=target_test_acc)
+  # Send the current training result back to Tune
+    print('Prec@1: {:.2f}'.format(target_test_acc))
+    tune.report(accuracy=target_test_acc)
 
 def main():
+  if args.dataset != "ImageCLEF":
     dataset = datasets.__dict__[args.dataset]
     dataset(root=args.img_root, task=args.source, download=True, transform=None)
 	
-    config = {  "st_temp": tune.quniform(2.0, 20.0, 0.5),
+  config = {  "st_temp": tune.quniform(2.0, 20.0, 0.5),
                 "mu": tune.quniform(0.5, 1.0, 0.1)}
 
-    scheduler = ASHAScheduler(metric="accuracy",mode="max")
-    search_alg = BayesOptSearch(metric="accuracy", mode="max")
-    reporter =  CLIReporter(metric_columns =["accuracy","training_iteration"])
+  scheduler = ASHAScheduler(metric="accuracy",mode="max")
+  search_alg = BayesOptSearch(metric="accuracy", mode="max")
+  reporter =  CLIReporter(metric_columns =["accuracy","training_iteration"])
 
-    analysis = tune.run(train_mcc, 
+  analysis = tune.run(train_mdav2, 
                     config=config, 
                     scheduler = scheduler, 
                     search_alg = search_alg,
                     num_samples=args.num_samples, 
                     progress_reporter = reporter,
-                    resources_per_trial={'cpu': 4, 'gpu': 1})
+                    resources_per_trial={'cpu': 2, 'gpu': 1})
 
-    dfs = analysis.trial_dataframes
-    ax = None  # This plots everything on the same plot
-    for d in dfs.values():
-        ax = d.mean_accuracy.plot(ax=ax, legend=False)
+  dfs = analysis.trial_dataframes
+  ax = None  # This plots everything on the same plot
+  for d in dfs.values():
+    ax = d.mean_accuracy.plot(ax=ax, legend=False)
 	
-    best_trial = result.get_best_trial("accuracy", "max", "last")
-    print("Best trial config: {}".format(best_trial.config))
-    print("Best trial final validation acc: {}".format(best_trial.last_result["accuracy"]))
+  best_trial = result.get_best_trial("accuracy", "max", "last")
+  print("Best trial config: {}".format(best_trial.config))
+  print("Best trial final validation acc: {}".format(best_trial.last_result["accuracy"]))
 
 if __name__ == "__main__":
-    main()
+  main()
