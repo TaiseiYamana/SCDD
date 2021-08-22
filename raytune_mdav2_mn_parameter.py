@@ -82,7 +82,7 @@ parser.add_argument('--mcc_temp', default=2.5, type=float, help='parameter mcc t
 parser.add_argument('--lam', default=1., type=float,
                         help='the trade-off hyper-parameter for mcc loss')
 #parser.add_argument('--mu', default=0.9, type=float,
-                        help='the trade-off hyper-parameter for soft target loss')
+                        #help='the trade-off hyper-parameter for soft target loss')
 # others
 parser.add_argument('--cuda', type=int, default=1)
 # ray tune config
