@@ -158,7 +158,7 @@ def main(args):
 
     # define dict
     iters = {'target':target_train_iter, 'source':source_train_iter}
-    nets = {'snet':snet, 'tnet':tnet}
+    nets = {'tnet':tnet, 'snet':snet}
 
     best_top1= 0.0
     best_top5 = 0.0
@@ -218,6 +218,7 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 	snet = nets['snet']
 	tnet = nets['tnet']
 
+	tnet.eval()
 	snet.train()
 
 	end = time.time()
@@ -234,7 +235,8 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 
 		s_source_out = snet(source_img)
 		s_target_out = snet(target_img)
-		t_target_out, _= tnet(target_img)
+		with torch.no_grad():  
+		    t_target_out, _= tnet(target_img)
 
 		cls_loss = cls(s_source_out, source_label)
 		mcc_loss = mcc(s_target_out)
