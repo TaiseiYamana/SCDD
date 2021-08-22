@@ -14,7 +14,7 @@ from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
-from torchvision.models import mobilenet_v3_small
+#from torchvision.models import mobilenet_v3_small
 
 
 # ray tune
@@ -100,7 +100,7 @@ if torch.cuda.is_available():
         cudnn.enabled = True
         cudnn.benchmark = True
 
-def train(models, iters, loss_functions, optimizer, lr_scheduler, config):
+def train(models_dict, iters, loss_functions, optimizer, lr_scheduler, config):
   device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
   tmodel = models['tmodel']
   smodel = models['smodel']       
@@ -224,12 +224,12 @@ def train_mdav2(config):
     kd = kd.to(device)
         
   # define dict
-  models = {'tmodel':tmodel,'smodel':smodel}
+  models_dict = {'tmodel':tmodel,'smodel':smodel}
   iters = {'target':target_train_iter, 'source':source_train_iter}
   loss_functions = {'cls':cls, 'da':da, 'kd':kd}
 
   for epoch in range(1,args.epochs+1):
-    train(models, iters, loss_functions, optimizer, lr_scheduler, config)
+    train(models_dict, iters, loss_functions, optimizer, lr_scheduler, config)
     target_test_acc = test(smodel, target_val_loader)
 
   # Send the current training result back to Tune
