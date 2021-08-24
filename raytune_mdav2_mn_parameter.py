@@ -204,6 +204,7 @@ def train_mdav2(config):
   tbackbone = models.__dict__[args.t_arch](pretrained=True)
   tmodel = modules.Classifier(tbackbone, num_classes).to(device)
   # Student model
+  
   smodel = mobilenet_v3_small(pretrained=True)
   smodel.classifier[3] = nn.Linear(1024, 12)
   smodel = smodel.to(device)
