@@ -90,8 +90,13 @@ def main(args):
     logging.info('----------- Network Initialization --------------')
     logging.info('Initialize Teacher Model')
     logging.info('=> using pre-trained model {}'.format(args.t_arch))
-    tbackbone = models.__dict__[args.t_arch](pretrained=True)
-    tnet = modules.Classifier(tbackbone, num_classes).to(device)
+    if args.t_arch == 'mobilenet_v3_large':
+		    tnet = mobilenet_v3_large(pretrained=True)
+		    tnet.classifier[3] = nn.Linear(1280, num_classes)
+		    tnet = tnet.to(device) 
+    else:      
+		    tbackbone = models.__dict__[args.t_arch](pretrained=True)
+		    tnet = modules.Classifier(tbackbone, num_classes).to(device)
     checkpoint = torch.load(args.t_model_param)
     load_pretrained_model(tnet, checkpoint['net'])
     tnet.eval()
@@ -325,14 +330,9 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--source', default = 'A', help='source domain(s)')
     parser.add_argument('-t', '--target', default = 'W', help='target domain(s)')
     # model parameters
-    parser.add_argument('--t_arch', metavar='ARCH', default='resnet50',
-                        choices=architecture_names,
-                        help='backbone architecture: ' +
-                             ' | '.join(architecture_names) +
-                             ' (default: resnet50)')   
+    parser.add_argument('--t_arch', metavar='ARCH', default='resnet50')   
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
-    parser.add_argument('--s_arch', metavar='ARCH', default='mobilenet_v3_small',
-                        choices=architecture_names)      
+    parser.add_argument('--s_arch', metavar='ARCH', default='mobilenet_v3_small')      
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
