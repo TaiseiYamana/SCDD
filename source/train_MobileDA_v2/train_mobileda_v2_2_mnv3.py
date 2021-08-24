@@ -109,7 +109,6 @@ def main(args):
 		    snet = mobilenet_v3_large(pretrained=True)
 		    snet.classifier[3] = nn.Linear(1280, num_classes)              
     snet = snet.to(device)
-    #snet = modules.Classifier(sbackbone, num_classes).to(device)
     logging.info('%s', snet)
     logging.info("param size = %fMB", count_parameters_in_MB(snet))
     logging.info('-----------------------------------------------')
