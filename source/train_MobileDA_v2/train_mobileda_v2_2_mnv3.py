@@ -243,8 +243,11 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 
 		s_source_out = snet(source_img)
 		s_target_out = snet(target_img)
-		with torch.no_grad():  
-		    t_target_out, _= tnet(target_img)
+		with torch.no_grad():
+		    if args.t_arch == 'mobilenet_v3_large' or args.t_arch == 'mobilenet_v3_small':
+		        t_target_out = tnet(target_img)
+		    else:
+		        t_target_out, _= tnet(target_img)
 
 		cls_loss = cls(s_source_out, source_label)
 		mcc_loss = mcc(s_target_out)
