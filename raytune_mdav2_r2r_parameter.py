@@ -215,11 +215,7 @@ def train_mdav2(config):
   smodel = modules.Classifier(sbackbone, num_classes).to(device)
 
   # define optimizer and lr scheduler
-  params = [
-                {"params": smodel.features.parameters(), "lr": 0.1 * args.lr},
-                {"params": smodel.classifier.parameters(), "lr": 1.0 * args.lr}
-  ]
-  optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
+  optimizer = SGD(smodel.get_parameters(base_lr=args.lr), args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
   lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
   # define loss function
