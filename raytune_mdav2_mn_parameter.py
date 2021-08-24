@@ -83,8 +83,8 @@ parser.add_argument('--mcc_temp', default=2.5, type=float, help='parameter mcc t
 #parser.add_argument('--st_temp', default=2.0, type=float, help='parameter soft target temperature scaling')
 parser.add_argument('--lam', default=1., type=float,
                         help='the trade-off hyper-parameter for mcc loss')
-#parser.add_argument('--mu', default=0.9, type=float,
-                        #help='the trade-off hyper-parameter for soft target loss')
+parser.add_argument('--mu', default=0.9, type=float,
+                        help='the trade-off hyper-parameter for soft target loss')
 # others
 parser.add_argument('--cuda', type=int, default=1)
 # ray tune config
@@ -133,7 +133,7 @@ def train(models_dict, iters, loss_functions, optimizer, lr_scheduler, config):
     cls_loss = cls(s_source_out, source_label)
     da_loss = da(s_target_out)
     kd_loss = kd(s_target_out, t_target_out)
-    loss = cls_loss + da_loss * args.lam + kd_loss * config["mu"]
+    loss = cls_loss + da_loss * args.lam + kd_loss * args.mu
 
     optimizer.zero_grad()
     loss.backward()
@@ -243,8 +243,7 @@ def main():
     dataset = datasets.__dict__[args.dataset]
     dataset(root=args.img_root, task=args.source, download=True, transform=None)
 	
-  config = {  "st_temp": tune.quniform(2.0, 20.0, 1),
-                "mu": tune.quniform(0.5, 1.0, 0.1)}
+  config = {  "st_temp": tune.quniform(2.0, 20.0, 1)}
 
   scheduler = ASHAScheduler(metric="accuracy",mode="max", grace_period=5, reduction_factor=2)
   search_alg = BayesOptSearch(metric="accuracy", mode="max")
