@@ -132,8 +132,8 @@ def train(models_dict, iters, loss_functions, optimizer, lr_scheduler, config):
     with torch.no_grad():
       t_target_out, _ = tmodel(target_img)
 
-    s_source_out = smodel(source_img)
-    s_target_out = smodel(target_img)
+    s_source_out, _ = smodel(source_img)
+    s_target_out, _ = smodel(target_img)
 
     cls_loss = cls(s_source_out, source_label)
     da_loss = da(s_target_out)
@@ -156,7 +156,7 @@ def test(model, test_loader):
 	      img = img.to(device)
 	      label = label.to(device)
 
-      out = model(img)
+      out, _ = model(img)
       prec, _ = accuracy(out, label, topk=(1,5))
       acc.update(prec.item(), img.size(0))
 		
