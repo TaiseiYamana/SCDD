@@ -105,7 +105,7 @@ def main(args):
     if args.s_arch == 'mobilenet_v3_small':
 		    snet = mobilenet_v3_small(pretrained=True)
 		    snet.classifier[3] = nn.Linear(1024, num_classes)
-    else if args.s_arch == 'mobilenet_v3_large':
+    elif args.s_arch == 'mobilenet_v3_large':
 		    snet = mobilenet_v3_large(pretrained=True)
 		    snet.classifier[3] = nn.Linear(1280, num_classes)              
     snet = snet.to(device)
