@@ -1,6 +1,6 @@
 # C->I
-# r50->mnv3s
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobile_v2_2_mnv3.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_mnv3l/imageclefda' \
+# r50->mnv3l
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_mnv3.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_mnv3l/imageclefda' \
                                                            --img_root '/content' \
                                                            --note 'C2I' \
                                                            --t_arch 'resnet50' \
@@ -16,8 +16,8 @@
                                                            --mcc_temp 2.5 \
                                                            --st_temp 4.0
 # C->P
-# r50->mnv3s
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobile_v2_2_mnv3.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_mnv3l/imageclefda' \
+# r50->mnv3l
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_mnv3.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_mnv3l/imageclefda' \
                                                            --img_root '/content' \
                                                            --note 'C2P' \
                                                            --t_arch 'resnet50' \
@@ -33,8 +33,8 @@
                                                            --mcc_temp 2.5 \
                                                            --st_temp 4.0
 # I->C
-# r50->mnv3s
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobile_v2_2_mnv3.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_mnv3l/imageclefda' \
+# r50->mnv3l
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_mnv3.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_mnv3l/imageclefda' \
                                                            --img_root '/content' \
                                                            --note 'I2C' \
                                                            --t_arch 'resnet50' \
@@ -50,8 +50,8 @@
                                                            --mcc_temp 2.5 \
                                                            --st_temp 4.0
 # I->P
-# r50->mnv3s
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobile_v2_2_mnv3.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_mnv3l/imageclefda' \
+# r50->mnv3l
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_mnv3.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_mnv3l/imageclefda' \
                                                            --img_root '/content' \
                                                            --note 'I2P' \
                                                            --t_arch 'resnet50' \
@@ -67,8 +67,8 @@
                                                            --mcc_temp 2.5 \
                                                            --st_temp 4.0
 # P->C
-# r50->mnv3s
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobile_v2_2_mnv3.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_mnv3l/imageclefda' \
+# r50->mnv3l
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_mnv3.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_mnv3l/imageclefda' \
                                                            --img_root '/content' \
                                                            --note 'P2C' \
                                                            --t_arch 'resnet50' \
@@ -84,8 +84,8 @@
                                                            --mcc_temp 2.5 \
                                                            --st_temp 4.0
 # P->I
-# r50->mnv3s
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobile_v2_2_mnv3.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_mnv3l/imageclefda' \
+# r50->mnv3l
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2_2_mnv3.py --save_root '/content/drive/MyDrive/results/MobileDA_v2/r50_2_mnv3l/imageclefda' \
                                                            --img_root '/content' \
                                                            --note 'P2I' \
                                                            --t_arch 'resnet50' \
