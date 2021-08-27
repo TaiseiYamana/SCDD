@@ -279,8 +279,8 @@ def test_2(test_loader, net, cls, args, phase):
     
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
 		softlabel = nn.functional.log_softmax(out / 4, dim=-1)
-		distributed_hard.update(torch.var(out))
-		distributed_soft.update(torch.var(softlabel))
+		distributed_hard.update(torch.var(out), img.size(0))
+		distributed_soft.update(torch.var(softlabel), img.size(0))
 		losses.update(loss.item(), img.size(0))
 		top1.update(prec1.item(), img.size(0))
 		top5.update(prec5.item(), img.size(0))
