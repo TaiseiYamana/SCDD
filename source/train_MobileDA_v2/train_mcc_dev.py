@@ -124,7 +124,7 @@ def main(args):
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
             print("top1acc:{:.2f}".format(checkpoint['prec@1']))
-        _ , _ ,dis = test(target_val_loader, net, cls, args, phase = 'Target')
+        _ , _ ,dis = test_2(target_val_loader, net, cls, args, phase = 'Target')
         print("Distributed {}".format(dis))   
         return
 	
