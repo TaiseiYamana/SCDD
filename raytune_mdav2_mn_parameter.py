@@ -261,7 +261,7 @@ def main():
   dfs = analysis.trial_dataframes
   ax = None  # This plots everything on the same plot
   for d in dfs.values():
-    ax = d.mean_accuracy.plot(ax=ax, legend=False)
+    ax = d.accuracy.plot(ax=ax, legend=False)
 	
   best_trial = result.get_best_trial("accuracy", "max", "last")
   print("Best trial config: {}".format(best_trial.config))
