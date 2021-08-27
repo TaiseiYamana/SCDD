@@ -124,8 +124,8 @@ def main(args):
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
             print("top1acc:{:.2f}".format(checkpoint['prec@1']))
-        _ , _ ,dis = test_2(target_val_loader, net, cls, args, phase = 'Target')
-        print("Distributed {}".format(dis))   
+        _ , _ ,dis_hard, dis_soft = test_2(target_val_loader, net, cls, args, phase = 'Target')
+        print("Distributed Hard {}, Distributed Soft {}".format(dis_hard, dis_soft))   
         return
 	
 		
@@ -262,7 +262,8 @@ def test_2(test_loader, net, cls, args, phase):
 	losses = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
-	distributed = AverageMeter()
+	distributed_hard = AverageMeter()
+	distributed_soft = AverageMeter()
 
 	net.eval()
 
@@ -277,7 +278,9 @@ def test_2(test_loader, net, cls, args, phase):
 			loss = cls(out, target)
     
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
-		distributed.update(torch.var(out))
+		softlabel = nn.functional.log_softmax(out / 4, dim=-1)
+		distributed_hard.update(torch.var(out))
+		distributed_soft.update(torch.var(softlabel))
 		losses.update(loss.item(), img.size(0))
 		top1.update(prec1.item(), img.size(0))
 		top5.update(prec5.item(), img.size(0))
@@ -285,7 +288,7 @@ def test_2(test_loader, net, cls, args, phase):
 	f_l = [losses.avg, top1.avg, top5.avg]
 	logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
 
-	return top1.avg, top5.avg, distributed.avg
+	return top1.avg, top5.avg, distributed_hard.avg, distributed_soft.avg
 if __name__ == '__main__':
     architecture_names = sorted(
         name for name in models.__dict__
