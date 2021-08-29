@@ -39,12 +39,14 @@ class ImageList(datasets.VisionDataset):
         self.loader = default_loader
         self.data_list_file = data_list_file
 
-        if indexs is not None:
-            indexs = np.array(indexs)
-            self.samples = self.samples[indexs]
-            self.indexs = indexs
-        else:
-            self.indexs = np.arange(len(self.samples))
+        self.indexs = np.arange(len(self.samples))
+
+        #if indexs is not None:
+            #indexs = np.array(indexs)
+            #self.samples = self.samples[indexs]
+            #self.indexs = indexs
+        #else:
+            #self.indexs = np.arange(len(self.samples))
   
 
     def __getitem__(self, index: int) -> Tuple[Any, int]:
