@@ -31,14 +31,13 @@ class ImageList(datasets.VisionDataset):
 
     def __init__(self, root: str, classes: List[str], data_list_file: str, indexs: Optional[Callable] = None,
                  transform: Optional[Callable] = None, target_transform: Optional[Callable] = None):
-        super().__init__(root, transform=transform, target_transform=target_transform)
+        super().__init__(root, transform=transform, target_transform=target_transform, indexs = indexs)
         self.samples = self.parse_data_file(data_list_file)
         self.classes = classes
         self.class_to_idx = {cls: idx
                              for idx, cls in enumerate(self.classes)}
         self.loader = default_loader
         self.data_list_file = data_list_file
-        self.indexs = np.arange(len(self.samples))
 
         if indexs is not None:
             indexs = np.array(indexs)
