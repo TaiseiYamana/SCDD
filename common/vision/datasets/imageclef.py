@@ -12,7 +12,7 @@ class ImageCLEF(ImageList):
     }
     CLASSES = ['aeroplane', 'bike', 'bird', 'boat', 'bottle', 'bus', 'car', 'dog', 'horse', 'monitor', 'motorbike', 'people']
 
-    def __init__(self, root: str, task: str, indexs: Optional[Callable] = None, **kwargs):
+    def __init__(self, root: str, task: str, **kwargs):
         assert task in self.image_list
         data_list_file = os.path.join(root, self.image_list[task])
 
