@@ -16,7 +16,7 @@ class ImageCLEF(ImageList):
         assert task in self.image_list
         data_list_file = os.path.join(root, self.image_list[task])
 
-        super(ImageCLEF, self).__init__(root, ImageCLEF.CLASSES, data_list_file=data_list_file, **kwargs)
+        super(ImageCLEF, self).__init__(root, ImageCLEF.CLASSES, data_list_file=data_list_file, indexs, **kwargs)
     @classmethod
     def domains(cls):
         return list(cls.image_list.keys())
