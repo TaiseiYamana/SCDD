@@ -38,6 +38,7 @@ class ImageList(datasets.VisionDataset):
                              for idx, cls in enumerate(self.classes)}
         self.loader = default_loader
         self.data_list_file = data_list_file
+        self.indexs = np.arange(len(self.samples))
 
         if indexs is not None:
             indexs = np.array(indexs)
