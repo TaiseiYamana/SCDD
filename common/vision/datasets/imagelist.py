@@ -29,7 +29,7 @@ class ImageList(datasets.VisionDataset):
         If your data_list_file has different formats, please over-ride :meth:`~ImageList.parse_data_file`.
     """
 
-    def __init__(self, root: str, classes: List[str], data_list_file: str, indexs,
+    def __init__(self, root: str, classes: List[str], data_list_file: str, indexs: Optional[Callable] = None,
                  transform: Optional[Callable] = None, target_transform: Optional[Callable] = None):
         super().__init__(root, transform=transform, target_transform=target_transform)
         self.samples = self.parse_data_file(data_list_file)
