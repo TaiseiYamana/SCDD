@@ -82,7 +82,7 @@ def main(args):
     target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader)
+    #target_train_iter = ForeverDataIterator(target_train_loader)
 
     num_classes = len(source_train_loader.dataset.classes)
 
@@ -166,7 +166,8 @@ def main(args):
 		    pseudo_dataset = dataset(root=ImageCLEF_root, task=args.target, indexs = pseudo_idx, transform=val_transform)
 		    selected_target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
-		    iters = {'target':target_train_iter, 'source':selected_target_train_loader}                                 
+		    selected_target_train_iter = ForeverDataIterator(selected_target_train_loader)
+		    iters = {'target':target_train_iter, 'source':selected_target_train_iter}                                 
 		    # train one epoch
 		    train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
 
