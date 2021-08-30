@@ -14,6 +14,7 @@ from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
+from torchvision.models import mobilenet_v3_small, mobilenet_v3_large
 
 sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
@@ -102,8 +103,16 @@ def main(args):
 
     logging.info('Initialize Student Model')
     logging.info('=> using pre-trained model {}'.format(args.s_arch))
-    sbackbone = models.__dict__[args.s_arch](pretrained=True)
-    snet = modules.Classifier(sbackbone, num_classes).to(device)
+    if args.s_arch == 'mobilenet_v3_small':
+		    snet = mobilenet_v3_small(pretrained=True)
+		    snet.classifier[3] = nn.Linear(1024, num_classes)
+    elif args.s_arch == 'mobilenet_v3_large':
+		    snet = mobilenet_v3_large(pretrained=True)
+		    snet.classifier[3] = nn.Linear(1280, num_classes)
+    else:
+		    sbackbone = models.__dict__[args.s_arch](pretrained=True)
+		    snet = modules.Classifier(sbackbone, num_classes)
+    snet = snet.to(device)
     logging.info('%s', snet)
     logging.info("param size = %fMB", count_parameters_in_MB(snet))
     logging.info('-----------------------------------------------')
