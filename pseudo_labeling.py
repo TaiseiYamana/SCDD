@@ -15,7 +15,7 @@ def pseudo_labeling(threshold, data_loadr, model):
     model.eval()
 
     with torch.no_grad():
-        for batch_idx, (inputs, targets, indexs) in enumerate(target_val_loader):
+        for batch_idx, (inputs, targets, indexs) in enumerate(data_loadr):
             out_prob = []
             if torch.cuda.is_available():
                 inputs = inputs.to(device)
