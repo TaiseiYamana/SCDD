@@ -167,7 +167,7 @@ def main(args):
 		    selected_target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
 		    selected_target_train_iter = ForeverDataIterator(selected_target_train_loader)
-		    iters = {'target':target_train_iter, 'source':selected_target_train_iter}                                 
+		    iters = {'target':selected_target_train_iter, 'source':source_train_iter}                                 
 		    # train one epoch
 		    train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
 
