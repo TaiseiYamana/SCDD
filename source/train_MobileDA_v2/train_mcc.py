@@ -99,7 +99,13 @@ def main(args):
     logging.info('-----------------------------------------------')
 
     # define optimizer and lr scheduler
-    optimizer = SGD(net.get_parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
+    if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
+		    params = [
+            {"params": net.features.parameters(), "lr": 0.1 * args.lr},
+            {"params": net.classifier.parameters(), "lr": 1.0 * args.lr}]
+    else:
+		    params = net.get_parameters(base_lr = args.lr)  
+    optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
     # define loss function
