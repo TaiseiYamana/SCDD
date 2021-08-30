@@ -33,6 +33,7 @@ class ImageList(datasets.VisionDataset):
                              for idx, cls in enumerate(self.classes)}
         self.loader = default_loader
         self.data_list_file = data_list_file
+        self.ndexs = np.arange(len(self.samples))
 
     def __getitem__(self, index: int) -> Tuple[Any, int]:
         """
@@ -46,7 +47,7 @@ class ImageList(datasets.VisionDataset):
             img = self.transform(img)
         if self.target_transform is not None and target is not None:
             target = self.target_transform(target)
-        return img, target
+        return img, target, self.indexs[index]
 
     def __len__(self) -> int:
         return len(self.samples)
