@@ -25,7 +25,7 @@ class ImageList(datasets.VisionDataset):
         If your data_list_file has different formats, please over-ride :meth:`~ImageList.parse_data_file`.
     """
 
-    def __init__(self, root: str, classes: List[str], data_list_file: str,
+    def __init__(self, root: str, classes: List[str], data_list_file: str, indexs = None, 
                  transform: Optional[Callable] = None, target_transform: Optional[Callable] = None):
         super().__init__(root, transform=transform, target_transform=target_transform)
         self.samples = self.parse_data_file(data_list_file)
@@ -34,7 +34,12 @@ class ImageList(datasets.VisionDataset):
                              for idx, cls in enumerate(self.classes)}
         self.loader = default_loader
         self.data_list_file = data_list_file
-        self.indexs = np.arange(len(self.samples))
+
+        if indexs is not None:
+            indexs = np.array(indexs)
+            self.indexs = indexs
+        else:
+            self.indexs = np.arange(len(self.samples))
 
     def __getitem__(self, index: int) -> Tuple[Any, int]:
         """
