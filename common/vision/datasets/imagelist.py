@@ -39,7 +39,7 @@ class ImageList(datasets.VisionDataset):
             indexs = np.array(indexs)
             pseudo_samples =[]
             for idx in indexs:
-                pseudo_samples.append(target_val_dataset.samples[idx])
+                pseudo_samples.append(self.samples[idx])
             self.samples = pseudo_samples
             indexs = np.array(indexs)
         else:
