@@ -83,8 +83,16 @@ def main(args):
 	  # create model
     logging.info('----------- Network Initialization --------------')
     logging.info('=> using pre-trained model {}'.format(args.arch))
-    backbone = models.__dict__[args.arch](pretrained=True)
-    net = modules.Classifier(backbone, num_classes).to(device)
+    if args.arch == 'mobilenet_v3_small':
+		    net = mobilenet_v3_small(pretrained=True)
+		    net.classifier[3] = nn.Linear(1024, num_classes)
+    elif args.arch == 'mobilenet_v3_large':
+		    net = mobilenet_v3_large(pretrained=True)
+		    net.classifier[3] = nn.Linear(1280, num_classes)  
+    else:
+		    backbone = models.__dict__[args.arch](pretrained=True)
+		    net = modules.Classifier(backbone, num_classes)
+    net = 
     logging.info('%s', net)
     logging.info("param size = %fMB", count_parameters_in_MB(net))
     logging.info('-----------------------------------------------')
@@ -188,7 +196,7 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 	end = time.time()
 	for i in range(args.iters_per_epoch):
 		source_img, source_label ,_ = next(source_iter)
-		target_img, _ = next(target_iter)
+		target_img, _, _ = next(target_iter)
 
 		data_time.update(time.time() - end)
 
@@ -196,9 +204,12 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 			source_img = source_img.cuda()
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
-
-		source_out, _= net(source_img)
-		target_out, _= net(target_img)
+		if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
+    		source_out = net(source_img)
+    		target_out = net(target_img)
+		else:
+    		source_out, _= net(source_img)
+    		target_out, _= net(target_img)
 
 		cls_loss = cls(source_out, source_label)
 		mcc_loss = mcc(target_out)
@@ -245,9 +256,11 @@ def test(test_loader, net, cls, args, phase):
 			target = target.cuda()
 
 		with torch.no_grad():
-			out, _ = net(img)
-			loss = cls(out, target)
-
+			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
+    			out = net(img)
+			else:
+				out, _ = net(img)
+			loss = cls(out, target)                
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
 		losses.update(loss.item(), img.size(0))
 		top1.update(prec1.item(), img.size(0))
@@ -273,8 +286,11 @@ def test_2(test_loader, net, cls, args, phase):
 			target = target.cuda()
 
 		with torch.no_grad():
-			out, _ = net(img)           
-			loss = cls(out, target)
+			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
+    			out = net(img)
+			else:
+				out, _ = net(img)
+			loss = cls(out, target)  
     
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
 		softlabel = nn.functional.softmax(out / 4, dim=-1)

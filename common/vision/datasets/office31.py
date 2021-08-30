@@ -47,7 +47,7 @@ class Office31(ImageList):
                'mobile_phone', 'monitor', 'mouse', 'mug', 'paper_notebook', 'pen', 'phone', 'printer', 'projector',
                'punchers', 'ring_binder', 'ruler', 'scissors', 'speaker', 'stapler', 'tape_dispenser', 'trash_can']
 
-    def __init__(self, root: str, task: str, download: Optional[bool] = True, **kwargs):
+    def __init__(self, root: str, task: str, indexs = None,  download: Optional[bool] = True, **kwargs):
         assert task in self.image_list
         data_list_file = os.path.join(root, self.image_list[task])
 
@@ -56,7 +56,7 @@ class Office31(ImageList):
         else:
             list(map(lambda file_name, _: check_exits(root, file_name), self.download_list))
 
-        super(Office31, self).__init__(root, Office31.CLASSES, data_list_file=data_list_file, **kwargs)
+        super(Office31, self).__init__(root, Office31.CLASSES, data_list_file=data_list_file, indexs = indexs, **kwargs)
 
     @classmethod
     def domains(cls):
