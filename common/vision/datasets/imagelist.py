@@ -34,7 +34,7 @@ class ImageList(datasets.VisionDataset):
                              for idx, cls in enumerate(self.classes)}
         self.loader = default_loader
         self.data_list_file = data_list_file
-        self.ndexs = np.arange(len(self.samples))
+        self.indexs = np.arange(len(self.samples))
 
     def __getitem__(self, index: int) -> Tuple[Any, int]:
         """
