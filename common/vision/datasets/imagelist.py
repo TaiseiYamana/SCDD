@@ -37,6 +37,7 @@ class ImageList(datasets.VisionDataset):
 
         if indexs is not None:
             indexs = np.array(indexs)
+            self.samples = self.samples[indexs]           
             self.indexs = indexs
         else:
             self.indexs = np.arange(len(self.samples))
