@@ -3,6 +3,7 @@ import os
 from typing import Optional, Callable, Tuple, Any, List
 import torchvision.datasets as datasets
 from torchvision.datasets.folder import default_loader
+import numpy as np
 
 
 class ImageList(datasets.VisionDataset):
