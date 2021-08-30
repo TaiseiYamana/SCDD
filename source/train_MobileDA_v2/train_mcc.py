@@ -92,7 +92,7 @@ def main(args):
     else:
 		    backbone = models.__dict__[args.arch](pretrained=True)
 		    net = modules.Classifier(backbone, num_classes)
-    net = 
+    net = net.to(device)
     logging.info('%s', net)
     logging.info("param size = %fMB", count_parameters_in_MB(net))
     logging.info('-----------------------------------------------')
@@ -205,11 +205,11 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
 		if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
-    		source_out = net(source_img)
-    		target_out = net(target_img)
+			source_out = net(source_img)
+			target_out = net(target_img)
 		else:
-    		source_out, _= net(source_img)
-    		target_out, _= net(target_img)
+			source_out, _= net(source_img)
+			target_out, _= net(target_img)
 
 		cls_loss = cls(source_out, source_label)
 		mcc_loss = mcc(target_out)
