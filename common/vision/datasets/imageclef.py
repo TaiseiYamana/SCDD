@@ -12,11 +12,11 @@ class ImageCLEF(ImageList):
     }
     CLASSES = ['aeroplane', 'bike', 'bird', 'boat', 'bottle', 'bus', 'car', 'dog', 'horse', 'monitor', 'motorbike', 'people']
 
-    def __init__(self, root: str, task: str, **kwargs):
+    def __init__(self, root: str, task: str, indexs = None, **kwargs):
         assert task in self.image_list
         data_list_file = os.path.join(root, self.image_list[task])
 
-        super(ImageCLEF, self).__init__(root, ImageCLEF.CLASSES, data_list_file=data_list_file, **kwargs)
+        super(ImageCLEF, self).__init__(root, ImageCLEF.CLASSES, data_list_file=data_list_file, indexs= indexs, **kwargs)
     @classmethod
     def domains(cls):
         return list(cls.image_list.keys())
