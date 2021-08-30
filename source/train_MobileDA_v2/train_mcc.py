@@ -257,7 +257,7 @@ def test(test_loader, net, cls, args, phase):
 
 		with torch.no_grad():
 			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
-    			out = net(img)
+				out = net(img)
 			else:
 				out, _ = net(img)
 			loss = cls(out, target)                
@@ -287,7 +287,7 @@ def test_2(test_loader, net, cls, args, phase):
 
 		with torch.no_grad():
 			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
-    			out = net(img)
+				out = net(img)
 			else:
 				out, _ = net(img)
 			loss = cls(out, target)  
