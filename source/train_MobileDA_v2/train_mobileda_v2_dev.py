@@ -30,7 +30,7 @@ from utils import load_pretrained_model, save_checkpoint
 from utils import create_exp_dir, count_parameters_in_MB
 
 from kd_losses import *
-from pseudo_labeling import pseudo_pseudo_labeling
+from pseudo_labeling import pseudo_labeling
 
 ImageCLEF_root = "/content/drive/MyDrive/datasets/ImageCLEF"
 
@@ -161,7 +161,7 @@ def main(args):
     for epoch in range(1, args.epochs+1):
 		    epoch_start_time = time.time()
 		    # select paseudo labels
-		    pseudo_idx = pseudo_labeling(args.threshold, target_val_dataset, tnet)
+		    pseudo_idx = pseudo_labeling(args.threshold, target_val_loader, tnet)
 		    # creaet dataloader  
 		    pseudo_dataset = dataset(root=ImageCLEF_root, task=target, indexs = pseudo_idx, transform=val_transform)
 		    selected_target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,

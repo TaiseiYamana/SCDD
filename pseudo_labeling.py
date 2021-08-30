@@ -5,9 +5,8 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 def pseudo_labeling(threshold, data_loadr, model):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     idx_list = []
     pseudo_target = []
     pseudo_idx = []
