@@ -30,6 +30,8 @@ from utils import create_exp_dir, count_parameters_in_MB
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+ImageCLEF_root = "/content/drive/MyDrive/datasets/ImageCLEF"
+
 def main(args):
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
@@ -57,9 +59,15 @@ def main(args):
 
     # create dataset & dataloader
     dataset = datasets.__dict__[args.dataset]
-    source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
-    target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
-    target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
+
+    if args.dataset == "ImageCLEF":
+        source_train_dataset = dataset(root=ImageCLEF_root, task=args.source, transform=train_transform)
+        target_train_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=train_transform)
+        target_val_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=val_transform)
+    else:
+        source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
+        target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
+        target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
     
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
@@ -75,8 +83,16 @@ def main(args):
 	  # create model
     logging.info('----------- Network Initialization --------------')
     logging.info('=> using pre-trained model {}'.format(args.arch))
-    backbone = models.__dict__[args.arch](pretrained=True)
-    net = modules.Classifier(backbone, num_classes).to(device)
+    if args.arch == 'mobilenet_v3_small':
+		    net = mobilenet_v3_small(pretrained=True)
+		    net.classifier[3] = nn.Linear(1024, num_classes)
+    elif args.arch == 'mobilenet_v3_large':
+		    net = mobilenet_v3_large(pretrained=True)
+		    net.classifier[3] = nn.Linear(1280, num_classes)  
+    else:
+		    backbone = models.__dict__[args.arch](pretrained=True)
+		    net = modules.Classifier(backbone, num_classes)
+    net = 
     logging.info('%s', net)
     logging.info("param size = %fMB", count_parameters_in_MB(net))
     logging.info('-----------------------------------------------')
@@ -116,7 +132,8 @@ def main(args):
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
             print("top1acc:{:.2f}".format(checkpoint['prec@1']))
-        _ , _ = test(target_val_loader, net, cls, args, phase = 'Target')
+        _ , _ , dis_soft = test_2(target_val_loader, net, cls, args, phase = 'Target')
+        print("Distributed Soft {}".format(dis_soft))   
         return
 	
 		
@@ -125,6 +142,7 @@ def main(args):
 
     best_top1= 0.0    
     best_top5 = 0.0
+    stopping_counter = 0
     for epoch in range(1, args.epochs+1):
 		    # train one epoch
 		    epoch_start_time = time.time()
@@ -143,12 +161,20 @@ def main(args):
 		    	best_top1 = t_test_top1
 		    	best_top5 = t_test_top5
 		    	is_best = True
+		    	stopping_counter = 0
+		    else:
+		    	stopping_counter += 1
+          
 		    logging.info('Saving models......')
 		    save_checkpoint({'epoch': epoch,
           		            'net': net.state_dict(),
           		            'prec@1': t_test_top1,
           		            'prec@5': t_test_top5,}, 
           		            is_best, args.save_root)
+            
+		    if stopping_counter == 5:
+		    	logging.info('Planned　Stopping Training')
+		    	break
 			
     # print experiment result
     checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))		
@@ -169,8 +195,8 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 
 	end = time.time()
 	for i in range(args.iters_per_epoch):
-		source_img, source_label = next(source_iter)
-		target_img, _ = next(target_iter)
+		source_img, source_label ,_ = next(source_iter)
+		target_img, _, _ = next(target_iter)
 
 		data_time.update(time.time() - end)
 
@@ -178,9 +204,12 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 			source_img = source_img.cuda()
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
-
-		source_out, _= net(source_img)
-		target_out, _= net(target_img)
+		if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
+    		source_out = net(source_img)
+    		target_out = net(target_img)
+		else:
+    		source_out, _= net(source_img)
+    		target_out, _= net(target_img)
 
 		cls_loss = cls(source_out, source_label)
 		mcc_loss = mcc(target_out)
@@ -221,15 +250,17 @@ def test(test_loader, net, cls, args, phase):
 	net.eval()
 
 	end = time.time()
-	for i, (img, target) in enumerate(test_loader, start=1):
+	for i, (img, target, _) in enumerate(test_loader, start=1):
 		if args.cuda:
 			img = img.cuda()
 			target = target.cuda()
 
 		with torch.no_grad():
-			out, _ = net(img)
-			loss = cls(out, target)
-
+			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
+    			out = net(img)
+			else:
+				out, _ = net(img)
+			loss = cls(out, target)                
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
 		losses.update(loss.item(), img.size(0))
 		top1.update(prec1.item(), img.size(0))
@@ -240,6 +271,41 @@ def test(test_loader, net, cls, args, phase):
 
 	return top1.avg, top5.avg
 
+def test_2(test_loader, net, cls, args, phase):
+	losses = AverageMeter()
+	top1   = AverageMeter()
+	top5   = AverageMeter()
+	distributed_soft = AverageMeter()
+
+	net.eval()
+
+	end = time.time()
+	for i, (img, target) in enumerate(test_loader, start=1):
+		if args.cuda:
+			img = img.cuda()
+			target = target.cuda()
+
+		with torch.no_grad():
+			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
+    			out = net(img)
+			else:
+				out, _ = net(img)
+			loss = cls(out, target)  
+    
+		prec1, prec5 = accuracy(out, target, topk=(1,5))
+		softlabel = nn.functional.softmax(out / 4, dim=-1)
+		softlabel_var = torch.var(softlabel, dim=-1)
+		softlabel_var = torch.mean(softlabel_var)
+		distributed_soft.update(softlabel_var.item())
+		print(softlabel_var.item())   
+		losses.update(loss.item(), img.size(0))
+		top1.update(prec1.item(), img.size(0))
+		top5.update(prec5.item(), img.size(0))
+
+	f_l = [losses.avg, top1.avg, top5.avg]
+	logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
+
+	return top1.avg, top5.avg, distributed_soft.avg
 if __name__ == '__main__':
     architecture_names = sorted(
         name for name in models.__dict__
@@ -271,7 +337,7 @@ if __name__ == '__main__':
     parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')                       
     # training parameters
     parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
-    parser.add_argument('--lr', '--learning-rate', default=0.005, type=float, help='initial learning rate')
+    parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
     parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
