@@ -30,6 +30,7 @@ from utils import load_pretrained_model, save_checkpoint
 from utils import create_exp_dir, count_parameters_in_MB
 
 from kd_losses import *
+from pseudo_labeling import pseudo_pseudo_labeling
 
 ImageCLEF_root = "/content/drive/MyDrive/datasets/ImageCLEF"
 
@@ -150,7 +151,7 @@ def main(args):
 
 
     # define dict
-    iters = {'target':target_train_iter, 'source':source_train_iter}
+    #iters = {'target':target_train_iter, 'source':source_train_iter}
     nets = {'snet':snet, 'tnet':tnet}
 
     best_top1= 0.0
@@ -158,8 +159,15 @@ def main(args):
     stopping_counter = 0
     
     for epoch in range(1, args.epochs+1):
-		    # train one epoch
 		    epoch_start_time = time.time()
+		    # select paseudo labels
+		    pseudo_idx = pseudo_labeling(args.threshold, target_val_dataset, tnet)
+		    # creaet dataloader  
+		    pseudo_dataset = dataset(root=ImageCLEF_root, task=target, indexs = pseudo_idx, transform=val_transform)
+		    selected_target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
+                                                shuffle=True, num_workers=args.workers, drop_last=True)
+		    iters = {'target':target_train_iter, 'source':selected_target_train_loader}                                 
+		    # train one epoch
 		    train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
 
 		    # evaluate on testing set
@@ -347,6 +355,7 @@ if __name__ == '__main__':
     parser.add_argument('--mu', default=0.9, type=float,
                         help='the trade-off hyper-parameter for soft target loss')
     # others
+    parser.add_argument('--threshold', type=int, default=0.7)   
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
 
