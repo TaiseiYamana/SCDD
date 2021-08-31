@@ -289,7 +289,7 @@ def test(test_loader, net, cls, args, phase):
 	net.eval()
 
 	end = time.time()
-	for i, (img, target) in enumerate(test_loader, start=1):
+	for i, (img, target, _) in enumerate(test_loader, start=1):
 		if args.cuda:
 			img = img.cuda()
 			target = target.cuda()
