@@ -365,7 +365,7 @@ if __name__ == '__main__':
     parser.add_argument('--mu', default=0.9, type=float,
                         help='the trade-off hyper-parameter for soft target loss')
     # others
-    parser.add_argument('--threshold', type=int, default=0.7)   
+    parser.add_argument('--threshold', type=float, default=0.7)   
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
 
