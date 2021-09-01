@@ -139,8 +139,9 @@ def main(args):
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
             print("top1acc:{:.2f}".format(checkpoint['prec@1']))
-        _ , _ , dis_soft = test_2(target_val_loader, net, cls, args, phase = 'Target')
-        print("Distributed Soft {}".format(dis_soft))   
+        _ , _ , dis_soft, mcc = test_2(target_val_loader, net, cls, args, phase = 'Target')
+        print("Distributed Soft {}".format(dis_soft))
+        print("MCC Vlue {}".format(mcc))                
         return
 	
 		
@@ -157,7 +158,7 @@ def main(args):
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    t_test_top1, t_test_top5 = test(target_val_loader, net, cls, args, phase = 'Target')
+		    t_test_top1, t_test_top5 = test(target_val_loader, net, cls, mcc, args, phase = 'Target')
 		
 		    epoch_duration = time.time() - epoch_start_time
 		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
@@ -249,7 +250,7 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 			logging.info(log_str)
 
 
-def test(test_loader, net, cls, args, phase):
+def test(test_loader, net, cls, mcc, args, phase):
 	losses = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
@@ -282,12 +283,13 @@ def test_2(test_loader, net, cls, args, phase):
 	losses = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
+	mcc_losses  = AverageMeter()
 	distributed_soft = AverageMeter()
 
 	net.eval()
 
 	end = time.time()
-	for i, (img, target) in enumerate(test_loader, start=1):
+	for i, (img, target,_) in enumerate(test_loader, start=1):
 		if args.cuda:
 			img = img.cuda()
 			target = target.cuda()
@@ -298,8 +300,9 @@ def test_2(test_loader, net, cls, args, phase):
 			else:
 				out, _ = net(img)
 			loss = cls(out, target)  
-    
+			mcc_loss = mcc(target_out)   
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
+		mcc_losses.update(mcc_loss.item(), target_img.size(0))
 		softlabel = nn.functional.softmax(out / 4, dim=-1)
 		softlabel_var = torch.var(softlabel, dim=-1)
 		softlabel_var = torch.mean(softlabel_var)
@@ -312,7 +315,7 @@ def test_2(test_loader, net, cls, args, phase):
 	f_l = [losses.avg, top1.avg, top5.avg]
 	logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
 
-	return top1.avg, top5.avg, distributed_soft.avg
+	return top1.avg, top5.avg, distributed_soft.avg, mcc_losses.avg
 if __name__ == '__main__':
     architecture_names = sorted(
         name for name in models.__dict__
