@@ -139,7 +139,7 @@ def main(args):
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
             print("top1acc:{:.2f}".format(checkpoint['prec@1']))
-        _ , _ , dis_soft, classcoufusion = test_2(target_val_loader, net, cls, args, phase = 'Target')
+        _ , _ , dis_soft, classcoufusion = test_2(target_val_loader, net, cls, mcc, args, phase = 'Target')
         print("Distributed Soft {}".format(dis_soft))
         print("MCC Vlue {}".format(classcoufusion))                
         return
