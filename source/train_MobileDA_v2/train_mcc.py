@@ -279,7 +279,7 @@ def test(test_loader, net, cls, mcc, args, phase):
 
 	return top1.avg, top5.avg
 
-def test_2(test_loader, net, mcc, cls, args, phase):
+def test_2(test_loader, net, cls, mcc, args, phase):
 	losses = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
@@ -289,7 +289,7 @@ def test_2(test_loader, net, mcc, cls, args, phase):
 	net.eval()
 
 	end = time.time()
-	for i, (img, target,_) in enumerate(test_loader, start=1):
+	for i, (img, target, _) in enumerate(test_loader, start=1):
 		if args.cuda:
 			img = img.cuda()
 			target = target.cuda()
