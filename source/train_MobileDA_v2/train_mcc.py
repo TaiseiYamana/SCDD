@@ -139,9 +139,9 @@ def main(args):
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
             print("top1acc:{:.2f}".format(checkpoint['prec@1']))
-        _ , _ , dis_soft, mcc = test_2(target_val_loader, net, cls, args, phase = 'Target')
+        _ , _ , dis_soft, classcoufusion = test_2(target_val_loader, net, cls, args, phase = 'Target')
         print("Distributed Soft {}".format(dis_soft))
-        print("MCC Vlue {}".format(mcc))                
+        print("MCC Vlue {}".format(classcoufusion))                
         return
 	
 		
@@ -279,7 +279,7 @@ def test(test_loader, net, cls, mcc, args, phase):
 
 	return top1.avg, top5.avg
 
-def test_2(test_loader, net, cls, args, phase):
+def test_2(test_loader, net, mcc, cls, args, phase):
 	losses = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
@@ -300,14 +300,14 @@ def test_2(test_loader, net, cls, args, phase):
 			else:
 				out, _ = net(img)
 			loss = cls(out, target)  
-			mcc_loss = mcc(target_out)   
+			mcc_loss = mcc(out)   
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
-		mcc_losses.update(mcc_loss.item(), target_img.size(0))
+		mcc_losses.update(mcc_loss.item(), img.size(0))
 		softlabel = nn.functional.softmax(out / 4, dim=-1)
 		softlabel_var = torch.var(softlabel, dim=-1)
 		softlabel_var = torch.mean(softlabel_var)
 		distributed_soft.update(softlabel_var.item())
-		print(softlabel_var.item())   
+		#print(softlabel_var.item())   
 		losses.update(loss.item(), img.size(0))
 		top1.update(prec1.item(), img.size(0))
 		top5.update(prec5.item(), img.size(0))
