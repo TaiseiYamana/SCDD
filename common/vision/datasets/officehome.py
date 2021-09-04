@@ -52,7 +52,7 @@ class OfficeHome(ImageList):
                'Calendar', 'Calculator', 'Flowers', 'Lamp_Shade', 'Spoon', 'Candles', 'Clipboards', 'Scissors', 'TV',
                'Curtains', 'Fork', 'Soda', 'Table', 'Knives', 'Oven', 'Refrigerator', 'Marker']
 
-    def __init__(self, root: str, task: str, download: Optional[bool] = False, **kwargs):
+    def __init__(self, root: str, task: str, indexs = None, download: Optional[bool] = False, **kwargs):
         assert task in self.image_list
         data_list_file = os.path.join(root, self.image_list[task])
 
