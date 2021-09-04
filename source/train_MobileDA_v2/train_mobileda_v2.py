@@ -68,9 +68,10 @@ def main(args):
     
     # create dataset & dataloader
     if args.dataset == "ImageCLEF":
-        source_train_dataset = dataset(root=ImageCLEF_root, task=args.source, transform=train_transform)
-        target_train_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=train_transform)
-        target_val_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=val_transform)
+        args.img_root = ImageCLEF_root
+        source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
+        target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
+        target_val_dataset = dataset(root=args.img_root, task=args.target, transform=val_transform)
     else:
         source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
@@ -165,7 +166,7 @@ def main(args):
 		    # select paseudo labels
 		    pseudo_idx = pseudo_labeling(args.threshold, target_val_loader, tnet)
 		    # creaet dataloader  
-		    pseudo_dataset = dataset(root=ImageCLEF_root, task=args.target, indexs = pseudo_idx, transform=val_transform)
+		    pseudo_dataset = dataset(root=args.img_root, task=args.target, indexs = pseudo_idx, transform=val_transform)
 		    selected_target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
 		    selected_target_train_iter = ForeverDataIterator(selected_target_train_loader)
