@@ -41,7 +41,7 @@ class ImageList(datasets.VisionDataset):
             for idx in indexs:
                 pseudo_samples.append(self.samples[idx])
             self.samples = pseudo_samples
-            self.indexs = np.array(indexs)
+            self.indexs = indexs
         else:
             self.indexs = np.arange(len(self.samples))
 
