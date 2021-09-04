@@ -167,7 +167,7 @@ def main(args):
 		    pseudo_idx = pseudo_labeling(args.threshold, target_val_loader, tnet)
 		    # creaet dataloader  
 		    pseudo_dataset = dataset(root=args.img_root, task=args.target, indexs = pseudo_idx, transform=val_transform)
-		    selected_target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
+		    selected_target_train_loader = DataLoader(pseudo_dataset, batch_size=args.batch_size,
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
 		    selected_target_train_iter = ForeverDataIterator(selected_target_train_loader)
 		    iters = {'target':selected_target_train_iter, 'source':source_train_iter}
