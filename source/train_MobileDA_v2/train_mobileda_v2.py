@@ -209,7 +209,7 @@ def main(args):
           		            'prec@5': t_test_top5,}, 
           		            is_best, args.save_root)
                               
-		    if stopping_counter == args.stopp_num:
+		    if stopping_counter == args.stopping_num:
 		    	logging.info('Planned　Stopping Training')
 		    	break
 
