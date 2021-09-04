@@ -58,8 +58,6 @@ class OfficeHome(ImageList):
 
         if download:
             list(map(lambda args: download_data(root, *args), self.download_list))
-        else:
-            #list(map(lambda file_name, _, _: check_exits(root, file_name), self.download_list))
 
         super(OfficeHome, self).__init__(root, OfficeHome.CLASSES, data_list_file=data_list_file, indexs= indexs, **kwargs)
 
