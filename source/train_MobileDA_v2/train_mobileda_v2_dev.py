@@ -83,7 +83,7 @@ def main(args):
     target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
-    #target_train_iter = ForeverDataIterator(target_train_loader)
+    target_train_iter = ForeverDataIterator(target_train_loader)
 
     num_classes = len(source_train_loader.dataset.classes)
 
@@ -160,7 +160,19 @@ def main(args):
 
 
     # define dict
-    #iters = {'target':target_train_iter, 'source':source_train_iter}
+    source_train_iter = ForeverDataIterator(source_train_loader)
+    if (args.select_label):
+		    # select paseudo labels
+		    pseudo_idx = pseudo_labeling(args.threshold, target_val_loader, tnet)
+		    # creaet dataloader  
+		    pseudo_dataset = dataset(root=ImageCLEF_root, task=args.target, indexs = pseudo_idx, transform=val_transform)
+		    selected_target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
+                                                shuffle=True, num_workers=args.workers, drop_last=True)
+		    selected_target_train_iter = ForeverDataIterator(selected_target_train_loader)
+		    iters = {'target':selected_target_train_iter, 'source':source_train_iter}
+    else:   
+		    target_train_iter = ForeverDataIterator(target_train_loader)         
+		    iters = {'target':target_train_iter, 'source':source_train_iter}
     nets = {'snet':snet, 'tnet':tnet}
 
     best_top1= 0.0
@@ -169,20 +181,11 @@ def main(args):
     
     for epoch in range(1, args.epochs+1):
 		    epoch_start_time = time.time()
-		    # select paseudo labels
-		    pseudo_idx = pseudo_labeling(args.threshold, target_val_loader, tnet)
-		    # creaet dataloader  
-		    pseudo_dataset = dataset(root=ImageCLEF_root, task=args.target, indexs = pseudo_idx, transform=val_transform)
-		    selected_target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
-                                                shuffle=True, num_workers=args.workers, drop_last=True)
-		    selected_target_train_iter = ForeverDataIterator(selected_target_train_loader)
-		    iters = {'target':selected_target_train_iter, 'source':source_train_iter}                                 
+                               
 		    # train one epoch
 		    train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
-
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    #s_test_top1, s_test_top5 = test(source_val_loader, snet, cls, args, phase = 'Source')
 		    t_test_top1, t_test_top5 = test(target_val_loader, snet, cls, args, phase = 'Target')
 
 		    epoch_duration = time.time() - epoch_start_time
@@ -365,6 +368,8 @@ if __name__ == '__main__':
     parser.add_argument('--mu', default=0.9, type=float,
                         help='the trade-off hyper-parameter for soft target loss')
     # others
+    parser.add_argument('--select_label', type=bool, default=True)
+    parser.add_argument('--stopping', type=bool, default=True) 
     parser.add_argument('--threshold', type=float, default=0.7)   
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
