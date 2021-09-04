@@ -14,6 +14,7 @@ from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
+from torchvision.models import mobilenet_v3_small, mobilenet_v3_large
 
 sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
@@ -30,7 +31,9 @@ from utils import load_pretrained_model, save_checkpoint
 from utils import create_exp_dir, count_parameters_in_MB
 
 from kd_losses import *
+from pseudo_labeling import pseudo_labeling
 
+ImageCLEF_root = "/content/drive/MyDrive/datasets/ImageCLEF"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -59,11 +62,19 @@ def main(args):
         normalize
     ])
 
+
     # create dataset & dataloader
     dataset = datasets.__dict__[args.dataset]
-    source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
-    target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
-    target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
+    
+    # create dataset & dataloader
+    if args.dataset == "ImageCLEF":
+        source_train_dataset = dataset(root=ImageCLEF_root, task=args.source, transform=train_transform)
+        target_train_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=train_transform)
+        target_val_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=val_transform)
+    else:
+        source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
+        target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
+        target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
     
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
@@ -92,8 +103,16 @@ def main(args):
 
     logging.info('Initialize Student Model')
     logging.info('=> using pre-trained model {}'.format(args.s_arch))
-    sbackbone = models.__dict__[args.s_arch](pretrained=True)
-    snet = modules.Classifier(sbackbone, num_classes).to(device)
+    if args.s_arch == 'mobilenet_v3_small':
+		    snet = mobilenet_v3_small(pretrained=True)
+		    snet.classifier[3] = nn.Linear(1024, num_classes)
+    elif args.s_arch == 'mobilenet_v3_large':
+		    snet = mobilenet_v3_large(pretrained=True)
+		    snet.classifier[3] = nn.Linear(1280, num_classes)
+    else:
+		    sbackbone = models.__dict__[args.s_arch](pretrained=True)
+		    snet = modules.Classifier(sbackbone, num_classes)
+    snet = snet.to(device)
     logging.info('%s', snet)
     logging.info("param size = %fMB", count_parameters_in_MB(snet))
     logging.info('-----------------------------------------------')
@@ -141,19 +160,32 @@ def main(args):
 
 
     # define dict
-    iters = {'target':target_train_iter, 'source':source_train_iter}
+    source_train_iter = ForeverDataIterator(source_train_loader)
+    if (args.select_label):
+		    # select paseudo labels
+		    pseudo_idx = pseudo_labeling(args.threshold, target_val_loader, tnet)
+		    # creaet dataloader  
+		    pseudo_dataset = dataset(root=ImageCLEF_root, task=args.target, indexs = pseudo_idx, transform=val_transform)
+		    selected_target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
+                                                shuffle=True, num_workers=args.workers, drop_last=True)
+		    selected_target_train_iter = ForeverDataIterator(selected_target_train_loader)
+		    iters = {'target':selected_target_train_iter, 'source':source_train_iter}
+    else:   
+		    target_train_iter = ForeverDataIterator(target_train_loader)         
+		    iters = {'target':target_train_iter, 'source':source_train_iter}
     nets = {'snet':snet, 'tnet':tnet}
 
     best_top1= 0.0
     best_top5 = 0.0
+    stopping_counter = 0
+    
     for epoch in range(1, args.epochs+1):
-		    # train one epoch
 		    epoch_start_time = time.time()
+                               
+		    # train one epoch
 		    train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
-
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    #s_test_top1, s_test_top5 = test(source_val_loader, snet, cls, args, phase = 'Source')
 		    t_test_top1, t_test_top5 = test(target_val_loader, snet, cls, args, phase = 'Target')
 
 		    epoch_duration = time.time() - epoch_start_time
@@ -165,12 +197,21 @@ def main(args):
 		    	best_top1 = t_test_top1
 		    	best_top5 = t_test_top5
 		    	is_best = True
+		    	stopping_counter = 0                
+		    else:
+		    	stopping_counter += 1
+
 		    logging.info('Saving models......')
 		    save_checkpoint({'epoch': epoch,
           		            'net': snet.state_dict(),
           		            'prec@1': t_test_top1,
           		            'prec@5': t_test_top5,}, 
           		            is_best, args.save_root)
+                              
+		    if stopping_counter == args.stopp_num:
+		    	logging.info('Planned　Stopping Training')
+		    	break
+
     # print experiment result
     checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))				
     logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))			
@@ -195,8 +236,8 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 
 	end = time.time()
 	for i in range(args.iters_per_epoch):
-		source_img, source_label = next(source_iter)
-		target_img, _ = next(target_iter)
+		source_img, source_label, _ = next(source_iter)
+		target_img, _, _ = next(target_iter)
 
 		data_time.update(time.time() - end)
 
@@ -251,7 +292,7 @@ def test(test_loader, net, cls, args, phase):
 	net.eval()
 
 	end = time.time()
-	for i, (img, target) in enumerate(test_loader, start=1):
+	for i, (img, target, _) in enumerate(test_loader, start=1):
 		if args.cuda:
 			img = img.cuda()
 			target = target.cuda()
@@ -306,13 +347,13 @@ if __name__ == '__main__':
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
-    parser.add_argument('--lr', '--learning-rate', default=0.005, type=float, help='initial learning rate')
+    parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
     parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
-    parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
+    parser.add_argument('--epochs', default=50, type=int, help='number of total epochs to run')
     parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
     parser.add_argument('-p', '--print-freq', default=50, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
@@ -327,6 +368,9 @@ if __name__ == '__main__':
     parser.add_argument('--mu', default=0.9, type=float,
                         help='the trade-off hyper-parameter for soft target loss')
     # others
+    parser.add_argument('--select_label', type=bool, default=True)
+    parser.add_argument('--stopping_num', type=int, default=5) 
+    parser.add_argument('--threshold', type=float, default=0.7)   
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
 
