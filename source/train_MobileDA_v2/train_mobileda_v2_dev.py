@@ -208,7 +208,7 @@ def main(args):
           		            'prec@5': t_test_top5,}, 
           		            is_best, args.save_root)
                               
-		    if stopping_counter == 5:
+		    if stopping_counter == args.stopp_num:
 		    	logging.info('Planned　Stopping Training')
 		    	break
 
@@ -353,7 +353,7 @@ if __name__ == '__main__':
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
-    parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
+    parser.add_argument('--epochs', default=50, type=int, help='number of total epochs to run')
     parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
     parser.add_argument('-p', '--print-freq', default=50, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
@@ -369,7 +369,7 @@ if __name__ == '__main__':
                         help='the trade-off hyper-parameter for soft target loss')
     # others
     parser.add_argument('--select_label', type=bool, default=True)
-    parser.add_argument('--stopping', type=bool, default=True) 
+    parser.add_argument('--stopping_num', type=int, default=5) 
     parser.add_argument('--threshold', type=float, default=0.7)   
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
