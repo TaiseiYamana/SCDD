@@ -32,6 +32,7 @@ from utils import create_exp_dir, count_parameters_in_MB
 
 from kd_losses import *
 from pseudo_labeling import pseudo_labeling
+from split_dataset import split_dataset
 
 ImageCLEF_root = "/content/drive/MyDrive/datasets/ImageCLEF"
 
@@ -55,7 +56,7 @@ def main(args):
             T.ToTensor(),
             normalize
         ])
-    val_transform = T.Compose([
+    test_transform = T.Compose([
         ResizeImage(256),
         T.CenterCrop(224),
         T.ToTensor(),
@@ -66,29 +67,47 @@ def main(args):
     # create dataset & dataloader
     dataset = datasets.__dict__[args.dataset]
     
-    # create dataset & dataloader
+    # create dataset
     if args.dataset == "ImageCLEF":
         args.img_root = ImageCLEF_root
         source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
-        target_val_dataset = dataset(root=args.img_root, task=args.target, transform=val_transform)
+        target_test_dataset = dataset(root=args.img_root, task=args.target, transform=test_transform)
     else:
         source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
-        target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
-    
+        target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
+
+    # select target domain datasets
+    split_idx = split_dataset(target_train_dataset, split_pro = 0.8)
+    target_train_dataset = dataset(root=args.img_root, task=args.target, indexs = split_idx, transform=train_transform)
+    logging.info('target domain data number: {}/{}', .format(len(split_idx),len(target_train_dataset)))
+
+    # data loader
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
+    target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
+
+    if (args.select_label):
+		    # select paseudo labels
+		    pseudo_idx = pseudo_labeling(args.threshold, target_train_loader, tnet)
+		    # creaet dataloader  
+		    pseudo_dataset = dataset(root=args.img_root, task=args.target, indexs = pseudo_idx, transform=train_transform)
+		    target_train_loader = DataLoader(pseudo_dataset, batch_size=args.batch_size,
+                                                shuffle=True, num_workers=args.workers, drop_last=True)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader)
+    target_train_iter = ForeverDataIterator(target_train_loader) 
+
+    # define dict            
+    iters = {'target':target_train_iter, 'source':source_train_iter}
+    nets = {'snet':snet, 'tnet':tnet}
 
     num_classes = len(source_train_loader.dataset.classes)
 
-	  # create model
+	# create model
     logging.info('----------- Network Initialization --------------')
     logging.info('Initialize Teacher Model')
     logging.info('=> using pre-trained model {}'.format(args.t_arch))
@@ -158,23 +177,6 @@ def main(args):
             print("top1acc:{:.2f}".format(checkpoint['prec@1']))
         _ , _ = test(target_val_loader, snet, cls, args, phase = 'Target')
         return
-
-
-    # define dict
-    source_train_iter = ForeverDataIterator(source_train_loader)
-    if (args.select_label):
-		    # select paseudo labels
-		    pseudo_idx = pseudo_labeling(args.threshold, target_val_loader, tnet)
-		    # creaet dataloader  
-		    pseudo_dataset = dataset(root=args.img_root, task=args.target, indexs = pseudo_idx, transform=val_transform)
-		    selected_target_train_loader = DataLoader(pseudo_dataset, batch_size=args.batch_size,
-                                                shuffle=True, num_workers=args.workers, drop_last=True)
-		    selected_target_train_iter = ForeverDataIterator(selected_target_train_loader)
-		    iters = {'target':selected_target_train_iter, 'source':source_train_iter}
-    else:   
-		    target_train_iter = ForeverDataIterator(target_train_loader)         
-		    iters = {'target':target_train_iter, 'source':source_train_iter}
-    nets = {'snet':snet, 'tnet':tnet}
 
     best_top1= 0.0
     best_top5 = 0.0
