@@ -79,9 +79,10 @@ def main(args):
         target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
 
     # select target domain datasets
-    split_idx = split_dataset(target_train_dataset, split_pro = 0.8, args)
+    target_dataset_num = len(target_train_dataset)
+    split_idx = split_dataset(target_train_dataset, 0.8, args.seed)
     target_train_dataset = dataset(root=args.img_root, task=args.target, indexs = split_idx, transform=train_transform)
-    logging.info("target domain data number: {}/{}".format(len(split_idx),len(target_train_dataset)))
+    logging.info("Target train data number: Train:{}/Test:{}".format(len(split_idx),target_dataset_num))
 
     # data loader
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
@@ -89,21 +90,6 @@ def main(args):
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
-
-    if (args.select_label):
-		    # select paseudo labels
-		    pseudo_idx = pseudo_labeling(args.threshold, target_train_loader, tnet)
-		    # creaet dataloader  
-		    pseudo_dataset = dataset(root=args.img_root, task=args.target, indexs = pseudo_idx, transform=train_transform)
-		    target_train_loader = DataLoader(pseudo_dataset, batch_size=args.batch_size,
-                                                shuffle=True, num_workers=args.workers, drop_last=True)
-
-    source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader) 
-
-    # define dict            
-    iters = {'target':target_train_iter, 'source':source_train_iter}
-    nets = {'snet':snet, 'tnet':tnet}
 
     num_classes = len(source_train_loader.dataset.classes)
 
@@ -145,6 +131,21 @@ def main(args):
     mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
     st = SoftTarget(args.st_temp)
     cls = torch.nn.CrossEntropyLoss()
+  
+    if (args.select_label):
+		    # select paseudo labels
+		    pseudo_idx = pseudo_labeling(args.threshold, target_train_loader, tnet)
+		    # creaet dataloader  
+		    pseudo_dataset = dataset(root=args.img_root, task=args.target, indexs = pseudo_idx, transform=train_transform)
+		    target_train_loader = DataLoader(pseudo_dataset, batch_size=args.batch_size,
+                                                shuffle=True, num_workers=args.workers, drop_last=True)
+
+    source_train_iter = ForeverDataIterator(source_train_loader)
+    target_train_iter = ForeverDataIterator(target_train_loader) 
+
+    # define dict            
+    iters = {'target':target_train_iter, 'source':source_train_iter}
+    nets = {'snet':snet, 'tnet':tnet}
 
     if args.cuda:
 		    mcc = mcc.to(device)
