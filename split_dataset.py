@@ -1,7 +1,8 @@
 import numpy as np
 
 np.random.seed(args.seed)
-def split_dataset(dataset, split_pro = 0.8):
+def split_dataset(dataset, split_pro, args):
+  np.random.seed(args.seed)
   targets = []
   for _, target in dataset.samples:
     targets.append(target)

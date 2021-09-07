@@ -79,9 +79,9 @@ def main(args):
         target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
 
     # select target domain datasets
-    split_idx = split_dataset(target_train_dataset, split_pro = 0.8)
+    split_idx = split_dataset(target_train_dataset, split_pro = 0.8, args)
     target_train_dataset = dataset(root=args.img_root, task=args.target, indexs = split_idx, transform=train_transform)
-    logging.info("target domain data number: {}/{}", .format(len(split_idx),len(target_train_dataset)))
+    logging.info("target domain data number: {}/{}".format(len(split_idx),len(target_train_dataset)))
 
     # data loader
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
