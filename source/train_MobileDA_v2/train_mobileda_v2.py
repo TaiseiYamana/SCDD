@@ -78,7 +78,7 @@ def main(args):
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
 
-    # select target domain datasets
+    # split train target domain datasets
     target_dataset_num = len(target_train_dataset)
     split_idx = split_dataset(target_train_dataset, 0.8, args.seed)
     target_train_dataset = dataset(root=args.img_root, task=args.target, indexs = split_idx, transform=train_transform)

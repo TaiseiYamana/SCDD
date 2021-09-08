@@ -61,23 +61,29 @@ def main(args):
     # create dataset & dataloader
     dataset = datasets.__dict__[args.dataset]
 
+    # create dataset
     if args.dataset == "ImageCLEF":
-        source_train_dataset = dataset(root=ImageCLEF_root, task=args.source, transform=train_transform)
-        target_train_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=train_transform)
-        target_val_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=val_transform)
+        args.img_root = ImageCLEF_root
+        source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
+        target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
+        target_test_dataset = dataset(root=args.img_root, task=args.target, transform=test_transform)
     else:
         source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
-        target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
-    
+        target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
+
+    # split train target domain datasets
+    target_dataset_num = len(target_train_dataset)
+    split_idx = split_dataset(target_train_dataset, 0.8, args.seed)
+    target_train_dataset = dataset(root=args.img_root, task=args.target, indexs = split_idx, transform=train_transform)
+    logging.info("Target train data number: Train:{}/Test:{}".format(len(split_idx),target_dataset_num))
+
+    # data loader
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
-
-    source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader)
+    target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     num_classes = len(source_train_loader.dataset.classes)
 
