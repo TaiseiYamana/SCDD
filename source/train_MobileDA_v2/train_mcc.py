@@ -51,7 +51,7 @@ def main(args):
             T.ToTensor(),
             normalize
         ])
-    val_transform = T.Compose([
+    test_transform = T.Compose([
         ResizeImage(256),
         T.CenterCrop(224),
         T.ToTensor(),
@@ -145,7 +145,7 @@ def main(args):
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
             print("top1acc:{:.2f}".format(checkpoint['prec@1']))
-        _ , _ , dis_soft, classcoufusion = test_2(target_val_loader, net, cls, mcc, args, phase = 'Target')
+        _ , _ , dis_soft, classcoufusion = test_2(target_test_loader, net, cls, mcc, args, phase = 'Target')
         print("Distributed Soft {}".format(dis_soft))
         print("MCC Vlue {}".format(classcoufusion))                
         return
@@ -164,7 +164,7 @@ def main(args):
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    t_test_top1, t_test_top5 = test(target_val_loader, net, cls, mcc, args, phase = 'Target')
+		    t_test_top1, t_test_top5 = test(target_test_loader, net, cls, mcc, args, phase = 'Target')
 		
 		    epoch_duration = time.time() - epoch_start_time
 		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
