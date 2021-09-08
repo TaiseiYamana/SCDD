@@ -67,29 +67,6 @@ def main(args):
     # create dataset & dataloader
     dataset = datasets.__dict__[args.dataset]
     
-    # create dataset
-    if args.dataset == "ImageCLEF":
-        args.img_root = ImageCLEF_root
-        source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
-        target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
-        target_test_dataset = dataset(root=args.img_root, task=args.target, transform=test_transform)
-    else:
-        source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
-        target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
-        target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
-
-    # split train target domain datasets
-    target_dataset_num = len(target_train_dataset)
-    split_idx = split_dataset(target_train_dataset, 0.8, args.seed)
-    target_train_dataset = dataset(root=args.img_root, task=args.target, indexs = split_idx, transform=train_transform)
-    logging.info("Target train data number: Train:{}/Test:{}".format(len(split_idx),target_dataset_num))
-
-    # data loader
-    source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
-                                     shuffle=True, num_workers=args.workers, drop_last=True)
-    target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
-                                     shuffle=True, num_workers=args.workers, drop_last=True)
-    target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     num_classes = len(source_train_loader.dataset.classes)
 
@@ -160,7 +137,7 @@ def main(args):
         # extract features from both domains
         feature_extractor = nn.Sequential(net.backbone, net.bottleneck).to(device)
         source_feature = collect_feature(source_train_loader, feature_extractor, device)
-        target_feature = collect_feature(target_train_loader, feature_extractor, device)
+        target_feature = collect_feature(target_test_loader, feature_extractor, device)
         # plot t-SNE
         tSNE_filename = os.path.join(args.save_root, 'TSNE.png')
         tsne.visualize(source_feature, target_feature, tSNE_filename)
@@ -176,7 +153,7 @@ def main(args):
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
             print("top1acc:{:.2f}".format(checkpoint['prec@1']))
-        _ , _ = test(target_val_loader, snet, cls, args, phase = 'Target')
+        _ , _ = test(target_test_loader, snet, cls, args, phase = 'Target')
         return
 
     best_top1= 0.0
