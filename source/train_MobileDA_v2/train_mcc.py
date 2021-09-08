@@ -29,6 +29,8 @@ from utils import AverageMeter, accuracy
 from utils import load_pretrained_model, save_checkpoint
 from utils import create_exp_dir, count_parameters_in_MB
 
+from split_dataset import split_dataset
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 ImageCLEF_root = "/content/drive/MyDrive/datasets/ImageCLEF"
