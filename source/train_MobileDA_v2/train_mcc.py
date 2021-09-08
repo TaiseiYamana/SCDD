@@ -87,6 +87,9 @@ def main(args):
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
+    source_train_iter = ForeverDataIterator(source_train_loader)
+    target_train_iter = ForeverDataIterator(target_train_loader) 
+
     num_classes = len(source_train_loader.dataset.classes)
 
 	  # create model
@@ -154,7 +157,7 @@ def main(args):
 	
 		
     # define dict
-    iters = {'target':target_train_iter, 'source':source_train_iter}
+    iters = {'source':source_train_iter, 'target':target_train_iter, }
 
     best_top1= 0.0    
     best_top5 = 0.0
