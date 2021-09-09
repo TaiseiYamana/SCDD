@@ -7,7 +7,7 @@
                                             -d OfficeHome \
                                             -s Ar \
                                             -t Cl \
-                                            --epochs 30 \
+                                            --epochs 200 \
                                             --lr 0.01 \
                                             -i 1000 \
                                             -b 64 \
@@ -22,6 +22,7 @@
                                                            -d OfficeHome \
                                                            -s Ar \
                                                            -t Cl \
+                                                           --epochs 100 \
                                                            -i 500 \
                                                            --mcc_temp 2.5 \
                                                            --st_temp 8.0
@@ -35,6 +36,7 @@
                                                            -d OfficeHome \
                                                            -s Ar \
                                                            -t Cl \
+                                                           --epochs 100 \
                                                            -i 500 \
                                                            --seed 2 \
                                                            --mcc_temp 2.5 \
@@ -49,6 +51,7 @@
                                                            -d OfficeHome \
                                                            -s Ar \
                                                            -t Cl \
+                                                           --epochs 100 \
                                                            -i 500 \
                                                            --mcc_temp 2.5 \
                                                            --st_temp 8.0
@@ -61,7 +64,7 @@
                                             -d OfficeHome \
                                             -s Ar \
                                             -t Pr \
-                                            --epochs 30 \
+                                            --epochs 200 \
                                             --lr 0.01 \
                                             -i 1000 \
                                             -b 64 \
@@ -76,6 +79,7 @@
                                                            -d OfficeHome \
                                                            -s Ar \
                                                            -t Pr \
+                                                           --epochs 100 \
                                                            -i 500 \
                                                            --mcc_temp 2.5 \
                                                            --st_temp 8.0
@@ -89,6 +93,7 @@
                                                            -d OfficeHome \
                                                            -s Ar \
                                                            -t Pr \
+                                                           --epochs 100 \                                                                                                                  
                                                            -i 500 \
                                                            --seed 2 \
                                                            --mcc_temp 2.5 \
@@ -103,6 +108,7 @@
                                                            -d OfficeHome \
                                                            -s Ar \
                                                            -t Pr \
+                                                           --epochs 100 \
                                                            -i 500 \
                                                            --mcc_temp 2.5 \
                                                            --st_temp 8.0                                        
