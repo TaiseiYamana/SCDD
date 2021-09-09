@@ -13,6 +13,7 @@ from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
+from torchvision.models import mobilenet_v3_small, mobilenet_v3_large
 
 sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
@@ -27,6 +28,8 @@ from common.utils.analysis import collect_feature, tsne, a_distance
 from utils import AverageMeter, accuracy
 from utils import load_pretrained_model, save_checkpoint
 from utils import create_exp_dir, count_parameters_in_MB
+
+from split_dataset import split_dataset
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -50,7 +53,7 @@ def main(args):
             T.ToTensor(),
             normalize
         ])
-    val_transform = T.Compose([
+    test_transform = T.Compose([
         ResizeImage(256),
         T.CenterCrop(224),
         T.ToTensor(),
@@ -60,23 +63,32 @@ def main(args):
     # create dataset & dataloader
     dataset = datasets.__dict__[args.dataset]
 
+    # create dataset
     if args.dataset == "ImageCLEF":
-        source_train_dataset = dataset(root=ImageCLEF_root, task=args.source, transform=train_transform)
-        target_train_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=train_transform)
-        target_val_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=val_transform)
+        args.img_root = ImageCLEF_root
+        source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
+        target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
+        target_test_dataset = dataset(root=args.img_root, task=args.target, transform=test_transform)
     else:
         source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
-        target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
-    
+        target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
+
+    # split train target domain datasets
+    target_dataset_num = len(target_train_dataset)
+    split_idx = split_dataset(target_train_dataset, 0.8, args.seed)
+    target_train_dataset = dataset(root=args.img_root, task=args.target, indexs = split_idx, transform=train_transform)
+    logging.info("Target train data number: Train:{}/Test:{}".format(len(split_idx),target_dataset_num))
+
+    # data loader
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
+    target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader)
+    target_train_iter = ForeverDataIterator(target_train_loader) 
 
     num_classes = len(source_train_loader.dataset.classes)
 
@@ -92,13 +104,25 @@ def main(args):
     else:
 		    backbone = models.__dict__[args.arch](pretrained=True)
 		    net = modules.Classifier(backbone, num_classes)
-    net = 
+    net = net.to(device)
     logging.info('%s', net)
     logging.info("param size = %fMB", count_parameters_in_MB(net))
     logging.info('-----------------------------------------------')
 
+    # check point parameter load
+    if (args.check_point):
+		    checkpoint = torch.load(os.path.join(args.model_param))
+		    load_pretrained_model(net, checkpoint['net'])
+		    check_point_epoch = checkpoint['epoch']
+         
     # define optimizer and lr scheduler
-    optimizer = SGD(net.get_parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
+    if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
+		    params = [
+            {"params": net.features.parameters(), "lr": 0.1 * args.lr},
+            {"params": net.classifier.parameters(), "lr": 1.0 * args.lr}]
+    else:
+		    params = net.get_parameters(base_lr = args.lr)  
+    optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
     # define loss function
@@ -132,25 +156,34 @@ def main(args):
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
             print("top1acc:{:.2f}".format(checkpoint['prec@1']))
-        _ , _ , dis_soft = test_2(target_val_loader, net, cls, args, phase = 'Target')
-        print("Distributed Soft {}".format(dis_soft))   
+        _ , _ , dis_soft, classcoufusion = test_2(target_test_loader, net, cls, mcc, args, phase = 'Target')
+        print("Distributed Soft {}".format(dis_soft))
+        print("MCC Vlue {}".format(classcoufusion))                
         return
 	
 		
     # define dict
-    iters = {'target':target_train_iter, 'source':source_train_iter}
+    iters = {'source':source_train_iter, 'target':target_train_iter, }
 
     best_top1= 0.0    
     best_top5 = 0.0
     stopping_counter = 0
     for epoch in range(1, args.epochs+1):
+		    # skip utill check point
+		    if (args.check_point):
+		    	if (check_point_epoch >= epoch) :
+		    		#skip_train(iters, optimizer, lr_scheduler, epoch, args)
+		    		continue
+		    	else:                            
+		    		args.check_point = False
+
 		    # train one epoch
 		    epoch_start_time = time.time()
 		    train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args)
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    t_test_top1, t_test_top5 = test(target_val_loader, net, cls, args, phase = 'Target')
+		    t_test_top1, t_test_top5 = test(target_test_loader, net, cls, mcc, args, phase = 'Target')
 		
 		    epoch_duration = time.time() - epoch_start_time
 		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
@@ -205,11 +238,11 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
 		if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
-    		source_out = net(source_img)
-    		target_out = net(target_img)
+			source_out = net(source_img)
+			target_out = net(target_img)
 		else:
-    		source_out, _= net(source_img)
-    		target_out, _= net(target_img)
+			source_out, _= net(source_img)
+			target_out, _= net(target_img)
 
 		cls_loss = cls(source_out, source_label)
 		mcc_loss = mcc(target_out)
@@ -241,8 +274,18 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 					   cls_losses=cls_losses, mcc_losses=mcc_losses, top1=top1, top5=top5))
 			logging.info(log_str)
 
+def skip_train(iters, optimizer, lr_scheduler, epoch, args):
+	source_iter = iters['source']
+	for i in range(args.iters_per_epoch):
+		_, _ ,_ = next(source_iter)
+		optimizer.zero_grad()
+		optimizer.step()
+		lr_scheduler.step()
+	logging.info("Skip epoch {}".format(epoch)) 
 
-def test(test_loader, net, cls, args, phase):
+
+
+def test(test_loader, net, cls, mcc, args, phase):
 	losses = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
@@ -257,7 +300,7 @@ def test(test_loader, net, cls, args, phase):
 
 		with torch.no_grad():
 			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
-    			out = net(img)
+				out = net(img)
 			else:
 				out, _ = net(img)
 			loss = cls(out, target)                
@@ -271,33 +314,35 @@ def test(test_loader, net, cls, args, phase):
 
 	return top1.avg, top5.avg
 
-def test_2(test_loader, net, cls, args, phase):
+def test_2(test_loader, net, cls, mcc, args, phase):
 	losses = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
+	mcc_losses  = AverageMeter()
 	distributed_soft = AverageMeter()
 
 	net.eval()
 
 	end = time.time()
-	for i, (img, target) in enumerate(test_loader, start=1):
+	for i, (img, target, _) in enumerate(test_loader, start=1):
 		if args.cuda:
 			img = img.cuda()
 			target = target.cuda()
 
 		with torch.no_grad():
 			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
-    			out = net(img)
+				out = net(img)
 			else:
 				out, _ = net(img)
 			loss = cls(out, target)  
-    
+			mcc_loss = mcc(out)   
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
+		mcc_losses.update(mcc_loss.item(), img.size(0))
 		softlabel = nn.functional.softmax(out / 4, dim=-1)
 		softlabel_var = torch.var(softlabel, dim=-1)
 		softlabel_var = torch.mean(softlabel_var)
 		distributed_soft.update(softlabel_var.item())
-		print(softlabel_var.item())   
+		#print(softlabel_var.item())   
 		losses.update(loss.item(), img.size(0))
 		top1.update(prec1.item(), img.size(0))
 		top5.update(prec5.item(), img.size(0))
@@ -305,7 +350,7 @@ def test_2(test_loader, net, cls, args, phase):
 	f_l = [losses.avg, top1.avg, top5.avg]
 	logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
 
-	return top1.avg, top5.avg, distributed_soft.avg
+	return top1.avg, top5.avg, distributed_soft.avg, mcc_losses.avg
 if __name__ == '__main__':
     architecture_names = sorted(
         name for name in models.__dict__
@@ -329,15 +374,12 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--source', default = 'A', help='source domain(s)')
     parser.add_argument('-t', '--target', default = 'W', help='target domain(s)')
     # model parameters
-    parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
-                        choices=architecture_names,
-                        help='backbone architecture: ' +
-                             ' | '.join(architecture_names) +
-                             ' (default: resnet18)')
-    parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')                       
+    parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18')
+    parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')
+    parser.add_argument('--check_point', default=None, type=bool, help='use check point parameter')                     
     # training parameters
     parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
-    parser.add_argument('--lr', '--learning-rate', default=0.005, type=float, help='initial learning rate')
+    parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
     parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
