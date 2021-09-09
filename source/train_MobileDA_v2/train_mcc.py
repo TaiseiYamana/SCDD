@@ -110,7 +110,7 @@ def main(args):
     logging.info('-----------------------------------------------')
 
     # check point parameter load
-     if(args.check_point)
+     if(args.check_point):
 		    checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))
 		    load_pretrained_model(tnet, checkpoint['net'])
 		    check_point_epoch = checkpoint['epoch']
