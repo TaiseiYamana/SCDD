@@ -281,7 +281,7 @@ def skip_train(iters, optimizer, lr_scheduler, epoch, args):
 		optimizer.zero_grad()
 		optimizer.step()
 		lr_scheduler.step()
-	loggin.info("Skip epoch {}".format(epoch)) 
+	logging.info("Skip epoch {}".format(epoch)) 
 
 
 
