@@ -112,7 +112,7 @@ def main(args):
     # check point parameter load
     if (args.check_point):
 		    checkpoint = torch.load(os.path.join(args.model_param))
-		    load_pretrained_model(tnet, checkpoint['net'])
+		    load_pretrained_model(net, checkpoint['net'])
 		    check_point_epoch = checkpoint['epoch']
          
     # define optimizer and lr scheduler
