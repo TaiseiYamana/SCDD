@@ -109,12 +109,6 @@ def main(args):
     logging.info("param size = %fMB", count_parameters_in_MB(net))
     logging.info('-----------------------------------------------')
 
-    # check point parameter load
-    if (args.check_point):
-		    checkpoint = torch.load(os.path.join(args.model_param))
-		    load_pretrained_model(net, checkpoint['net'])
-		    check_point_epoch = checkpoint['epoch']
-         
     # define optimizer and lr scheduler
     if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
 		    params = [
@@ -124,6 +118,24 @@ def main(args):
 		    params = net.get_parameters(base_lr = args.lr)  
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
+
+    # define optimizer and lr scheduler
+    if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
+		    params = [
+            {"params": net.features.parameters(), "lr": 0.1 * args.lr},
+            {"params": net.classifier.parameters(), "lr": 1.0 * args.lr}]
+    else:
+		    params = net.get_parameters(base_lr = args.lr)  
+    optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
+    lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
+
+    # check point parameter load
+    if (args.check_point):
+		    checkpoint = torch.load(os.path.join(args.model_param))
+		    load_pretrained_model(net, checkpoint['net'])
+		    check_point_epoch = checkpoint['epoch']
+		    optimizer.load_state_dict(checkpoint['optimizer'])
+		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
 
     # define loss function
     mcc_loss = MinimumClassConfusionLoss(temperature=args.temperature)
@@ -172,7 +184,6 @@ def main(args):
 		    # skip utill check point
 		    if (args.check_point):
 		    	if (check_point_epoch >= epoch) :
-		    		#skip_train(iters, optimizer, lr_scheduler, epoch, args)
 		    		logging.info("Skip epoch {}".format(epoch)) 
 		    		continue
 		    	else:                            
@@ -276,16 +287,6 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 					   epoch, i, args.iters_per_epoch, batch_time=batch_time, data_time=data_time,
 					   cls_losses=cls_losses, mcc_losses=mcc_losses, top1=top1, top5=top5))
 			logging.info(log_str)
-
-def skip_train(iters, optimizer, lr_scheduler, epoch, args):
-	source_iter = iters['source']
-	for i in range(args.iters_per_epoch):
-		_, _ ,_ = next(source_iter)
-		optimizer.zero_grad()
-		optimizer.step()
-		lr_scheduler.step()
-	logging.info("Skip epoch {}".format(epoch)) 
-
 
 
 def test(test_loader, net, cls, mcc, args, phase):
