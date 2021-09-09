@@ -163,7 +163,7 @@ def main(args):
 	
 		
     # define dict
-    iters = {'source':source_train_iter, 'target':target_train_iter, }
+    iters = {'source':source_train_iter, 'target':target_train_iter}
 
     best_top1= 0.0    
     best_top5 = 0.0
@@ -173,6 +173,7 @@ def main(args):
 		    if (args.check_point):
 		    	if (check_point_epoch >= epoch) :
 		    		#skip_train(iters, optimizer, lr_scheduler, epoch, args)
+		    		logging.info("Skip epoch {}".format(epoch)) 
 		    		continue
 		    	else:                            
 		    		args.check_point = False
@@ -201,6 +202,8 @@ def main(args):
 		    logging.info('Saving models......')
 		    save_checkpoint({'epoch': epoch,
           		            'net': net.state_dict(),
+          		            'optimizer': optimizer.state_dict(),							  			
+          		            'scheduler': lr_scheduler.state_dict(),
           		            'prec@1': t_test_top1,
           		            'prec@5': t_test_top5,}, 
           		            is_best, args.save_root)

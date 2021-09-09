@@ -163,7 +163,7 @@ def main(args):
 	
 		
     # define dict
-    iters = {'source':source_train_iter, 'target':target_train_iter, }
+    iters = {'source':source_train_iter, 'target':target_train_iter}
 
     best_top1= 0.0    
     best_top5 = 0.0
