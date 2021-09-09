@@ -171,8 +171,9 @@ def main(args):
     for epoch in range(1, args.epochs+1):
 		    # skip utill check point
 		    if (args.check_point):
-		    	if (check_point_epoch > epoch) :
+		    	if (check_point_epoch >= epoch) :
 		    		skip_train(iters, optimizer, lr_scheduler, epoch, args)
+            continue
 		    	else:                            
 		    		args.check_point = False
 
