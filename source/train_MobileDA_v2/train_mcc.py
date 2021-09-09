@@ -109,6 +109,12 @@ def main(args):
     logging.info("param size = %fMB", count_parameters_in_MB(net))
     logging.info('-----------------------------------------------')
 
+    # check point parameter load
+     if(args.check_point)
+		    checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))
+		    load_pretrained_model(tnet, checkpoint['net'])
+		    check_point_epoch = checkpoint['epoch']
+         
     # define optimizer and lr scheduler
     if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
 		    params = [
@@ -163,6 +169,13 @@ def main(args):
     best_top5 = 0.0
     stopping_counter = 0
     for epoch in range(1, args.epochs+1):
+		    # skip utill check point
+		    if (args.check_point):
+		    	if (check_point_epoch > epoch) :
+		    		skip_train(iters, lr_scheduler, args)
+		    	else:                            
+		    		args.check_point = False
+
 		    # train one epoch
 		    epoch_start_time = time.time()
 		    train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args)
@@ -260,6 +273,12 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 					   cls_losses=cls_losses, mcc_losses=mcc_losses, top1=top1, top5=top5))
 			logging.info(log_str)
 
+def skip_train(iters, lr_scheduler, args):
+	source_iter = iters['source']
+	for i in range(args.iters_per_epoch):
+		_, _ ,_ = next(source_iter)
+		lr_scheduler.step()
+
 
 def test(test_loader, net, cls, mcc, args, phase):
 	losses = AverageMeter()
@@ -351,7 +370,8 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--target', default = 'W', help='target domain(s)')
     # model parameters
     parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18')
-    parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')                       
+    parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')
+    parser.add_argument('--check_point', default=None, type=bool, help='use check point parameter')                     
     # training parameters
     parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
