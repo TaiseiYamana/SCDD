@@ -172,7 +172,7 @@ def main(args):
 		    # skip utill check point
 		    if (args.check_point):
 		    	if (check_point_epoch > epoch) :
-		    		skip_train(iters, lr_scheduler, epoch, args)
+		    		skip_train(iters, optimizer, lr_scheduler, epoch, args)
 		    	else:                            
 		    		args.check_point = False
 
@@ -273,7 +273,7 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 					   cls_losses=cls_losses, mcc_losses=mcc_losses, top1=top1, top5=top5))
 			logging.info(log_str)
 
-def skip_train(iters, ,optimizer, lr_scheduler, epoch, args):
+def skip_train(iters, optimizer, lr_scheduler, epoch, args):
 	source_iter = iters['source']
 	for i in range(args.iters_per_epoch):
 		_, _ ,_ = next(source_iter)
