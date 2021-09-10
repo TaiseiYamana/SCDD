@@ -123,8 +123,8 @@ def main(args):
     # define optimizer and lr scheduler
     if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
 		    params = [
-            {"params": net.features.parameters(), "lr": 0.1 * args.lr},
-            {"params": net.classifier.parameters(), "lr": 1.0 * args.lr}]
+            {"params": net.features.parameters(), "lr": 0.1 * 1},
+            {"params": net.classifier.parameters(), "lr": 1.0 * 1}]
     else:
 		    params = net.get_parameters()  
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
