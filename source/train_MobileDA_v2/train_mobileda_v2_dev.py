@@ -32,6 +32,7 @@ from utils import create_exp_dir, count_parameters_in_MB
 
 from kd_losses import *
 from pseudo_labeling import pseudo_labeling
+from split_dataset import split_dataset
 
 ImageCLEF_root = "/content/drive/MyDrive/datasets/ImageCLEF"
 
@@ -55,7 +56,7 @@ def main(args):
             T.ToTensor(),
             normalize
         ])
-    val_transform = T.Compose([
+    test_transform = T.Compose([
         ResizeImage(256),
         T.CenterCrop(224),
         T.ToTensor(),
@@ -65,29 +66,37 @@ def main(args):
 
     # create dataset & dataloader
     dataset = datasets.__dict__[args.dataset]
-    
-    # create dataset & dataloader
+
+    # dataset
     if args.dataset == "ImageCLEF":
-        source_train_dataset = dataset(root=ImageCLEF_root, task=args.source, transform=train_transform)
-        target_train_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=train_transform)
-        target_val_dataset = dataset(root=ImageCLEF_root, task=args.target, transform=val_transform)
+        args.img_root = ImageCLEF_root
+        source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
+        target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
+        target_test_dataset = dataset(root=args.img_root, task=args.target, transform=test_transform)
     else:
         source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
-        target_val_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=val_transform)
-    
+        target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
+
+    # split train target domain datasets
+    target_dataset_num = len(target_train_dataset)
+    split_idx = split_dataset(target_train_dataset, 0.8, args.seed)
+    target_train_dataset = dataset(root=args.img_root, task=args.target, indexs = split_idx, transform=train_transform)
+    logging.info("Target train data number: Train:{}/Test:{}".format(len(split_idx),target_dataset_num))
+
+    # data loader
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_val_loader = DataLoader(target_val_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
+    target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader)
+    target_train_iter = ForeverDataIterator(target_train_loader)     
 
     num_classes = len(source_train_loader.dataset.classes)
 
-	  # create model
+	# create model
     logging.info('----------- Network Initialization --------------')
     logging.info('Initialize Teacher Model')
     logging.info('=> using pre-trained model {}'.format(args.t_arch))
@@ -121,10 +130,33 @@ def main(args):
     optimizer = SGD(snet.get_parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
+    # check point parameter load
+    if (args.check_point):
+		    checkpoint = torch.load(os.path.join(args.s_model_param))
+		    load_pretrained_model(snet, checkpoint['net'])
+		    check_point_epoch = checkpoint['epoch']
+		    optimizer.load_state_dict(checkpoint['optimizer'])
+		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
+
     # define loss function
     mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
     st = SoftTarget(args.st_temp)
     cls = torch.nn.CrossEntropyLoss()
+  
+    if (args.select_label):
+		    # select paseudo labels
+		    pseudo_idx = pseudo_labeling(args.threshold, target_train_loader, tnet)
+		    # creaet dataloader  
+		    pseudo_dataset = dataset(root=args.img_root, task=args.target, indexs = pseudo_idx, transform=train_transform)
+		    target_train_loader = DataLoader(pseudo_dataset, batch_size=args.batch_size,
+                                                shuffle=True, num_workers=args.workers, drop_last=True)
+
+    source_train_iter = ForeverDataIterator(source_train_loader)
+    target_train_iter = ForeverDataIterator(target_train_loader) 
+
+    # define dict            
+    iters = {'target':target_train_iter, 'source':source_train_iter}
+    nets = {'snet':snet, 'tnet':tnet}
 
     if args.cuda:
 		    mcc = mcc.to(device)
@@ -139,7 +171,7 @@ def main(args):
         # extract features from both domains
         feature_extractor = nn.Sequential(net.backbone, net.bottleneck).to(device)
         source_feature = collect_feature(source_train_loader, feature_extractor, device)
-        target_feature = collect_feature(target_train_loader, feature_extractor, device)
+        target_feature = collect_feature(target_test_loader, feature_extractor, device)
         # plot t-SNE
         tSNE_filename = os.path.join(args.save_root, 'TSNE.png')
         tsne.visualize(source_feature, target_feature, tSNE_filename)
@@ -155,25 +187,8 @@ def main(args):
             checkpoint = torch.load(args.model_param)
             load_pretrained_model(net, checkpoint['net'])
             print("top1acc:{:.2f}".format(checkpoint['prec@1']))
-        _ , _ = test(target_val_loader, snet, cls, args, phase = 'Target')
+        _ , _ = test(target_test_loader, snet, cls, args, phase = 'Target')
         return
-
-
-    # define dict
-    source_train_iter = ForeverDataIterator(source_train_loader)
-    if (args.select_label):
-		    # select paseudo labels
-		    pseudo_idx = pseudo_labeling(args.threshold, target_val_loader, tnet)
-		    # creaet dataloader  
-		    pseudo_dataset = dataset(root=ImageCLEF_root, task=args.target, indexs = pseudo_idx, transform=val_transform)
-		    selected_target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
-                                                shuffle=True, num_workers=args.workers, drop_last=True)
-		    selected_target_train_iter = ForeverDataIterator(selected_target_train_loader)
-		    iters = {'target':selected_target_train_iter, 'source':source_train_iter}
-    else:   
-		    target_train_iter = ForeverDataIterator(target_train_loader)         
-		    iters = {'target':target_train_iter, 'source':source_train_iter}
-    nets = {'snet':snet, 'tnet':tnet}
 
     best_top1= 0.0
     best_top5 = 0.0
@@ -204,11 +219,13 @@ def main(args):
 		    logging.info('Saving models......')
 		    save_checkpoint({'epoch': epoch,
           		            'net': snet.state_dict(),
+          		            'optimizer': optimizer.state_dict(),							  			
+          		            'scheduler': lr_scheduler.state_dict(),                             
           		            'prec@1': t_test_top1,
           		            'prec@5': t_test_top5,}, 
           		            is_best, args.save_root)
                               
-		    if stopping_counter == args.stopp_num:
+		    if stopping_counter == args.stopping_num:
 		    	logging.info('Planned　Stopping Training')
 		    	break
 
@@ -345,6 +362,8 @@ if __name__ == '__main__':
                              ' | '.join(architecture_names) +
                              ' (default: resnet18)')    
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
+    parser.add_argument('--s-model-param', default=None, type=str, help='path name of student model')
+    parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')         
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
@@ -355,7 +374,7 @@ if __name__ == '__main__':
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
     parser.add_argument('--epochs', default=50, type=int, help='number of total epochs to run')
     parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
-    parser.add_argument('-p', '--print-freq', default=50, type=int, help='print frequency (default: 50)')
+    parser.add_argument('-p', '--print-freq', default= 100, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
     parser.add_argument("--phase", type=str, default='train', choices=['train', 'test', 'analysis'],
                         help="When phase is 'test', only test the model."
@@ -365,7 +384,7 @@ if __name__ == '__main__':
     parser.add_argument('--st_temp', default=2.0, type=float, help='parameter soft target temperature scaling')
     parser.add_argument('--lam', default=1., type=float,
                         help='the trade-off hyper-parameter for mcc loss')
-    parser.add_argument('--mu', default=0.9, type=float,
+    parser.add_argument('--mu', default=1., type=float,
                         help='the trade-off hyper-parameter for soft target loss')
     # others
     parser.add_argument('--select_label', type=bool, default=True)
