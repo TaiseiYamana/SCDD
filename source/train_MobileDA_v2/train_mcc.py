@@ -180,8 +180,8 @@ def main(args):
 		    check_point_epoch = checkpoint['epoch']
 		    optimizer.load_state_dict(checkpoint['optimizer'])
 		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
-		    best_top1 = check_point['prec@1']       
-		    best_top5 = check_point['prec@5']
+		    best_top1 = checkpoint['prec@1']       
+		    best_top5 = checkpoint['prec@5']
 
     stopping_counter = 0
     for epoch in range(1, args.epochs+1):
