@@ -89,6 +89,7 @@ def main(args):
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
+    target_val_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)                                       
     target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
@@ -193,7 +194,7 @@ def main(args):
 		    train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    t_test_top1, t_test_top5 = test(target_val_loader, snet, cls, args, phase = 'Target')
+		    t_test_top1, t_test_top5 = test(target_test_loader, snet, cls, args, phase = 'Target')
 
 		    epoch_duration = time.time() - epoch_start_time
 		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
