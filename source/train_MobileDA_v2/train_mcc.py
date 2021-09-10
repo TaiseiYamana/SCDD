@@ -85,6 +85,7 @@ def main(args):
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
+    target_val_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)                                     
     target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
@@ -195,16 +196,17 @@ def main(args):
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    t_test_top1, t_test_top5 = test(target_test_loader, net, cls, mcc, args, phase = 'Target')
+		    t_val_top1, t_val_top5 = test(target_val_loader, net, cls, mcc, args, phase = 'Target Validation')            
+		    t_test_top1, t_test_top5 = test(target_test_loader, net, cls, mcc, args, phase = 'Target Test')
 		
 		    epoch_duration = time.time() - epoch_start_time
 		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
 
 		    # save model
 		    is_best = False
-		    if t_test_top1 > best_top1:
-		    	best_top1 = t_test_top1
-		    	best_top5 = t_test_top5
+		    if t_val_top1 > best_top1:
+		    	best_top1 = t_val_top1
+		    	best_top5 = t_val_top5
 		    	is_best = True
 		    	stopping_counter = 0
 		    else:
@@ -219,7 +221,7 @@ def main(args):
           		            'prec@5': t_test_top5,}, 
           		            is_best, args.save_root)
             
-		    if stopping_counter == 5:
+		    if stopping_counter == 8:
 		    	logging.info('Planned　Stopping Training')
 		    	break
 			
