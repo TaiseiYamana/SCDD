@@ -116,7 +116,7 @@ def main(args):
             {"params": net.features.parameters(), "lr": 0.1 * args.lr},
             {"params": net.classifier.parameters(), "lr": 1.0 * args.lr}]
     else:
-		    params = net.get_parameters(base_lr = args.lr)  
+		    params = net.get_parameters()  
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
@@ -126,7 +126,7 @@ def main(args):
             {"params": net.features.parameters(), "lr": 0.1 * args.lr},
             {"params": net.classifier.parameters(), "lr": 1.0 * args.lr}]
     else:
-		    params = net.get_parameters(base_lr = args.lr)  
+		    params = net.get_parameters()  
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
