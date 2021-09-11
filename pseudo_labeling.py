@@ -41,5 +41,5 @@ def pseudo_labeling(threshold, data_loadr, model):
     pseudo_labeling_acc = (pseudo_target == gt_target)*1
     pseudo_labeling_acc = (sum(pseudo_labeling_acc)/len(pseudo_labeling_acc))*100
 
-    logging.info('Pseudo-Labeling Accuracy (positive): {pseudo_labeling_acc}, Total Selected: {len(pseudo_idx)}')
+    logging.info(f'Pseudo-Labeling Accuracy (positive): {pseudo_labeling_acc}, Total Selected: {len(pseudo_idx)}')
     return pseudo_idx
