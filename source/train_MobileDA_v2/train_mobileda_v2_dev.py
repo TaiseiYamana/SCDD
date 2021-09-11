@@ -89,6 +89,7 @@ def main(args):
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
+    target_val_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)                                     
     target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
@@ -129,14 +130,6 @@ def main(args):
     # define optimizer and lr scheduler
     optimizer = SGD(snet.get_parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
-
-    # check point parameter load
-    if (args.check_point):
-		    checkpoint = torch.load(os.path.join(args.s_model_param))
-		    load_pretrained_model(snet, checkpoint['net'])
-		    check_point_epoch = checkpoint['epoch']
-		    optimizer.load_state_dict(checkpoint['optimizer'])
-		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
 
     # define loss function
     mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
@@ -219,7 +212,8 @@ def main(args):
 		    train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    t_test_top1, t_test_top5 = test(target_val_loader, snet, cls, args, phase = 'Target')
+		    t_val_top1, t_val_top5 = test(target_val_loader, net, cls, mcc, args, phase = 'Target Validation')            
+		    t_test_top1, t_test_top5 = test(target_test_loader, net, cls, mcc, args, phase = 'Target Test')
 
 		    epoch_duration = time.time() - epoch_start_time
 		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
