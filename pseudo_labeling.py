@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 import torch
 import torch.nn.functional as F
+import logging
 
 def pseudo_labeling(threshold, data_loadr, model):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -40,6 +41,5 @@ def pseudo_labeling(threshold, data_loadr, model):
     pseudo_labeling_acc = (pseudo_target == gt_target)*1
     pseudo_labeling_acc = (sum(pseudo_labeling_acc)/len(pseudo_labeling_acc))*100
 
-    print(f'Pseudo-Labeling Accuracy (positive): {pseudo_labeling_acc}, Total Selected: {len(pseudo_idx)}')
-
+    logging.info('Pseudo-Labeling Accuracy (positive): {pseudo_labeling_acc}, Total Selected: {len(pseudo_idx)}')
     return pseudo_idx
