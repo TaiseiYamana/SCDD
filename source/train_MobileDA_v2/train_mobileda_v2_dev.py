@@ -205,6 +205,14 @@ def main(args):
 		    best_top5 = checkpoint['prec@5']
                 
     for epoch in range(1, args.epochs+1):
+		    # skip utill check point
+		    if (args.check_point):
+		    	if (check_point_epoch >= epoch) :
+		    		logging.info("Skip epoch {}".format(epoch)) 
+		    		continue
+		    	else:                            
+		    		args.check_point = False
+
 		    epoch_start_time = time.time()
                                
 		    # train one epoch
