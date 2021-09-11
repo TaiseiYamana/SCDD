@@ -186,7 +186,7 @@ def main(args):
     best_top1= 0.0
     best_top5 = 0.0
     stopping_counter = 0
-    
+
     for epoch in range(1, args.epochs+1):
 		    epoch_start_time = time.time()
                                
@@ -354,6 +354,7 @@ if __name__ == '__main__':
                              ' | '.join(architecture_names) +
                              ' (default: resnet18)')    
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
+    parser.add_argument('--s-model-param', default=None, type=str, help='path name of student model')    
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
@@ -362,7 +363,7 @@ if __name__ == '__main__':
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
-    parser.add_argument('--epochs', default=50, type=int, help='number of total epochs to run')
+    parser.add_argument('--epochs', default=100, type=int, help='number of total epochs to run')
     parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
     parser.add_argument('-p', '--print-freq', default= 100, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')

@@ -193,7 +193,17 @@ def main(args):
     best_top1= 0.0
     best_top5 = 0.0
     stopping_counter = 0
-    
+
+    # check point parameter load
+    if (args.check_point):
+		    checkpoint = torch.load(os.path.join(args.s_model_param))
+		    load_pretrained_model(net, checkpoint['net'])
+		    check_point_epoch = checkpoint['epoch']
+		    optimizer.load_state_dict(checkpoint['optimizer'])
+		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
+		    best_top1 = checkpoint['prec@1']       
+		    best_top5 = checkpoint['prec@5']
+                
     for epoch in range(1, args.epochs+1):
 		    epoch_start_time = time.time()
                                
