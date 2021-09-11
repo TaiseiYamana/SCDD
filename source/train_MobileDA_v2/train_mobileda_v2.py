@@ -194,7 +194,7 @@ def main(args):
 		    train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    t_val_top1, t_val_top5 = test(target_val_loader, net, cls, mcc, args, phase = 'Target Validation')              
+		    t_val_top1, t_val_top5 = test(target_val_loader, snet, cls, mcc, args, phase = 'Target Validation')              
 		    t_test_top1, t_test_top5 = test(target_test_loader, snet, cls, args, phase = 'Target')
 
 		    epoch_duration = time.time() - epoch_start_time
