@@ -321,22 +321,22 @@ def test(test_loader, net, cls, args, phase):
 	net.eval()
 
 	end = time.time()
-	for i, (img, target, _) in enumerate(test_loader, start=1):
-		if args.cuda:
-			img = img.cuda()
-			target = target.cuda()
+	with torch.inference_mode():
+		for i, (img, target, _) in enumerate(test_loader, start=1):
+			if args.cuda:
+				img = img.cuda()
+				target = target.cuda()
 
-		with torch.no_grad():
 			out, _  = net(img)
 			loss = cls(out, target)
 
-		prec1, prec5 = accuracy(out, target, topk=(1,5))
-		losses.update(loss.item(), img.size(0))
-		top1.update(prec1.item(), img.size(0))
-		top5.update(prec5.item(), img.size(0))
+			prec1, prec5 = accuracy(out, target, topk=(1,5))
+			losses.update(loss.item(), img.size(0))
+			top1.update(prec1.item(), img.size(0))
+			top5.update(prec5.item(), img.size(0))
 
-	f_l = [losses.avg, top1.avg, top5.avg]
-	logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
+		f_l = [losses.avg, top1.avg, top5.avg]
+		logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
 
 	return top1.avg, top5.avg
 
