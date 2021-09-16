@@ -21,7 +21,7 @@ def collect_feature(data_loader: DataLoader, feature_extractor: nn.Module,
     feature_extractor.eval()
     all_features = []
     with torch.no_grad():
-        for i, (images, target) in enumerate(tqdm.tqdm(data_loader)):
+        for i, (images, target, _) in enumerate(tqdm.tqdm(data_loader)):
             images = images.to(device)
             feature = feature_extractor(images).cpu()
             all_features.append(feature)

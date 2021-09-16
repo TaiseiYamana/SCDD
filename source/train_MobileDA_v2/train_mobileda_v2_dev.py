@@ -34,6 +34,8 @@ from kd_losses import *
 from pseudo_labeling import pseudo_labeling
 from split_dataset import split_dataset
 
+import matplotlib.pyplot as plt
+
 ImageCLEF_root = "/content/drive/MyDrive/datasets/ImageCLEF"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -157,12 +159,12 @@ def main(args):
 		    cls = cls.to(device)
 
     if args.phase == 'analysis':
-        if args.model_param != None:
+        if args.t_model_param != None:
             # load model paramater
-            checkpoint = torch.load(args.model_param)
-            load_pretrained_model(net, checkpoint['net'])
+            checkpoint = torch.load(args.t_model_param)
+            load_pretrained_model(tnet, checkpoint['net'])
         # extract features from both domains
-        feature_extractor = nn.Sequential(net.backbone, net.bottleneck).to(device)
+        feature_extractor = nn.Sequential(tnet.backbone, tnet.bottleneck).to(device)
         source_feature = collect_feature(source_train_loader, feature_extractor, device)
         target_feature = collect_feature(target_test_loader, feature_extractor, device)
         # plot t-SNE
@@ -189,7 +191,7 @@ def main(args):
 
     # check point parameter load
     if (args.check_point):
-		    checkpoint = torch.load(os.path.join(args.s_model_param))
+		    checkpoint = torch.load(args.s_model_param)
 		    load_pretrained_model(net, checkpoint['net'])
 		    check_point_epoch = checkpoint['epoch']
 		    optimizer.load_state_dict(checkpoint['optimizer'])
