@@ -34,6 +34,8 @@ from kd_losses import *
 from pseudo_labeling import pseudo_labeling
 from split_dataset import split_dataset
 
+import matplotlib.pyplot as plt
+
 ImageCLEF_root = "/content/drive/MyDrive/datasets/ImageCLEF"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -89,7 +91,7 @@ def main(args):
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_val_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)                                       
+    target_val_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)                                     
     target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
@@ -157,12 +159,12 @@ def main(args):
 		    cls = cls.to(device)
 
     if args.phase == 'analysis':
-        if args.model_param != None:
+        if args.t_model_param != None:
             # load model paramater
-            checkpoint = torch.load(args.model_param)
-            load_pretrained_model(net, checkpoint['net'])
+            checkpoint = torch.load(args.t_model_param)
+            load_pretrained_model(tnet, checkpoint['net'])
         # extract features from both domains
-        feature_extractor = nn.Sequential(net.backbone, net.bottleneck).to(device)
+        feature_extractor = nn.Sequential(tnet.backbone, tnet.bottleneck).to(device)
         source_feature = collect_feature(source_train_loader, feature_extractor, device)
         target_feature = collect_feature(target_test_loader, feature_extractor, device)
         # plot t-SNE
@@ -187,15 +189,33 @@ def main(args):
     best_top5 = 0.0
     stopping_counter = 0
 
+    # check point parameter load
+    if (args.check_point):
+		    checkpoint = torch.load(args.s_model_param)
+		    load_pretrained_model(net, checkpoint['net'])
+		    check_point_epoch = checkpoint['epoch']
+		    optimizer.load_state_dict(checkpoint['optimizer'])
+		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
+		    best_top1 = checkpoint['prec@1']       
+		    best_top5 = checkpoint['prec@5']
+                
     for epoch in range(1, args.epochs+1):
+		    # skip utill check point
+		    if (args.check_point):
+		    	if (check_point_epoch >= epoch) :
+		    		logging.info("Skip epoch {}".format(epoch)) 
+		    		continue
+		    	else:                            
+		    		args.check_point = False
+
 		    epoch_start_time = time.time()
                                
 		    # train one epoch
 		    train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    t_val_top1, t_val_top5 = test(target_val_loader, snet, cls, mcc, args, phase = 'Target Validation')              
-		    t_test_top1, t_test_top5 = test(target_test_loader, snet, cls, args, phase = 'Target')
+		    t_val_top1, t_val_top5 = test(target_val_loader, snet, cls, args, phase = 'Target Validation')            
+		    t_test_top1, t_test_top5 = test(target_test_loader, snet, cls, args, phase = 'Target Test')
 
 		    epoch_duration = time.time() - epoch_start_time
 		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
@@ -213,6 +233,8 @@ def main(args):
 		    logging.info('Saving models......')
 		    save_checkpoint({'epoch': epoch,
           		            'net': snet.state_dict(),
+          		            'optimizer': optimizer.state_dict(),							  			
+          		            'scheduler': lr_scheduler.state_dict(),                             
           		            'prec@1': t_test_top1,
           		            'prec@5': t_test_top5,}, 
           		            is_best, args.save_root)
@@ -301,22 +323,22 @@ def test(test_loader, net, cls, args, phase):
 	net.eval()
 
 	end = time.time()
-	for i, (img, target, _) in enumerate(test_loader, start=1):
-		if args.cuda:
-			img = img.cuda()
-			target = target.cuda()
+	with torch.inference_mode():
+		for i, (img, target, _) in enumerate(test_loader, start=1):
+			if args.cuda:
+				img = img.cuda()
+				target = target.cuda()
 
-		with torch.no_grad():
 			out, _  = net(img)
 			loss = cls(out, target)
 
-		prec1, prec5 = accuracy(out, target, topk=(1,5))
-		losses.update(loss.item(), img.size(0))
-		top1.update(prec1.item(), img.size(0))
-		top5.update(prec5.item(), img.size(0))
+			prec1, prec5 = accuracy(out, target, topk=(1,5))
+			losses.update(loss.item(), img.size(0))
+			top1.update(prec1.item(), img.size(0))
+			top5.update(prec5.item(), img.size(0))
 
-	f_l = [losses.avg, top1.avg, top5.avg]
-	logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
+		f_l = [losses.avg, top1.avg, top5.avg]
+		logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
 
 	return top1.avg, top5.avg
 
@@ -354,7 +376,8 @@ if __name__ == '__main__':
                              ' | '.join(architecture_names) +
                              ' (default: resnet18)')    
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
-    parser.add_argument('--s-model-param', default=None, type=str, help='path name of student model')    
+    parser.add_argument('--s-model-param', default=None, type=str, help='path name of student model')
+    parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')         
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
@@ -363,7 +386,7 @@ if __name__ == '__main__':
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
-    parser.add_argument('--epochs', default=100, type=int, help='number of total epochs to run')
+    parser.add_argument('--epochs', default=50, type=int, help='number of total epochs to run')
     parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
     parser.add_argument('-p', '--print-freq', default= 100, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
