@@ -34,7 +34,7 @@
                                                            --note 'Ar2Cr' \
                                                            --t_arch 'resnet34' \
                                                            --s_arch 'resnet18' \
-                                                           --t-model-param '/content/drive/MyDrive/SCDD/ofhome/r50_r34/Ar2Cl/model_best.pth.tar' \
+                                                           --t-model-param '/content/drive/MyDrive/SCDD/ofhome/r50_2_r34/Ar2Cl/model_best.pth.tar' \
                                                            -d OfficeHome \
                                                            -s Ar \
                                                            -t Cl \
