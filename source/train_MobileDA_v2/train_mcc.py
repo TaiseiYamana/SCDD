@@ -101,7 +101,12 @@ def main(args):
 		    net.classifier[3] = nn.Linear(1024, num_classes)
     elif args.arch == 'mobilenet_v3_large':
 		    net = mobilenet_v3_large(pretrained=True)
-		    net.classifier[3] = nn.Linear(1280, num_classes)  
+		    net.classifier[3] = nn.Linear(1280, num_classes) 
+    elif args.arch == 'alexnet':
+		    net = alexnet(pretrained=True)
+		    net.classifier[6] = nn.Linear(4096, num_classes)
+		    torch.nn.init.normal_(net.classifier[6].weight, mean=0, std=5e-3)
+		    net.classifier[6].bias.data.fill_(0.01)	
     else:
 		    backbone = models.__dict__[args.arch](pretrained=True)
 		    net = modules.Classifier(backbone, num_classes)
@@ -111,17 +116,7 @@ def main(args):
     logging.info('-----------------------------------------------')
 
     # define optimizer and lr scheduler
-    if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
-		    params = [
-            {"params": net.features.parameters(), "lr": 0.1 * 1},
-            {"params": net.classifier.parameters(), "lr": 1.0 * 1}]
-    else:
-		    params = net.get_parameters()  
-    optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
-    lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
-
-    # define optimizer and lr scheduler
-    if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
+    if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large' or args.arch == 'alexnet':
 		    params = [
             {"params": net.features.parameters(), "lr": 0.1 * 1},
             {"params": net.classifier.parameters(), "lr": 1.0 * 1}]
