@@ -13,7 +13,7 @@ from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
-from torchvision.models import mobilenet_v3_small, mobilenet_v3_large
+from torchvision.models import mobilenet_v3_small, mobilenet_v3_large, alexnet
 
 sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
@@ -113,8 +113,8 @@ def main(args):
     # define optimizer and lr scheduler
     if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
 		    params = [
-            {"params": net.features.parameters(), "lr": 0.1 * args.lr},
-            {"params": net.classifier.parameters(), "lr": 1.0 * args.lr}]
+            {"params": net.features.parameters(), "lr": 0.1 * 1},
+            {"params": net.classifier.parameters(), "lr": 1.0 * 1}]
     else:
 		    params = net.get_parameters()  
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
