@@ -266,7 +266,7 @@ def train(iters, net, optimizer, lr_scheduler, cls, dcoral, epoch, args):
     
 		prec1, prec5 = accuracy(source_out, source_label, topk=(1,5))
 		cls_losses.update(cls_loss.item(), source_img.size(0))
-		mcc_losses.update(mcc_loss.item(), target_img.size(0))
+		dcoral_losses.update(dcoral_loss.item(), target_img.size(0))
 		top1.update(prec1.item(), source_img.size(0))
 		top5.update(prec5.item(), source_img.size(0))
 
