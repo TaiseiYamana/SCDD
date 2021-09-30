@@ -251,7 +251,7 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 			source_img = source_img.cuda()
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
-		if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
+		if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large' or args.arch == 'alexnet':
 			source_out = net(source_img)
 			target_out = net(target_img)
 		else:
@@ -303,7 +303,7 @@ def test(test_loader, net, cls, mcc, args, phase):
 			target = target.cuda()
 
 		with torch.no_grad():
-			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
+			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large' or args.arch == 'alexnet':
 				out = net(img)
 			else:
 				out, _ = net(img)
