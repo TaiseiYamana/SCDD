@@ -121,7 +121,7 @@ def main(args):
     elif args.s_arch == 'mobilenet_v3_large':
 		    snet = mobilenet_v3_large(pretrained=True)
 		    snet.classifier[3] = nn.Linear(1280, num_classes)
-    elif args.arch == 'alexnet':
+    elif args.s_arch == 'alexnet':
  		    snet = alexnet(pretrained=True)
  		    snet.classifier[6] = nn.Linear(4096, num_classes)
  		    torch.nn.init.normal_(snet.classifier[6].weight, mean=0, std=5e-3)
@@ -135,7 +135,14 @@ def main(args):
     logging.info('-----------------------------------------------')
 
     # define optimizer and lr scheduler
-    optimizer = SGD(snet.get_parameters(), args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
+        # define optimizer and lr scheduler
+    if args.s_arch == 'mobilenet_v3_small' or args.s_arch == 'mobilenet_v3_large' or args.s_arch == 'alexnet':
+		    params = [
+            {"params": snet.features.parameters(), "lr": 0.1 * 1},
+            {"params": snet.classifier.parameters(), "lr": 1.0 * 1}]
+    else:
+		    params = snet.get_parameters() 
+    optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
     # define loss function
