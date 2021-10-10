@@ -282,7 +282,7 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
 
-		if args.s_arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large' or args.arch == 'alexnet':
+		if args.s_arch == 'mobilenet_v3_small' or args.s_arch == 'mobilenet_v3_large' or args.s_arch == 'alexnet':
 			s_source_out = snet(source_img)
 			s_target_out = snet(target_img)            
 			t_target_out = tnet(target_img)
@@ -339,7 +339,7 @@ def test(test_loader, net, cls, args, phase):
 				img = img.cuda()
 				target = target.cuda()
 
-			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large' or args.arch == 'alexnet':
+			if args.s_arch == 'mobilenet_v3_small' or args.s_arch == 'mobilenet_v3_large' or args.s_arch == 'alexnet':
 				out = net(img)
 			else:
 				out, _ = net(img)
