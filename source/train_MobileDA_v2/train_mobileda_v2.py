@@ -14,7 +14,7 @@ from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
-from torchvision.models import mobilenet_v3_small, mobilenet_v3_large
+from torchvision.models import mobilenet_v3_small, mobilenet_v3_large, alexnet
 
 sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
@@ -121,6 +121,11 @@ def main(args):
     elif args.s_arch == 'mobilenet_v3_large':
 		    snet = mobilenet_v3_large(pretrained=True)
 		    snet.classifier[3] = nn.Linear(1280, num_classes)
+    elif args.arch == 'alexnet':
+ 		    snet = alexnet(pretrained=True)
+		    snet.classifier[6] = nn.Linear(4096, num_classes)
+		    torch.nn.init.normal_(snet.classifier[6].weight, mean=0, std=5e-3)
+		    snet.classifier[6].bias.data.fill_(0.01)	            
     else:
 		    sbackbone = models.__dict__[args.s_arch](pretrained=True)
 		    snet = modules.Classifier(sbackbone, num_classes)
@@ -277,9 +282,14 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
 
-		s_source_out, _ = snet(source_img)
-		s_target_out, _ = snet(target_img)
-		t_target_out, _= tnet(target_img)
+		if args.s_arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large' or args.arch == 'alexnet':
+			s_source_out = snet(source_img)
+			s_target_out = snet(target_img)            
+			t_target_out = tnet(target_img)
+		else:
+			s_source_out, _ = snet(source_img)
+			s_target_out, _ = snet(target_img)
+			t_target_out, _= tnet(target_img)
 
 		cls_loss = cls(s_source_out, source_label)
 		mcc_loss = mcc(s_target_out)
@@ -329,8 +339,11 @@ def test(test_loader, net, cls, args, phase):
 				img = img.cuda()
 				target = target.cuda()
 
-			out, _  = net(img)
-			loss = cls(out, target)
+			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large' or args.arch == 'alexnet':
+				out = net(img)
+			else:
+				out, _ = net(img)
+			loss = cls(out, target)    
 
 			prec1, prec5 = accuracy(out, target, topk=(1,5))
 			losses.update(loss.item(), img.size(0))
