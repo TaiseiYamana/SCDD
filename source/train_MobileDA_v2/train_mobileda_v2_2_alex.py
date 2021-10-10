@@ -178,8 +178,8 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 
 	end = time.time()
 	for i in range(args.iters_per_epoch):
-		source_img, source_label = next(source_iter)
-		target_img, _ = next(target_iter)
+		source_img, source_label, _ = next(source_iter)
+		target_img, _ , _ = next(target_iter)
 
 		data_time.update(time.time() - end)
 
@@ -234,7 +234,7 @@ def test(test_loader, net, cls, args, phase):
 	net.eval()
 
 	end = time.time()
-	for i, (img, target) in enumerate(test_loader, start=1):
+	for i, (img, target, _) in enumerate(test_loader, start=1):
 		if args.cuda:
 			img = img.cuda()
 			target = target.cuda()
