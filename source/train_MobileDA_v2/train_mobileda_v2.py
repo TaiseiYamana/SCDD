@@ -384,7 +384,6 @@ if __name__ == '__main__':
                              ' | '.join(architecture_names) +
                              ' (default: resnet50)')
     parser.add_argument('--s_arch', metavar='ARCH', default='resnet18',
-                        choices=architecture_names,
                         help='backbone architecture: ' +
                              ' | '.join(architecture_names) +
                              ' (default: resnet18)')    
