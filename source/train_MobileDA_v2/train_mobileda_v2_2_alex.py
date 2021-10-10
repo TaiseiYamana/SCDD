@@ -56,7 +56,7 @@ def main(args):
     logging.info('Initialize Teacher Model')
     logging.info('=> using pre-trained model {}'.format(args.t_arch))
     tbackbone = models.__dict__[args.t_arch](pretrained=True)
-    tnet = models.Classifier(tbackbone, num_classes).to(device)
+    tnet = modules.Classifier(tbackbone, num_classes).to(device)
     checkpoint = torch.load(args.t_model_param)
     load_pretrained_model(tnet, checkpoint['net'])
     tnet.eval()
