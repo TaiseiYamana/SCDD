@@ -123,9 +123,9 @@ def main(args):
 		    snet.classifier[3] = nn.Linear(1280, num_classes)
     elif args.arch == 'alexnet':
  		    snet = alexnet(pretrained=True)
-		    snet.classifier[6] = nn.Linear(4096, num_classes)
-		    torch.nn.init.normal_(snet.classifier[6].weight, mean=0, std=5e-3)
-		    snet.classifier[6].bias.data.fill_(0.01)	            
+ 		    snet.classifier[6] = nn.Linear(4096, num_classes)
+ 		    torch.nn.init.normal_(snet.classifier[6].weight, mean=0, std=5e-3)
+ 		    snet.classifier[6].bias.data.fill_(0.01)	            
     else:
 		    sbackbone = models.__dict__[args.s_arch](pretrained=True)
 		    snet = modules.Classifier(sbackbone, num_classes)
