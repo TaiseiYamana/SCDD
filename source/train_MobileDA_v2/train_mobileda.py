@@ -305,7 +305,7 @@ def train(iters, nets, optimizer, lr_scheduler, cls, dcoral, st, epoch, args):
 
 		prec1, prec5 = accuracy(s_source_out, source_label, topk=(1,5))
 		cls_losses.update(cls_loss.item(), source_img.size(0))
-		mcc_losses.update(mcc_loss.item(), target_img.size(0))
+		dcoral_losses.update(dcoral_loss.item(), target_img.size(0))
 		kd_losses.update(kd_loss.item(), target_img.size(0))
 		top1.update(prec1.item(), source_img.size(0))
 		top5.update(prec5.item(), source_img.size(0))
@@ -322,13 +322,13 @@ def train(iters, nets, optimizer, lr_scheduler, cls, dcoral, st, epoch, args):
 			log_str = ('Epoch[{0}]:[{1:03}/{2:03}] '
 					   'Time:{batch_time.val:.4f} '
 					   'Data:{data_time.val:.4f}  '
-					   'Cls:{cls_losses.val:.4f}({cls_losses.avg:.4f})  '
+					   'DCORAL:{dcoral_losses.val:.4f}({dcoral_losses.avg:.4f})  '
 					   'MCC:{mcc_losses.val:.4f}({mcc_losses.avg:.4f})  '
 					   'KD:{kd_losses.val:.4f}({kd_losses.avg:.4f})  '
 					   'prec@1:{top1.val:.2f}({top1.avg:.2f})  '
 					   'prec@5:{top5.val:.2f}({top5.avg:.2f})'.format(
 					   epoch, i, args.iters_per_epoch, batch_time=batch_time, data_time=data_time,
-					   cls_losses=cls_losses, mcc_losses=mcc_losses, kd_losses=kd_losses, top1=top1, top5=top5))
+					   cls_losses=cls_losses, dcoral_losses=dcoral_losses, kd_losses=kd_losses, top1=top1, top5=top5))
 			logging.info(log_str)
 
 
