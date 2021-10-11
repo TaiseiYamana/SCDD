@@ -322,8 +322,8 @@ def train(iters, nets, optimizer, lr_scheduler, cls, dcoral, st, epoch, args):
 			log_str = ('Epoch[{0}]:[{1:03}/{2:03}] '
 					   'Time:{batch_time.val:.4f} '
 					   'Data:{data_time.val:.4f}  '
+					   'CLs:{cls_losses.val:.4f}({cls_losses.avg:.4f})  '
 					   'DCORAL:{dcoral_losses.val:.4f}({dcoral_losses.avg:.4f})  '
-					   'MCC:{mcc_losses.val:.4f}({mcc_losses.avg:.4f})  '
 					   'KD:{kd_losses.val:.4f}({kd_losses.avg:.4f})  '
 					   'prec@1:{top1.val:.2f}({top1.avg:.2f})  '
 					   'prec@5:{top5.val:.2f}({top5.avg:.2f})'.format(
