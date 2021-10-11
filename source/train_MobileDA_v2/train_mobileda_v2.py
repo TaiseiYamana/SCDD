@@ -291,12 +291,12 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 
 		if args.s_arch == 'mobilenet_v3_small' or args.s_arch == 'mobilenet_v3_large' or args.s_arch == 'alexnet':
 			s_source_out = snet(source_img)
-			s_target_out = snet(target_img)            
-			t_target_out = tnet(target_img)
+			s_target_out = snet(target_img)           
 		else:
 			s_source_out, _ = snet(source_img)
 			s_target_out, _ = snet(target_img)
-			t_target_out, _= tnet(target_img)
+			
+		t_target_out, _= tnet(target_img)
 
 		cls_loss = cls(s_source_out, source_label)
 		mcc_loss = mcc(s_target_out)
