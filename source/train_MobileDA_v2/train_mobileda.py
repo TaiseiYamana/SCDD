@@ -414,7 +414,7 @@ if __name__ == '__main__':
                              "When phase is 'analysis', only analysis the model.")
     # loss parameters
     parser.add_argument('--st_temp', default=2.0, type=float, help='parameter soft target temperature scaling')
-    parser.add_argument('--lam', default=0.9., type=float,
+    parser.add_argument('--lam', default=0.9, type=float,
                         help='the trade-off hyper-parameter for dcoral loss')
     parser.add_argument('--mu', default=1., type=float,
                         help='the trade-off hyper-parameter for soft target loss')
