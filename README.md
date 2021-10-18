@@ -18,12 +18,15 @@
 4. [Citation](#citation)
 5. [License](#license)
 
-##introduction
+##　Introduction
+
 SCDD is UDA method for lieghtweight model. Lightweight model can be trained 
-##functionality
-##experiment
-##citation
-##license
+
+## Functionality
+
+## Experiment
+## Citation
+## License
 
 
 
