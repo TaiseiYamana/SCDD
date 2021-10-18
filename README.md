@@ -1,1 +1,5 @@
-[SCDD.pdf](https://github.com/TaiseiYamana/TaiseisDA/files/7365383/SCDD.pdf)
+# Stepwise Cross Domain Distillation (SCDD)
+
+<div align="center">
+    <img src=".github/SCDD.png", width="300">
+</div>
