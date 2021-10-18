@@ -1,3 +1,1 @@
-<div align="center">
-    <img src=".github/SCDD.pdf" width="300">
-</div>
+[SCDD.pdf](https://github.com/TaiseiYamana/TaiseisDA/files/7365383/SCDD.pdf)
