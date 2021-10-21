@@ -18,6 +18,8 @@ class MobileNetV3(models.MobileNetV3):
         super(MobileNetV3, self).__init__(dropout, *args, **kwargs)
         self._out_features = self.classifier[3].in_features
 
+        print( dropout)
+
         self.classifier = nn.Sequential(
             nn.Linear(self.classifier[0].in_features, self._out_features),
             nn.Hardswish(inplace=True),
