@@ -14,8 +14,9 @@ __all__ = ["MobileNetV3", "mobilenet_v3_large", "mobilenet_v3_small"]
 class MobileNetV3(models.MobileNetV3):
     """MoibleNets without fully connected layer"""
 
-    def __init__(self, dropout,*args, **kwargs):
-        super(MobileNetV3, self).__init__(dropout,*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(MobileNetV3, self).__init__(*args, **kwargs)
+        models.MobileNetV3.__init__(dropout)
         cls_in_features = self.classifier[0].in_features
         self._out_features = self.classifier[3].in_features
 
