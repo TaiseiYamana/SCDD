@@ -26,7 +26,7 @@ class MobileNetV3(models.MobileNetV3):
             # nn.Linear(last_channel, num_classes),
         )    
 
-    def _forward_impl(self, x: Tensor) -> Tensor:
+    def _forward_impl(self, x):
         x = self.features(x)
 
         x = self.avgpool(x)
@@ -36,7 +36,7 @@ class MobileNetV3(models.MobileNetV3):
 
         return x
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x):
         return self._forward_impl(x)
 
 def _mobilenet_v3_model(arch, inverted_residual_setting, last_channel, pretrained, progress, **kwargs):
