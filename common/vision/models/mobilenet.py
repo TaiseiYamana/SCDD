@@ -19,10 +19,12 @@ class MobileNetV3(models.MobileNetV3):
         cls_in_features = self.classifier[0].in_features
         self._out_features = self.classifier[3].in_features
 
+        self.dropout = dropout
+
         self.classifier = nn.Sequential(
             nn.Linear(cls_in_features, self._out_features),
             nn.Hardswish(inplace=True),
-            nn.Dropout(p=dropout, inplace=True)
+            nn.Dropout(p=0.2, inplace=True)
         )    
 
     def _forward_impl(self, x):
