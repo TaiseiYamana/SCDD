@@ -49,7 +49,7 @@ def _mobilenet_v3_model(arch, inverted_residual_setting, last_channel, pretraine
         model.load_state_dict(pretrained_dict, strict=False)
     return model        
 
-def mobilenet_v3_large(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> MobileNetV3:
+def mobilenet_v3_large(pretrained: bool = False, progress: bool = True, **kwargs):
     """
     Constructs a large MobileNetV3 architecture from
     `"Searching for MobileNetV3" <https://arxiv.org/abs/1905.02244>`_.
@@ -62,7 +62,7 @@ def mobilenet_v3_large(pretrained: bool = False, progress: bool = True, **kwargs
     return _mobilenet_v3_model(arch, inverted_residual_setting, last_channel, pretrained, progress, **kwargs)
 
 
-def mobilenet_v3_small(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> MobileNetV3:
+def mobilenet_v3_small(pretrained: bool = False, progress: bool = True, **kwargs):
     """
     Constructs a small MobileNetV3 architecture from
     `"Searching for MobileNetV3" <https://arxiv.org/abs/1905.02244>`_.
