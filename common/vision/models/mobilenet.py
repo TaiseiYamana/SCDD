@@ -20,7 +20,7 @@ class MobileNetV3(models.MobileNetV3):
         lastconv_output_channels = self.classifier[0].in_features
 
         self.classifier = nn.Sequential(
-            nn.Linear(lastconv_output_channels, _out_features),
+            nn.Linear(lastconv_output_channels, self._out_features),
             nn.Hardswish(inplace=True),
             nn.Dropout(p=dropout, inplace=True),
             # nn.Linear(last_channel, num_classes),
