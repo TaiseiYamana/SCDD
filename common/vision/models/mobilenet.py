@@ -19,7 +19,7 @@ class MobileNetV3(models.MobileNetV3):
         self._out_features = self.classifier[3].in_features
 
     # building last several layers
-    lastconv_input_channels = inverted_residual_setting[-1].out_channels
+    lastconv_input_channels = args.inverted_residual_setting[-1].out_channels
     lastconv_output_channels = 6 * lastconv_input_channels
 
     self.classifier = nn.Sequential(
