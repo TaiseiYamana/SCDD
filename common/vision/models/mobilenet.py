@@ -5,7 +5,7 @@
 import torch.nn as nn
 from torchvision import models
 from torchvision.models.utils import load_state_dict_from_url
-from torchvision.models.movilenetv3 import _mobilenet_v3_conf, model_urls
+from torchvision.models.mobilenetv3 import _mobilenet_v3_conf, model_urls
 import copy
 
 __all__ = ["MobileNetV3", "mobilenet_v3_large", "mobilenet_v3_small"]
