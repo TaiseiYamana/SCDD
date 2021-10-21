@@ -15,7 +15,7 @@ class MobileNetV3(models.MobileNetV3):
     """MoibleNets without fully connected layer"""
 
     def __init__(self, dropout, *args, **kwargs):
-        super(MobileNetV3, self).__init__(dropout, *args, **kwargs)
+        super(MobileNetV3, self).__init__(dropout = 0.2, *args, **kwargs)
         cls_in_features = self.classifier[0].in_features
         self._out_features = self.classifier[3].in_features
 
