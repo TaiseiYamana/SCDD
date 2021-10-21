@@ -17,14 +17,14 @@ class MobileNetV3(models.MobileNetV3):
     def __init__(self, *args, **kwargs):
         super(MobileNetV3, self).__init__(*args, **kwargs)
         self._out_features = self.classifier[3].in_features
-        self.lastconv_output_channels = self.classifier[0].in_features
+        lastconv_output_channels = self.classifier[0].in_features
 
-    self.classifier = nn.Sequential(
-        nn.Linear(lastconv_output_channels, last_channel),
-        nn.Hardswish(inplace=True),
-        nn.Dropout(p=dropout, inplace=True),
-        # nn.Linear(last_channel, num_classes),
-    )    
+        self.classifier = nn.Sequential(
+            nn.Linear(lastconv_output_channels, last_channel),
+            nn.Hardswish(inplace=True),
+            nn.Dropout(p=dropout, inplace=True),
+            # nn.Linear(last_channel, num_classes),
+        )    
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         x = self.features(x)
