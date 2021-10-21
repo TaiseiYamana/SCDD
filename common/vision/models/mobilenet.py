@@ -17,13 +17,10 @@ class MobileNetV3(models.MobileNetV3):
     def __init__(self, *args, **kwargs):
         super(MobileNetV3, self).__init__(*args, **kwargs)
         self._out_features = self.classifier[3].in_features
-
-    # building last several layers
-    lastconv_input_channels = args.inverted_residual_setting[-1].out_channels
-    lastconv_output_channels = 6 * lastconv_input_channels
+        self.lastconv_output_channels = self.classifier[0].in_features
 
     self.classifier = nn.Sequential(
-        nn.Linear(lastconv_output_channels, last_channel),
+        nn.Linear(self.lastconv_output_channels, last_channel),
         nn.Hardswish(inplace=True),
         nn.Dropout(p=dropout, inplace=True),
         # nn.Linear(last_channel, num_classes),
