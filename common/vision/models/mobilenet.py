@@ -22,7 +22,7 @@ class MobileNetV3(models.MobileNetV3):
         self.classifier = nn.Sequential(
             nn.Linear(cls_in_features, self._out_features),
             nn.Hardswish(inplace=True),
-            nn.Dropout(p=args[5], inplace=True)
+            nn.Dropout(p=0.9, inplace=True)
         )    
 
     def _forward_impl(self, x):
