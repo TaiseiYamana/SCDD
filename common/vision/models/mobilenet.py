@@ -15,16 +15,14 @@ class MobileNetV3(models.MobileNetV3):
     """MoibleNets without fully connected layer"""
 
     def __init__(self, dropout, *args, **kwargs):
-        super(MobileNetV3, self).__init__(dropout = 0.2, *args, **kwargs)
+        super(MobileNetV3, self).__init__(*args, **kwargs)
         cls_in_features = self.classifier[0].in_features
         self._out_features = self.classifier[3].in_features
-
-        self.dropout = dropout
 
         self.classifier = nn.Sequential(
             nn.Linear(cls_in_features, self._out_features),
             nn.Hardswish(inplace=True),
-            nn.Dropout(p=0.2, inplace=True)
+            nn.Dropout(p=super.dropout, inplace=True)
         )    
 
     def _forward_impl(self, x):
