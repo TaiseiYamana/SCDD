@@ -59,7 +59,7 @@ def mobilenet_v3_large(num_classes: int, pretrained: bool = False, progress: boo
     arch = "mobilenet_v3_large"
     inverted_residual_setting, last_channel = _mobilenet_v3_conf(arch, **kwargs)
     model = _mobilenet_v3_model(arch, inverted_residual_setting, last_channel, pretrained, progress, **kwargs)
-    model.classifier[3] = nn.Liner(model.out_features, num_classes)
+    model.classifier[3] = nn.Linear(model.out_features, num_classes)
     return model
 
 def mobilenet_v3_small(num_classes: int, pretrained: bool = False, progress: bool = True, **kwargs):
@@ -73,5 +73,5 @@ def mobilenet_v3_small(num_classes: int, pretrained: bool = False, progress: boo
     arch = "mobilenet_v3_small"
     inverted_residual_setting, last_channel = _mobilenet_v3_conf(arch, **kwargs)
     model = _mobilenet_v3_model(arch, inverted_residual_setting, last_channel, pretrained, progress, **kwargs)
-    model.classifier[3] = nn.Liner(model.out_features, num_classes)
+    model.classifier[3] = nn.Linear(model.out_features, num_classes)
     return model
