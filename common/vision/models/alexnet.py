@@ -8,8 +8,7 @@ from torchvision.models.utils import load_state_dict_from_url
 from torchvision.models.alexnet import model_urls
 import copy
 
-__all__ = ["MobileNetV3", "mobilenet_v3_large", "mobilenet_v3_small"]
-
+__all__ = ["AlexNet", "alexnet"]
 
 class AlexNet(models.AlexNet):
     """MoibleNets without fully connected layer"""
