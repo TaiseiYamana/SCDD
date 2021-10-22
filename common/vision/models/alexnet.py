@@ -2,7 +2,7 @@
 # Modified based on torchvision.models.alexnet.
 # ------------------------------------------------------------------------------
 
-import tourch
+import torch
 import torch.nn as nn
 from torchvision import models
 from torchvision.models.utils import load_state_dict_from_url
