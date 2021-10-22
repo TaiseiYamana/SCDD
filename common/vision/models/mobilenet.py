@@ -16,21 +16,13 @@ class MobileNetV3(models.MobileNetV3):
 
     def __init__(self, *args, **kwargs):
         super(MobileNetV3, self).__init__(*args, **kwargs)
-        cls_in_features = self.classifier[0].in_features
         self._out_features = self.classifier[3].in_features
-
-        self.classifier = nn.Sequential(
-            nn.Linear(cls_in_features, self._out_features),
-            nn.Hardswish(inplace=True),
-            nn.Dropout(p=super.dropout, inplace=True)
-        )    
+        self.classifier = self.classifier[:-1]
 
     def _forward_impl(self, x):
         x = self.features(x)
-
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
-
         x = self.classifier(x)
 
         return x
