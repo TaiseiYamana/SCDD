@@ -17,15 +17,14 @@ class MobileNetV3(models.MobileNetV3):
     def __init__(self, *args, **kwargs):
         super(MobileNetV3, self).__init__(*args, **kwargs)
         self._out_features = self.classifier[3].in_features
-        self.classifier = self.classifier[:-1]
 
     def _forward_impl(self, x):
-        x = self.features(x)
-        x = self.avgpool(x)
-        x = torch.flatten(x, 1)
-        x = self.classifier(x)
+        f = self.features(x)
+        f = self.avgpool(f)
+        f = torch.flatten(f, 1)
+        predictions = self.classifier(f)
 
-        return x
+        return predictions, f
 
     def forward(self, x):
         return self._forward_impl(x)
@@ -37,7 +36,7 @@ class MobileNetV3(models.MobileNetV3):
 
     def copy_head(self) -> nn.Module:
         """Copy the origin fully connected layer"""
-        return copy.deepcopy(self.fc)
+        return copy.deepcopy(self.classifier)
 
 def _mobilenet_v3_model(arch, inverted_residual_setting, last_channel, pretrained, progress, **kwargs):
     model = MobileNetV3(inverted_residual_setting, last_channel, **kwargs)
@@ -49,7 +48,7 @@ def _mobilenet_v3_model(arch, inverted_residual_setting, last_channel, pretraine
         model.load_state_dict(pretrained_dict, strict=False)
     return model        
 
-def mobilenet_v3_large(pretrained: bool = False, progress: bool = True, **kwargs):
+def mobilenet_v3_large(num_classes: int, pretrained: bool = False, progress: bool = True,  **kwargs):
     """
     Constructs a large MobileNetV3 architecture from
     `"Searching for MobileNetV3" <https://arxiv.org/abs/1905.02244>`_.
@@ -59,10 +58,11 @@ def mobilenet_v3_large(pretrained: bool = False, progress: bool = True, **kwargs
     """
     arch = "mobilenet_v3_large"
     inverted_residual_setting, last_channel = _mobilenet_v3_conf(arch, **kwargs)
-    return _mobilenet_v3_model(arch, inverted_residual_setting, last_channel, pretrained, progress, **kwargs)
+    model = _mobilenet_v3_model(arch, inverted_residual_setting, last_channel, pretrained, progress, **kwargs)
+    model.classifier[3] = nn.Liner(model.out_features, num_classes)
+    return model
 
-
-def mobilenet_v3_small(pretrained: bool = False, progress: bool = True, **kwargs):
+def mobilenet_v3_small(num_classes: int, pretrained: bool = False, progress: bool = True, **kwargs):
     """
     Constructs a small MobileNetV3 architecture from
     `"Searching for MobileNetV3" <https://arxiv.org/abs/1905.02244>`_.
@@ -72,4 +72,6 @@ def mobilenet_v3_small(pretrained: bool = False, progress: bool = True, **kwargs
     """
     arch = "mobilenet_v3_small"
     inverted_residual_setting, last_channel = _mobilenet_v3_conf(arch, **kwargs)
-    return _mobilenet_v3_model(arch, inverted_residual_setting, last_channel, pretrained, progress, **kwargs)
+    model = _mobilenet_v3_model(arch, inverted_residual_setting, last_channel, pretrained, progress, **kwargs)
+    model.classifier[3] = nn.Liner(model.out_features, num_classes)
+    return model
