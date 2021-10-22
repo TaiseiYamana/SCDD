@@ -30,6 +30,15 @@ class MobileNetV3(models.MobileNetV3):
     def forward(self, x):
         return self._forward_impl(x)
 
+    @property
+    def out_features(self) -> int:
+        """The dimension of output features"""
+        return self._out_features
+
+    def copy_head(self) -> nn.Module:
+        """Copy the origin fully connected layer"""
+        return copy.deepcopy(self.fc)
+
 def _mobilenet_v3_model(arch, inverted_residual_setting, last_channel, pretrained, progress, **kwargs):
     model = MobileNetV3(inverted_residual_setting, last_channel, **kwargs)
     if pretrained:
