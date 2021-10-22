@@ -103,7 +103,7 @@ def main(args):
     logging.info('----------- Network Initialization --------------')
     logging.info('Initialize Teacher Model')
     logging.info('=> using pre-trained model {}'.format(args.t_arch))
-    if (args.t_arch in 'resnet'):
+    if ('resnet' in args.t_arch):
             tbackbone = models.__dict__[args.t_arch](pretrained=True)
             tnet = modules.Classifier(tbackbone, num_classes).to(device)
     else:
