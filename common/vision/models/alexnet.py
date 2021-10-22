@@ -41,6 +41,7 @@ def alexnet(num_classes: int, pretrained: bool = False, progress: bool = True, *
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
+    arch = "alexnet" 
     model = AlexNet(**kwargs)
     if pretrained:
         model_dict = model.state_dict()
