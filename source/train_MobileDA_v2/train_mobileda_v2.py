@@ -91,7 +91,7 @@ def main(args):
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_val_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)                                     
+    target_val_loader = DataLoader(target_train_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)                                     
     target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
@@ -103,10 +103,13 @@ def main(args):
     logging.info('----------- Network Initialization --------------')
     logging.info('Initialize Teacher Model')
     logging.info('=> using pre-trained model {}'.format(args.t_arch))
-    tbackbone = models.__dict__[args.t_arch](pretrained=True)
-    tnet = modules.Classifier(tbackbone, num_classes).to(device)
-    checkpoint = torch.load(args.t_model_param)
-    load_pretrained_model(tnet, checkpoint['net'])
+    if ('resnet' in args.t_arch):
+            tbackbone = models.__dict__[args.t_arch](pretrained=True)
+            tnet = modules.Classifier(tbackbone, num_classes).to(device)
+    else:
+            tnet = models.__dict__[args.t_arch](num_classes = num_classes, pretrained = True)
+    tnet_param = torch.load(args.t_model_param)
+    load_pretrained_model(tnet, tnet_param['net'])
     tnet.eval()
     for param in tnet.parameters():
 		    param.requires_grad = False
@@ -115,33 +118,24 @@ def main(args):
 
     logging.info('Initialize Student Model')
     logging.info('=> using pre-trained model {}'.format(args.s_arch))
-    if args.s_arch == 'mobilenet_v3_small':
-		    snet = mobilenet_v3_small(pretrained=True)
-		    snet.classifier[3] = nn.Linear(1024, num_classes)
-    elif args.s_arch == 'mobilenet_v3_large':
-		    snet = mobilenet_v3_large(pretrained=True)
-		    snet.classifier[3] = nn.Linear(1280, num_classes)
-    elif args.s_arch == 'alexnet':
- 		    snet = alexnet(pretrained=True)
- 		    snet.classifier[6] = nn.Linear(4096, num_classes)
- 		    torch.nn.init.normal_(snet.classifier[6].weight, mean=0, std=5e-3)
- 		    snet.classifier[6].bias.data.fill_(0.01)	            
-    else:
+    if ('resnet' in args.s_arch):
 		    sbackbone = models.__dict__[args.s_arch](pretrained=True)
 		    snet = modules.Classifier(sbackbone, num_classes)
+    else:
+            snet = models.__dict__[args.s_arch](num_classes = num_classes, pretrained = True)
     snet = snet.to(device)
     logging.info('%s', snet)
     logging.info("param size = %fMB", count_parameters_in_MB(snet))
     logging.info('-----------------------------------------------')
 
     # define optimizer and lr scheduler
-        # define optimizer and lr scheduler
-    if args.s_arch == 'mobilenet_v3_small' or args.s_arch == 'mobilenet_v3_large' or args.s_arch == 'alexnet':
+    if (args.t_arch in 'resnet'):
+		    params = snet.get_parameters() 
+    else:
 		    params = [
             {"params": snet.features.parameters(), "lr": 0.1 * 1},
             {"params": snet.classifier.parameters(), "lr": 1.0 * 1}]
-    else:
-		    params = snet.get_parameters() 
+            
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
@@ -289,13 +283,8 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
 
-		if args.s_arch == 'mobilenet_v3_small' or args.s_arch == 'mobilenet_v3_large' or args.s_arch == 'alexnet':
-			s_source_out = snet(source_img)
-			s_target_out = snet(target_img)           
-		else:
-			s_source_out, _ = snet(source_img)
-			s_target_out, _ = snet(target_img)
-			
+		s_source_out, _ = snet(source_img)
+		s_target_out, _ = snet(target_img)
 		t_target_out, _= tnet(target_img)
 
 		cls_loss = cls(s_source_out, source_label)
@@ -346,10 +335,7 @@ def test(test_loader, net, cls, args, phase):
 				img = img.cuda()
 				target = target.cuda()
 
-			if args.s_arch == 'mobilenet_v3_small' or args.s_arch == 'mobilenet_v3_large' or args.s_arch == 'alexnet':
-				out = net(img)
-			else:
-				out, _ = net(img)
+			out, _ = net(img)
 			loss = cls(out, target)    
 
 			prec1, prec5 = accuracy(out, target, topk=(1,5))
@@ -391,6 +377,7 @@ if __name__ == '__main__':
                              ' | '.join(architecture_names) +
                              ' (default: resnet50)')
     parser.add_argument('--s_arch', metavar='ARCH', default='resnet18',
+                        choices=architecture_names,
                         help='backbone architecture: ' +
                              ' | '.join(architecture_names) +
                              ' (default: resnet18)')    
