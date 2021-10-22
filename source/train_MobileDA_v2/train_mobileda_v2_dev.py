@@ -118,11 +118,11 @@ def main(args):
 
     logging.info('Initialize Student Model')
     logging.info('=> using pre-trained model {}'.format(args.s_arch))
-    if ('resnet' in args.t_arch):
+    if ('resnet' in args.s_arch):
 		    sbackbone = models.__dict__[args.s_arch](pretrained=True)
 		    snet = modules.Classifier(sbackbone, num_classes)
     else:
-            snet = models.__dict__[args.t_arch](num_classes = num_classes, pretrained = True)
+            snet = models.__dict__[args.s_arch](num_classes = num_classes, pretrained = True)
     snet = snet.to(device)
     logging.info('%s', snet)
     logging.info("param size = %fMB", count_parameters_in_MB(snet))
