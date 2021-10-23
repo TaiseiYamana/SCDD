@@ -20,7 +20,7 @@
 
 ## Introduction
 
-SCDD is UDA method for lieghtweight model. Lightweight model can be trained 
+SCDD is UDA method for lieghtweight model. Lightweight model can be trained by cross domain distillation.
 
 ## Functionality
 
