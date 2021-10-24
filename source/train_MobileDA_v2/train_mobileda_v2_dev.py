@@ -287,6 +287,8 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 			source_img = source_img.cuda()
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
+			if (args.select_label):
+				target_selected_img = target_selected_img.cuda()
 
 		s_source_out, _ = snet(source_img)
 		s_target_out, _ = snet(target_img)
