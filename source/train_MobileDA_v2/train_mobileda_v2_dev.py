@@ -199,7 +199,7 @@ def main(args):
     # check point parameter load
     if (args.check_point):
 		    checkpoint = torch.load(args.s_model_param)
-		    load_pretrained_model(net, checkpoint['net'])
+		    load_pretrained_model(snet, checkpoint['net'])
 		    check_point_epoch = checkpoint['epoch']
 		    optimizer.load_state_dict(checkpoint['optimizer'])
 		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
