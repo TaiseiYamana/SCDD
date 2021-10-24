@@ -144,7 +144,7 @@ def main(args):
 		    # select paseudo labels
 		    selected_idx = pseudo_labeling(args.threshold, target_train_loader, tnet)
 		    target_selected_dataset = dataset(root=args.img_root, task=args.target, indexs = selected_idx, transform=train_transform)
-		    target_train_selected_loader = DataLoader(selected_dataset, batch_size=args.batch_size,
+		    target_train_selected_loader = DataLoader(target_selected_dataset, batch_size=args.batch_size,
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
 		    target_train_selected_iter = ForeverDataIterator(target_train_selected_loader)
 		    # define dict 
@@ -279,7 +279,7 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 		source_img, source_label, _ = next(source_iter)
 		target_img, _, _ = next(target_iter)
 		if (args.select_label):
-			target_selected_img = next(target_selected_iter)
+			target_selected_img, _, _ = next(target_selected_iter)
 
 		data_time.update(time.time() - end)
 
