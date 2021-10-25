@@ -12,7 +12,7 @@
 
 
 # Contents
-1. [Introduction](#introduction)
+1. [Introduction](#ntroduction)
 2. [Functionality](#functionality)
 3. [experiment](#experiment)
 4. [Citation](#citation)
