@@ -13,10 +13,10 @@
 
 # Contents
 1. [Introduction](#Introduction)
-2. [Functionality](#functionality)
-3. [experiment](#experiment)
-4. [Citation](#citation)
-5. [License](#license)
+2. [Functionality](#Functionality)
+3. [experiment](#Experiment)
+4. [Citation](#Citation)
+5. [License](#License)
 
 ## Introduction
 
