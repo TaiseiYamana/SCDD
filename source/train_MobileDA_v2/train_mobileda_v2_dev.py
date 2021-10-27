@@ -110,8 +110,8 @@ def main(args):
     tnet.eval()
     for param in tnet.parameters():
 		    param.requires_grad = False
-    logging.info('%s', tnet)
-    logging.info("param size = %fMB", count_parameters_in_MB(tnet))
+    #logging.info('%s', tnet)
+    #logging.info("param size = %fMB", count_parameters_in_MB(tnet))
 
     logging.info('Initialize Student Model')
     logging.info('=> using pre-trained model {}'.format(args.s_arch))
@@ -120,8 +120,8 @@ def main(args):
 		    snet = modules.Classifier(sbackbone, num_classes).to(device)
     else:
             snet = models.__dict__[args.s_arch](num_classes = num_classes, pretrained = True).to(device)
-    logging.info('%s', snet)
-    logging.info("param size = %fMB", count_parameters_in_MB(snet))
+    #logging.info('%s', snet)
+    #logging.info("param size = %fMB", count_parameters_in_MB(snet))
     logging.info('-----------------------------------------------')
 
     nets = {'snet':snet, 'tnet':tnet}
