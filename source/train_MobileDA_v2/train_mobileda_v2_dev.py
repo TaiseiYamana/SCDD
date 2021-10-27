@@ -1,4 +1,3 @@
-# Distillation zoo
 import argparse
 import os
 import sys
@@ -173,6 +172,7 @@ def main(args):
 # target_train_iter             UDAに使用
 # target_train_selected_iter    KDに使用
 # ------------------------------------------------------------------------------
+
     # loss function
     mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
     st = SoftTarget(args.st_temp)
