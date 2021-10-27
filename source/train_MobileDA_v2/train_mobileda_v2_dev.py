@@ -151,28 +151,6 @@ def main(args):
     else:
             iters = {'source':source_train_iter,'target':target_train_iter}
 
-# ------------------------------------------------------------------------------
-# dataset & dataloader & dataiter list
-
-## datset
-# source_train_dataset 
-# target_train_dataset
-# target_train_selected_dataset :The labels selected by teacher
-# target_test_dataset
-
-## dataloader
-# source_train_loader 
-# target_train_loader
-# target_train_test_loader
-# target_train_selected_loader
-# target_test_loader
-
-## dataiter for train
-# source_train_iter             CLSに使用
-# target_train_iter             UDAに使用
-# target_train_selected_iter    KDに使用
-# ------------------------------------------------------------------------------
-
     # loss function
     mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
     st = SoftTarget(args.st_temp)
