@@ -372,7 +372,7 @@ if __name__ == '__main__':
                              ' | '.join(architecture_names) +
                              ' (default: resnet18)')    
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
-    parser.add_argument('--s-model-param', default=None, type=str, help='path name of student model')
+    #parser.add_argument('--s-model-param', default=None, type=str, help='path name of student model')
     parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')         
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
@@ -406,6 +406,9 @@ if __name__ == '__main__':
     args.save_root = os.path.join(args.save_root, args.note)#./results/pt_of31_A_r50
     args.img_root = os.path.join(args.img_root, args.dataset)#./datasets/Office31
     create_exp_dir(args.save_root) #save-rootの作成
+
+    if (args.check_point == True):
+        args.s_model_param = os.path.join(args.save_root, 'checkpoint.pth.tar')
 
     log_format = '%(message)s'
     logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=log_format)
