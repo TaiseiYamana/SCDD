@@ -381,7 +381,7 @@ if __name__ == '__main__':
     parser.add_argument('--mcc_temp', default=2.5, type=float, help='parameter mcc temperature scaling')
     parser.add_argument('--st_temp', default=2.0, type=float, help='parameter soft target temperature scaling')
     parser.add_argument('--lam', default=1., type=float,
-                        help='the trade-off hyper-parameter for mcc loss')
+                        help='the trade-off hyper-parameter for dcoral loss')
     parser.add_argument('--mu', default=1., type=float,
                         help='the trade-off hyper-parameter for soft target loss')
     # others
