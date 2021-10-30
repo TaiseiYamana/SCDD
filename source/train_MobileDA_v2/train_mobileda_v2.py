@@ -1,4 +1,3 @@
-# Distillation zoo
 import argparse
 import os
 import sys
@@ -80,22 +79,19 @@ def main(args):
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
 
-    # split train target domain datasets
+    # spliting train target domain datasets
     target_dataset_num = len(target_train_dataset)
     split_idx = split_dataset(target_train_dataset, 0.8, args.seed)
     target_train_dataset = dataset(root=args.img_root, task=args.target, indexs = split_idx, transform=train_transform)
     logging.info("Target train data number: Train:{}/Test:{}".format(len(split_idx),target_dataset_num))
 
-    # data loader
+    # dataloader
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_val_loader = DataLoader(target_train_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)                                     
-    target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
-
-    source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader)     
+    target_train_test_loader = DataLoader(target_train_dataset, batch_size = args.batch_size, shuffle = False, num_workers = args.workers)                                                                  
+    target_test_loader = DataLoader(target_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)  
 
     num_classes = len(source_train_loader.dataset.classes)
 
@@ -107,28 +103,29 @@ def main(args):
             tbackbone = models.__dict__[args.t_arch](pretrained=True)
             tnet = modules.Classifier(tbackbone, num_classes).to(device)
     else:
-            tnet = models.__dict__[args.t_arch](num_classes = num_classes, pretrained = True)
+            tnet = models.__dict__[args.t_arch](num_classes = num_classes, pretrained = True).to(device)
     tnet_param = torch.load(args.t_model_param)
     load_pretrained_model(tnet, tnet_param['net'])
     tnet.eval()
     for param in tnet.parameters():
 		    param.requires_grad = False
-    logging.info('%s', tnet)
-    logging.info("param size = %fMB", count_parameters_in_MB(tnet))
+    #logging.info('%s', tnet)
+    #logging.info("param size = %fMB", count_parameters_in_MB(tnet))
 
     logging.info('Initialize Student Model')
     logging.info('=> using pre-trained model {}'.format(args.s_arch))
     if ('resnet' in args.s_arch):
 		    sbackbone = models.__dict__[args.s_arch](pretrained=True)
-		    snet = modules.Classifier(sbackbone, num_classes)
+		    snet = modules.Classifier(sbackbone, num_classes).to(device)
     else:
-            snet = models.__dict__[args.s_arch](num_classes = num_classes, pretrained = True)
-    snet = snet.to(device)
-    logging.info('%s', snet)
-    logging.info("param size = %fMB", count_parameters_in_MB(snet))
+            snet = models.__dict__[args.s_arch](num_classes = num_classes, pretrained = True).to(device)
+    #logging.info('%s', snet)
+    #logging.info("param size = %fMB", count_parameters_in_MB(snet))
     logging.info('-----------------------------------------------')
 
-    # define optimizer and lr scheduler
+    nets = {'snet':snet, 'tnet':tnet}
+
+    # optimizer and lr scheduler
     if (args.t_arch in 'resnet'):
 		    params = snet.get_parameters() 
     else:
@@ -139,57 +136,30 @@ def main(args):
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
-    # define loss function
-    mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
-    st = SoftTarget(args.st_temp)
-    cls = torch.nn.CrossEntropyLoss()
+    source_train_iter = ForeverDataIterator(source_train_loader)
+    target_train_iter = ForeverDataIterator(target_train_loader) 
   
     if (args.select_label):
 		    # select paseudo labels
-		    pseudo_idx = pseudo_labeling(args.threshold, target_train_loader, tnet)
-		    # creaet dataloader  
-		    pseudo_dataset = dataset(root=args.img_root, task=args.target, indexs = pseudo_idx, transform=train_transform)
-		    target_train_loader = DataLoader(pseudo_dataset, batch_size=args.batch_size,
+		    selected_idx = pseudo_labeling(args.threshold, target_train_loader, tnet)
+		    target_selected_dataset = dataset(root=args.img_root, task=args.target, indexs = selected_idx, transform=train_transform)
+		    target_train_selected_loader = DataLoader(target_selected_dataset, batch_size=args.batch_size,
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
+		    target_train_selected_iter = ForeverDataIterator(target_train_selected_loader)
+		    # define dict 
+		    iters = {'source':source_train_iter,'target':target_train_iter, 'target_selected':target_train_selected_iter}                      
+    else:
+            iters = {'source':source_train_iter,'target':target_train_iter}
 
-    source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader) 
-
-    # define dict            
-    iters = {'target':target_train_iter, 'source':source_train_iter}
-    nets = {'snet':snet, 'tnet':tnet}
+    # loss function
+    mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
+    st = SoftTarget(args.st_temp)
+    cls = torch.nn.CrossEntropyLoss()
 
     if args.cuda:
 		    mcc = mcc.to(device)
 		    st = st.to(device)
 		    cls = cls.to(device)
-
-    if args.phase == 'analysis':
-        if args.t_model_param != None:
-            # load model paramater
-            checkpoint = torch.load(args.t_model_param)
-            load_pretrained_model(tnet, checkpoint['net'])
-        # extract features from both domains
-        feature_extractor = nn.Sequential(tnet.backbone, tnet.bottleneck).to(device)
-        source_feature = collect_feature(source_train_loader, feature_extractor, device)
-        target_feature = collect_feature(target_test_loader, feature_extractor, device)
-        # plot t-SNE
-        tSNE_filename = os.path.join(args.save_root, 'TSNE.png')
-        tsne.visualize(source_feature, target_feature, tSNE_filename)
-        print("Saving t-SNE to", tSNE_filename)
-        # calculate A-distance, which is a measure for distribution discrepancy
-        A_distance = a_distance.calculate(source_feature, target_feature, device)
-        print("A-distance =", A_distance)
-        return
-
-    if args.phase == 'test':
-        if args.model_param != None:
-            # load model paramater
-            checkpoint = torch.load(args.model_param)
-            load_pretrained_model(net, checkpoint['net'])
-            print("top1acc:{:.2f}".format(checkpoint['prec@1']))
-        _ , _ = test(target_test_loader, snet, cls, args, phase = 'Target')
-        return
 
     best_top1= 0.0
     best_top5 = 0.0
@@ -197,8 +167,9 @@ def main(args):
 
     # check point parameter load
     if (args.check_point):
-		    checkpoint = torch.load(args.s_model_param)
-		    load_pretrained_model(net, checkpoint['net'])
+		    s_model_param = os.path.join(args.save_root, 'checkpoint.pth.tar')
+		    checkpoint = torch.load(s_model_param)
+		    load_pretrained_model(snet, checkpoint['net'])
 		    check_point_epoch = checkpoint['epoch']
 		    optimizer.load_state_dict(checkpoint['optimizer'])
 		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
@@ -209,7 +180,7 @@ def main(args):
 		    # skip utill check point
 		    if (args.check_point):
 		    	if (check_point_epoch >= epoch) :
-		    		logging.info("Skip epoch {}".format(epoch)) 
+		    		logging.info("Epoch {} Skipped".format(epoch)) 
 		    		continue
 		    	else:                            
 		    		args.check_point = False
@@ -220,8 +191,8 @@ def main(args):
 		    train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    t_val_top1, t_val_top5 = test(target_val_loader, snet, cls, args, phase = 'Target Validation')            
-		    t_test_top1, t_test_top5 = test(target_test_loader, snet, cls, args, phase = 'Target Test')
+		    t_test_top1, t_test_top5 = test(target_train_test_loader, snet, cls, args, phase = 'Target Train')             
+		    t_test_top1, t_test_top5 = test(target_test_loader, snet, cls, args, phase = 'Target Test')                    
 
 		    epoch_duration = time.time() - epoch_start_time
 		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
@@ -265,16 +236,20 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 
 	source_iter = iters['source']
 	target_iter = iters['target']
+	if (args.select_label):
+		target_selected_iter = iters['target_selected']
 
 	snet = nets['snet']
 	tnet = nets['tnet']
 
 	snet.train()
 
-	end = time.time()
 	for i in range(args.iters_per_epoch):
+		end = time.time()
 		source_img, source_label, _ = next(source_iter)
 		target_img, _, _ = next(target_iter)
+		if (args.select_label):
+			target_selected_img, _, _ = next(target_selected_iter)
 
 		data_time.update(time.time() - end)
 
@@ -282,14 +257,23 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 			source_img = source_img.cuda()
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
+			if (args.select_label):
+				target_selected_img = target_selected_img.cuda()
 
 		s_source_out, _ = snet(source_img)
 		s_target_out, _ = snet(target_img)
-		t_target_out, _= tnet(target_img)
+		if (args.select_label):        
+			s_target_selected_out, _ = snet(target_selected_img)
+			t_target_selected_out, _ = tnet(target_selected_img)
+		else:                        
+			t_target_out, _= tnet(target_img)
 
 		cls_loss = cls(s_source_out, source_label)
 		mcc_loss = mcc(s_target_out)
-		kd_loss = st(s_target_out, t_target_out)
+		if (args.select_label):           
+			kd_loss = st(s_target_selected_out, t_target_selected_out)
+		else:
+			kd_loss = st(s_target_out, t_target_out)                     
 		loss = cls_loss + mcc_loss * args.lam + kd_loss * args.mu
 
 		prec1, prec5 = accuracy(s_source_out, source_label, topk=(1,5))
@@ -305,7 +289,6 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 		lr_scheduler.step()
 
 		batch_time.update(time.time() - end)
-		end = time.time()
 
 		if i % args.print_freq == 0:
 			log_str = ('Epoch[{0}]:[{1:03}/{2:03}] '
@@ -328,7 +311,6 @@ def test(test_loader, net, cls, args, phase):
 
 	net.eval()
 
-	end = time.time()
 	with torch.inference_mode():
 		for i, (img, target, _) in enumerate(test_loader, start=1):
 			if args.cuda:
@@ -382,7 +364,6 @@ if __name__ == '__main__':
                              ' | '.join(architecture_names) +
                              ' (default: resnet18)')    
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
-    parser.add_argument('--s-model-param', default=None, type=str, help='path name of student model')
     parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')         
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
@@ -396,9 +377,6 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
     parser.add_argument('-p', '--print-freq', default= 100, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
-    parser.add_argument("--phase", type=str, default='train', choices=['train', 'test', 'analysis'],
-                        help="When phase is 'test', only test the model."
-                             "When phase is 'analysis', only analysis the model.")
     # loss parameters
     parser.add_argument('--mcc_temp', default=2.5, type=float, help='parameter mcc temperature scaling')
     parser.add_argument('--st_temp', default=2.0, type=float, help='parameter soft target temperature scaling')

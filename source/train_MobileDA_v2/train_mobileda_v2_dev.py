@@ -161,22 +161,14 @@ def main(args):
 		    st = st.to(device)
 		    cls = cls.to(device)
 
-    if args.phase == 'test':
-        if args.s_model_param != None:
-            # load model paramater
-            best_model = torch.load(args.s_model_param)
-            load_pretrained_model(net, best_model['net'])
-            print("top1acc:{:.2f}".format(best_model['prec@1']))
-        _ , _ = test(target_test_loader, snet, cls, args, phase = 'Target')
-        return
-
     best_top1= 0.0
     best_top5 = 0.0
     stopping_counter = 0
 
     # check point parameter load
     if (args.check_point):
-		    checkpoint = torch.load(args.s_model_param)
+		    s_model_param = os.path.join(args.save_root, 'checkpoint.pth.tar')
+		    checkpoint = torch.load(s_model_param)
 		    load_pretrained_model(snet, checkpoint['net'])
 		    check_point_epoch = checkpoint['epoch']
 		    optimizer.load_state_dict(checkpoint['optimizer'])
@@ -372,7 +364,6 @@ if __name__ == '__main__':
                              ' | '.join(architecture_names) +
                              ' (default: resnet18)')    
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
-    #parser.add_argument('--s-model-param', default=None, type=str, help='path name of student model')
     parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')         
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
@@ -386,9 +377,6 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
     parser.add_argument('-p', '--print-freq', default= 100, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
-    parser.add_argument("--phase", type=str, default='train', choices=['train', 'test'],
-                        help="When phase is 'test', only test the model."
-                             "When phase is 'analysis', only analysis the model.")
     # loss parameters
     parser.add_argument('--mcc_temp', default=2.5, type=float, help='parameter mcc temperature scaling')
     parser.add_argument('--st_temp', default=2.0, type=float, help='parameter soft target temperature scaling')
@@ -406,9 +394,6 @@ if __name__ == '__main__':
     args.save_root = os.path.join(args.save_root, args.note)#./results/pt_of31_A_r50
     args.img_root = os.path.join(args.img_root, args.dataset)#./datasets/Office31
     create_exp_dir(args.save_root) #save-rootの作成
-
-    if (args.check_point == True):
-        args.s_model_param = os.path.join(args.save_root, 'checkpoint.pth.tar')
 
     log_format = '%(message)s'
     logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=log_format)
