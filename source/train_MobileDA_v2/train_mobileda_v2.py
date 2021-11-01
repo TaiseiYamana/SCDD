@@ -173,8 +173,8 @@ def main(args):
 		    check_point_epoch = checkpoint['epoch']
 		    optimizer.load_state_dict(checkpoint['optimizer'])
 		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
-		    best_top1 = checkpoint['prec@1']       
-		    best_top5 = checkpoint['prec@5']
+		    best_top1 = checkpoint['best_top1']       
+		    best_top5 = checkpoint['best_top2']
                 
     for epoch in range(1, args.epochs+1):
 		    # skip utill check point
@@ -213,7 +213,9 @@ def main(args):
           		            'optimizer': optimizer.state_dict(),							  			
           		            'scheduler': lr_scheduler.state_dict(),                             
           		            'prec@1': t_test_top1,
-          		            'prec@5': t_test_top5,}, 
+          		            'prec@5': t_test_top5,
+          		            'best_top1': best_top1,
+          		            'best_top5': best_top5},                             
           		            is_best, args.save_root)
                               
 		    if stopping_counter == args.stopping_num:
