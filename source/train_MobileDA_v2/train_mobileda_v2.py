@@ -174,7 +174,7 @@ def main(args):
 		    optimizer.load_state_dict(checkpoint['optimizer'])
 		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
 		    best_top1 = checkpoint['best_top1']       
-		    best_top5 = checkpoint['best_top2']
+		    best_top5 = checkpoint['best_top5']
                 
     for epoch in range(1, args.epochs+1):
 		    # skip utill check point
