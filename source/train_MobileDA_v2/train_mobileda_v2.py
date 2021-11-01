@@ -126,7 +126,7 @@ def main(args):
     nets = {'snet':snet, 'tnet':tnet}
 
     # optimizer and lr scheduler
-    if (args.s_arch in 'resnet'):
+    if ('resnet' in args.s_arch):
 		    params = snet.get_parameters() 
     else:
 		    params = [
