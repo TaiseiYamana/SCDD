@@ -13,7 +13,6 @@ from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
-from torchvision.models import mobilenet_v3_small, mobilenet_v3_large, alexnet
 
 sys.path.append('../..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
