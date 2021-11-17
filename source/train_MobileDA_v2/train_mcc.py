@@ -248,9 +248,9 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 			logging.info(log_str)
 
 
-def test(test_loader, net, cls, mcc, args, phase):
+def test(data_loader, net, cls, mcc, args, phase):
 	clslosses = AverageMeter()
-	mcclosses = AverageMeter()	
+	mcclosses = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
 
@@ -267,52 +267,16 @@ def test(test_loader, net, cls, mcc, args, phase):
 			mccloss = mcc(out)		
 
 			prec1, prec5 = accuracy(out, target, topk=(1,5))
-			losses.update(loss.item(), img.size(0))
+			clslosses.update(clsloss.item(), img.size(0))
+			mcclosses.update(mccloss.item(), img.size(0))			
 			top1.update(prec1.item(), img.size(0))
 			top5.update(prec5.item(), img.size(0))
 
-		f_l = [losses.avg, top1.avg, top5.avg]
-		logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
+		f_l = [clslosses.avg, mcclosses.avg, top1.avg, top5.avg]
+		logging.info('-{}- Cls Loss: {:.4f}, MCC Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
 
 	return top1.avg, top5.avg
 
-def test_2(test_loader, net, cls, mcc, args, phase):
-	losses = AverageMeter()
-	top1   = AverageMeter()
-	top5   = AverageMeter()
-	mcc_losses  = AverageMeter()
-	distributed_soft = AverageMeter()
-
-	net.eval()
-
-	end = time.time()
-	for i, (img, target, _) in enumerate(test_loader, start=1):
-		if args.cuda:
-			img = img.cuda()
-			target = target.cuda()
-
-		with torch.no_grad():
-			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
-				out = net(img)
-			else:
-				out, _ = net(img)
-			loss = cls(out, target)  
-			mcc_loss = mcc(out)   
-		prec1, prec5 = accuracy(out, target, topk=(1,5))
-		mcc_losses.update(mcc_loss.item(), img.size(0))
-		softlabel = nn.functional.softmax(out / 4, dim=-1)
-		softlabel_var = torch.var(softlabel, dim=-1)
-		softlabel_var = torch.mean(softlabel_var)
-		distributed_soft.update(softlabel_var.item())
-		#print(softlabel_var.item())   
-		losses.update(loss.item(), img.size(0))
-		top1.update(prec1.item(), img.size(0))
-		top5.update(prec5.item(), img.size(0))
-
-	f_l = [losses.avg, top1.avg, top5.avg]
-	logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
-
-	return top1.avg, top5.avg, distributed_soft.avg, mcc_losses.avg
 if __name__ == '__main__':
     architecture_names = sorted(
         name for name in models.__dict__
