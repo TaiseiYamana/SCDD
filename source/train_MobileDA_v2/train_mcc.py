@@ -93,35 +93,27 @@ def main(args):
 
     num_classes = len(source_train_loader.dataset.classes)
 
-	  # create model
+	# create model
     logging.info('----------- Network Initialization --------------')
     logging.info('=> using pre-trained model {}'.format(args.arch))
-    if args.arch == 'mobilenet_v3_small':
-		    net = mobilenet_v3_small(pretrained=True)
-		    net.classifier[3] = nn.Linear(1024, num_classes)
-    elif args.arch == 'mobilenet_v3_large':
-		    net = mobilenet_v3_large(pretrained=True)
-		    net.classifier[3] = nn.Linear(1280, num_classes) 
-    elif args.arch == 'alexnet':
-		    net = alexnet(pretrained=True)
-		    net.classifier[6] = nn.Linear(4096, num_classes)
-		    torch.nn.init.normal_(net.classifier[6].weight, mean=0, std=5e-3)
-		    net.classifier[6].bias.data.fill_(0.01)	
-    else:
+    if ('resnet' in args.arch):
 		    backbone = models.__dict__[args.arch](pretrained=True)
-		    net = modules.Classifier(backbone, num_classes)
+		    net = modules.Classifier(backbone, num_classes).to(device)
+    else:
+            net = models.__dict__[args.arch](num_classes = num_classes, pretrained = True).to(device)
     net = net.to(device)
-    logging.info('%s', net)
+    #logging.info('%s', net)
     logging.info("param size = %fMB", count_parameters_in_MB(net))
     logging.info('-----------------------------------------------')
 
-    # define optimizer and lr scheduler
-    if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large' or args.arch == 'alexnet':
+    # optimizer and lr scheduler
+    if ('resnet' in args.arch):
+		    params = net.get_parameters() 
+    else:
 		    params = [
             {"params": net.features.parameters(), "lr": 0.1 * 1},
             {"params": net.classifier.parameters(), "lr": 1.0 * 1}]
-    else:
-		    params = net.get_parameters()  
+
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
@@ -131,36 +123,6 @@ def main(args):
     if args.cuda:
 		    mcc = mcc_loss.to(device)
 		    cls = cls_loss.to(device)
-
-    if args.phase == 'analysis': 
-        if args.model_param != None:
-            # load model paramater
-            checkpoint = torch.load(args.model_param)
-            load_pretrained_model(net, checkpoint['net'])
-        # extract features from both domains
-        feature_extractor = nn.Sequential(net.backbone, net.bottleneck).to(device)
-        source_feature = collect_feature(source_train_loader, feature_extractor, device)
-        target_feature = collect_feature(target_train_loader, feature_extractor, device)
-        # plot t-SNE
-        tSNE_filename = os.path.join(args.save_root, 'TSNE.png')
-        tsne.visualize(source_feature, target_feature, tSNE_filename)
-        print("Saving t-SNE to", tSNE_filename)
-        # calculate A-distance, which is a measure for distribution discrepancy
-        A_distance = a_distance.calculate(source_feature, target_feature, device)
-        print("A-distance =", A_distance)
-        return
-
-    if args.phase == 'test': 
-        if args.model_param != None:
-            # load model paramater
-            checkpoint = torch.load(args.model_param)
-            load_pretrained_model(net, checkpoint['net'])
-            print("top1acc:{:.2f}".format(checkpoint['prec@1']))
-        _ , _ , dis_soft, classcoufusion = test_2(target_test_loader, net, cls, mcc, args, phase = 'Target')
-        print("Distributed Soft {}".format(dis_soft))
-        print("MCC Vlue {}".format(classcoufusion))                
-        return
-	
 		
     # define dict
     iters = {'source':source_train_iter, 'target':target_train_iter}
@@ -251,12 +213,9 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 			source_img = source_img.cuda()
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
-		if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large' or args.arch == 'alexnet':
-			source_out = net(source_img)
-			target_out = net(target_img)
-		else:
-			source_out, _= net(source_img)
-			target_out, _= net(target_img)
+
+		source_out, _ = net(source_img)
+		target_out, _ = net(target_img)
 
 		cls_loss = cls(source_out, source_label)
 		mcc_loss = mcc(target_out)
@@ -290,31 +249,30 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 
 
 def test(test_loader, net, cls, mcc, args, phase):
-	losses = AverageMeter()
+	clslosses = AverageMeter()
+	mcclosses = AverageMeter()	
 	top1   = AverageMeter()
 	top5   = AverageMeter()
 
 	net.eval()
 
-	end = time.time()
-	for i, (img, target, _) in enumerate(test_loader, start=1):
-		if args.cuda:
-			img = img.cuda()
-			target = target.cuda()
+	with torch.inference_mode():
+		for i, (img, target, _) in enumerate(test_loader, start=1):
+			if args.cuda:
+				img = img.cuda()
+				target = target.cuda()
 
-		with torch.no_grad():
-			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large' or args.arch == 'alexnet':
-				out = net(img)
-			else:
-				out, _ = net(img)
-			loss = cls(out, target)                
-		prec1, prec5 = accuracy(out, target, topk=(1,5))
-		losses.update(loss.item(), img.size(0))
-		top1.update(prec1.item(), img.size(0))
-		top5.update(prec5.item(), img.size(0))
+			out, _ = net(img)
+			clsloss = cls(out, target)
+			mccloss = mcc(out)		
 
-	f_l = [losses.avg, top1.avg, top5.avg]
-	logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
+			prec1, prec5 = accuracy(out, target, topk=(1,5))
+			losses.update(loss.item(), img.size(0))
+			top1.update(prec1.item(), img.size(0))
+			top5.update(prec5.item(), img.size(0))
+
+		f_l = [losses.avg, top1.avg, top5.avg]
+		logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
 
 	return top1.avg, top5.avg
 
