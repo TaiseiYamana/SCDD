@@ -5,7 +5,7 @@
 import torch
 import torch.nn as nn
 from torchvision import models
-from torchvision.models.utils import load_state_dict_from_url
+from torchvision._internally_replaced_utils import load_state_dict_from_url
 from torchvision.models.alexnet import model_urls
 import copy
 
