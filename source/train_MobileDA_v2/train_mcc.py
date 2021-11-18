@@ -66,10 +66,12 @@ def main(args):
     if args.dataset == "ImageCLEF":
         args.img_root = ImageCLEF_root
         source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
+        source_test_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)        
         target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, transform=test_transform)
     else:
         source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
+        source_test_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)        
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
 
@@ -82,9 +84,10 @@ def main(args):
     # data loader
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
+    source_test_loader = DataLoader(source_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)                                    
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_val_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)                                     
+    target_train_test_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)                                     
     target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
@@ -155,7 +158,8 @@ def main(args):
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    t_val_top1, t_val_top5 = test(target_val_loader, net, cls, mcc, args, phase = 'Target Validation')            
+		    _, _ = test(source_test_loader, net, cls, mcc, args, phase = 'Source') 
+		    t_val_top1, t_val_top5 = test(target_train_test_loader, net, cls, mcc, args, phase = 'Target Train')            
 		    t_test_top1, t_test_top5 = test(target_test_loader, net, cls, mcc, args, phase = 'Target Test')
 		
 		    epoch_duration = time.time() - epoch_start_time
@@ -256,7 +260,7 @@ def test(data_loader, net, cls, mcc, args, phase):
 	net.eval()
 
 	with torch.inference_mode():
-		for i, (img, target, _) in enumerate(test_loader, start=1):
+		for i, (img, target, _) in enumerate(data_loader, start=1):
 			if args.cuda:
 				img = img.cuda()
 				target = target.cuda()
