@@ -250,7 +250,7 @@ def train(iters, net, optimizer, lr_scheduler, cls, dcoral, epoch, args):
 					   cls_losses=cls_losses, dcoral_losses=dcoral_losses, top1=top1, top5=top5))
 			logging.info(log_str)
 
-def test(target_loader, source_loader, net, cls, args, phase):
+def test(data_loader, net, cls, args, phase):
 	clslosses = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
