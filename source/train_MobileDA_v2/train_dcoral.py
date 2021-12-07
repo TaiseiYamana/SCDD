@@ -13,7 +13,6 @@ from torch.optim import SGD
 from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
-from torchvision.models import mobilenet_v3_small, mobilenet_v3_large
 
 sys.path.append('../..')
 from dalib.adaptation.dcoral import DeepCoralLoss
@@ -67,10 +66,12 @@ def main(args):
     if args.dataset == "ImageCLEF":
         args.img_root = ImageCLEF_root
         source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
+        source_test_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)        
         target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, transform=test_transform)
     else:
         source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
+        source_test_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)        
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
 
@@ -83,9 +84,10 @@ def main(args):
     # data loader
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
+    source_test_loader = DataLoader(source_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)                                    
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_val_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)                                     
+    target_train_test_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)                                     
     target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
@@ -93,76 +95,37 @@ def main(args):
 
     num_classes = len(source_train_loader.dataset.classes)
 
-	  # create model
+	# create model
     logging.info('----------- Network Initialization --------------')
     logging.info('=> using pre-trained model {}'.format(args.arch))
-    if args.arch == 'mobilenet_v3_small':
-		    net = mobilenet_v3_small(pretrained=True)
-		    net.classifier[3] = nn.Linear(1024, num_classes)
-    elif args.arch == 'mobilenet_v3_large':
-		    net = mobilenet_v3_large(pretrained=True)
-		    net.classifier[3] = nn.Linear(1280, num_classes)  
-    else:
+    if ('resnet' in args.arch):
 		    backbone = models.__dict__[args.arch](pretrained=True)
-		    net = modules.Classifier(backbone, num_classes)
+		    net = modules.Classifier(backbone, num_classes).to(device)
+    else:
+            net = models.__dict__[args.arch](num_classes = num_classes, pretrained = True).to(device)
     net = net.to(device)
-    logging.info('%s', net)
+    #logging.info('%s', net)
     logging.info("param size = %fMB", count_parameters_in_MB(net))
     logging.info('-----------------------------------------------')
 
-    # define optimizer and lr scheduler
-    if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
-		    params = [
-            {"params": net.features.parameters(), "lr": 0.1},
-            {"params": net.classifier.parameters(), "lr": 1.0}]
+    # optimizer and lr scheduler
+    if ('resnet' in args.arch):
+		    params = net.get_parameters() 
     else:
-		    params = net.get_parameters()  
-    optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
-    lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
-
-    # define optimizer and lr scheduler
-    if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
 		    params = [
             {"params": net.features.parameters(), "lr": 0.1 * 1},
-            {"params": net.classifier.parameters(), "lr": 1.0 * 1}]
-    else:
-		    params = net.get_parameters()  
+            {"params": net.classifier[:6].parameters(), "lr": 0.1 * 1},
+            {"params": net.classifier[6].parameters(), "lr": 1.0 * 1}]
+
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
     # define loss function
+    cls_loss = torch.nn.CrossEntropyLoss()
     dcoral = DeepCoralLoss()
-    cls = torch.nn.CrossEntropyLoss()
     if args.cuda:
-		    dcoral = dcoral.to(device)
-		    cls = cls.to(device)
-
-    if args.phase == 'analysis': 
-        if args.model_param != None:
-            # load model paramater
-            checkpoint = torch.load(args.model_param)
-            load_pretrained_model(net, checkpoint['net'])
-        # extract features from both domains
-        feature_extractor = nn.Sequential(net.backbone, net.bottleneck).to(device)
-        source_feature = collect_feature(source_train_loader, feature_extractor, device)
-        target_feature = collect_feature(target_train_loader, feature_extractor, device)
-        # plot t-SNE
-        tSNE_filename = os.path.join(args.save_root, 'TSNE.png')
-        tsne.visualize(source_feature, target_feature, tSNE_filename)
-        print("Saving t-SNE to", tSNE_filename)
-        # calculate A-distance, which is a measure for distribution discrepancy
-        A_distance = a_distance.calculate(source_feature, target_feature, device)
-        print("A-distance =", A_distance)
-        return
-
-    if args.phase == 'test': 
-        if args.model_param != None:
-            # load model paramater
-            checkpoint = torch.load(args.model_param)
-            load_pretrained_model(net, checkpoint['net'])
-            print("top1acc:{:.2f}".format(checkpoint['prec@1']))            
-        return
-	
+		    cls = cls_loss.to(device)
+		    dcoral = dcoral.to(device)            
 		
     # define dict
     iters = {'source':source_train_iter, 'target':target_train_iter}
@@ -196,7 +159,8 @@ def main(args):
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    t_val_top1, t_val_top5 = test(target_val_loader, net, cls, args, phase = 'Target Validation')            
+		    _, _ = test(source_test_loader, net, cls, args, phase = 'Source') 
+		    t_val_top1, t_val_top5 = test(target_train_test_loader, net, cls, args, phase = 'Target Train')            
 		    t_test_top1, t_test_top5 = test(target_test_loader, net, cls, args, phase = 'Target Test')
 		
 		    epoch_duration = time.time() - epoch_start_time
@@ -204,9 +168,9 @@ def main(args):
 
 		    # save model
 		    is_best = False
-		    if t_val_top1 > best_top1:
-		    	best_top1 = t_val_top1
-		    	best_top5 = t_val_top5
+		    if t_test_top1 > best_top1:
+		    	best_top1 = t_test_top1
+		    	best_top5 = t_test_top5
 		    	is_best = True
 		    	stopping_counter = 0
 		    else:
@@ -253,12 +217,9 @@ def train(iters, net, optimizer, lr_scheduler, cls, dcoral, epoch, args):
 			source_img = source_img.cuda()
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
-		if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
-			source_out = net(source_img)
-			target_out = net(target_img)
-		else:
-			source_out, _= net(source_img)
-			target_out, _= net(target_img)
+
+		source_out, _ = net(source_img)
+		target_out, _ = net(target_img)
 
 		cls_loss = cls(source_out, source_label)
 		dcoral_loss = dcoral(source_out,target_out)
@@ -290,33 +251,29 @@ def train(iters, net, optimizer, lr_scheduler, cls, dcoral, epoch, args):
 					   cls_losses=cls_losses, dcoral_losses=dcoral_losses, top1=top1, top5=top5))
 			logging.info(log_str)
 
-
-def test(test_loader, net, cls, args, phase):
-	losses = AverageMeter()
+def test(data_loader, net, cls, args, phase):
+	clslosses = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
 
 	net.eval()
 
-	end = time.time()
-	for i, (img, target, _) in enumerate(test_loader, start=1):
-		if args.cuda:
-			img = img.cuda()
-			target = target.cuda()
+	with torch.inference_mode():
+		for i, (img, target, _) in enumerate(data_loader, start=1):
+			if args.cuda:
+				img = img.cuda()
+				target = target.cuda()
+			out, _ = net(img)
 
-		with torch.no_grad():
-			if args.arch == 'mobilenet_v3_small' or args.arch == 'mobilenet_v3_large':
-				out = net(img)
-			else:
-				out, _ = net(img)
-			loss = cls(out, target)                
-		prec1, prec5 = accuracy(out, target, topk=(1,5))
-		losses.update(loss.item(), img.size(0))
-		top1.update(prec1.item(), img.size(0))
-		top5.update(prec5.item(), img.size(0))
+			clsloss = cls(out, target)	
 
-	f_l = [losses.avg, top1.avg, top5.avg]
-	logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
+			prec1, prec5 = accuracy(out, target, topk=(1,5))
+			clslosses.update(clsloss.item(), img.size(0))		
+			top1.update(prec1.item(), img.size(0))
+			top5.update(prec5.item(), img.size(0))
+
+		f_l = [clslosses.avg, top1.avg, top5.avg]
+		logging.info('-{}- Cls Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
 
 	return top1.avg, top5.avg
 
@@ -333,9 +290,9 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='pretrain Teacher net')
     # root path
-    parser.add_argument('--save_root', type=str, default='./results/DCORAL', help='models and logs are saved here')
+    parser.add_argument('--save_root', type=str, default='./results/PT', help='models and logs are saved here')
     parser.add_argument('--img_root', type=str, default='./datasets', help='path name of image dataset')
-    parser.add_argument('--note', type=str, default='A2W', help='note for this run') #office31_source_pretrain
+    parser.add_argument('--note', type=str, default='pt_of31_A2W_r50', help='note for this run') #office31_source_pretrain
     # dataset parameters
     parser.add_argument('-d', '--dataset', metavar='DATA', default='Office31',
                         help='dataset: ' + ' | '.join(dataset_names) +
@@ -347,7 +304,7 @@ if __name__ == '__main__':
     parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')
     parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')                     
     # training parameters
-    parser.add_argument('-b', '--batch-size', default=128, type=int, help='mini-batch size (default: 32)')
+    parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
     parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
@@ -362,7 +319,8 @@ if __name__ == '__main__':
                         help="When phase is 'test', only test the model."
                              "When phase is 'analysis', only analysis the model.")
     # mcc parameters
-    parser.add_argument('--trade-off', default=0.9, type=float,
+    parser.add_argument('--temperature', default=2.5, type=float, help='parameter temperature scaling')
+    parser.add_argument('--trade-off', default=1., type=float,
                         help='the trade-off hyper-parameter for transfer loss')                         
     # others
     parser.add_argument('--cuda', type=int, default=1)
