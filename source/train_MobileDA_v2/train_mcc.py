@@ -114,7 +114,8 @@ def main(args):
     else:
 		    params = [
             {"params": net.features.parameters(), "lr": 0.1 * 1},
-            {"params": net.classifier.parameters(), "lr": 1.0 * 1}]
+            {"params": net.classifier[:6].parameters(), "lr": 0.1 * 1},
+            {"params": net.classifier[6].parameters(), "lr": 1.0 * 1}]
 
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
@@ -167,9 +168,9 @@ def main(args):
 
 		    # save model
 		    is_best = False
-		    if t_val_top1 > best_top1:
-		    	best_top1 = t_val_top1
-		    	best_top5 = t_val_top5
+		    if t_test_top1 > best_top1:
+		    	best_top1 = t_test_top1
+		    	best_top5 = t_test_top5
 		    	is_best = True
 		    	stopping_counter = 0
 		    else:
@@ -180,8 +181,8 @@ def main(args):
           		            'net': net.state_dict(),
           		            'optimizer': optimizer.state_dict(),							  			
           		            'scheduler': lr_scheduler.state_dict(),
-          		            'prec@1': t_val_top1,
-          		            'prec@5': t_val_top5,}, 
+          		            'prec@1': t_test_top1,
+          		            'prec@5': t_test_top5,}, 
           		            is_best, args.save_root)
             
 		    if stopping_counter == 8:
@@ -322,7 +323,7 @@ if __name__ == '__main__':
                         help="When phase is 'test', only test the model."
                              "When phase is 'analysis', only analysis the model.")
     # mcc parameters
-    parser.add_argument('--temperature', default=2.5, type=float, help='parameter temperature scaling')
+    parser.add_argument('--temperature', default=2., type=float, help='parameter temperature scaling')
     parser.add_argument('--trade-off', default=1., type=float,
                         help='the trade-off hyper-parameter for transfer loss')                         
     # others
