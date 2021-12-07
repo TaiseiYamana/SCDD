@@ -181,8 +181,8 @@ def main(args):
           		            'net': net.state_dict(),
           		            'optimizer': optimizer.state_dict(),							  			
           		            'scheduler': lr_scheduler.state_dict(),
-          		            'prec@1': t_val_top1,
-          		            'prec@5': t_val_top5,}, 
+          		            'prec@1': t_test_top1,
+          		            'prec@5': t_test_top5,}, 
           		            is_best, args.save_root)
             
 		    if stopping_counter == 8:
