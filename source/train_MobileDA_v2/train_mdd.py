@@ -223,7 +223,7 @@ def train(iters, net, optimizer, lr_scheduler, cls, mdd, epoch, args):
 		target_out, target_outadv = net(target_img)
 
 		cls_loss = cls(source_out, source_label)
-		mcc_loss = -mdd(source_out, source_outadv, target_out, target_outadv)
+		mdd_loss = -mdd(source_out, source_outadv, target_out, target_outadv)
 		loss = cls_loss + mdd_loss * args.trade_off 
     
 		prec1, prec5 = accuracy(source_out, source_label, topk=(1,5))
