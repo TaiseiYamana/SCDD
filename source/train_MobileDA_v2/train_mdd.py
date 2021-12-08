@@ -15,7 +15,6 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as T
 
 sys.path.append('../..')
-from dalib.adaptation.mcc import MinimumClassConfusionLoss
 from dalib.adaptation.mdd import ClassificationMarginDisparityDiscrepancy as MarginDisparityDiscrepancy
 
 import common.vision.datasets as datasets
@@ -160,9 +159,9 @@ def main(args):
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    _, _ = test(source_test_loader, net, cls, mcc, args, phase = 'Source') 
-		    t_val_top1, t_val_top5 = test(target_train_test_loader, net, cls, mcc, args, phase = 'Target Train')            
-		    t_test_top1, t_test_top5 = test(target_test_loader, net, cls, mcc, args, phase = 'Target Test')
+		    _, _ = test(source_test_loader, net, cls, args, phase = 'Source') 
+		    t_val_top1, t_val_top5 = test(target_train_test_loader, net, cls, args, phase = 'Target Train')            
+		    t_test_top1, t_test_top5 = test(target_test_loader, net, cls, args, phase = 'Target Test')
 		
 		    epoch_duration = time.time() - epoch_start_time
 		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
