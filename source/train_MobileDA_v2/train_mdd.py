@@ -15,7 +15,8 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as T
 
 sys.path.append('../..')
-from dalib.adaptation.mdd import ClassificationMarginDisparityDiscrepancy as MarginDisparityDiscrepancy
+from dalib.modules.domain_discriminator import DomainDiscriminator
+from dalib.adaptation.cdan import ConditionalDomainAdversarialLoss, ImageClassifier
 
 import common.vision.datasets as datasets
 import common.vision.models as models
