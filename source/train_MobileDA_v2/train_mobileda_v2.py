@@ -129,9 +129,9 @@ def main(args):
 		    params = snet.get_parameters() 
     else:
 		    params = [
-            {"params": net.features.parameters(), "lr": 0.1 * 1},
-            {"params": net.classifier[:6].parameters(), "lr": 0.1 * 1},
-            {"params": net.classifier[6].parameters(), "lr": 1.0 * 1}]
+            {"params": snet.features.parameters(), "lr": 0.1 * 1},
+            {"params": snet.classifier[:6].parameters(), "lr": 0.1 * 1},
+            {"params": snet.classifier[6].parameters(), "lr": 1.0 * 1}]
             
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
