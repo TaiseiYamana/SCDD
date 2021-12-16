@@ -366,7 +366,7 @@ if __name__ == '__main__':
                              ' | '.join(architecture_names) +
                              ' (default: resnet18)')    
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
-    parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')         
+    parser.add_argument('--check_point', action='store_true', help='use check point parameter')         
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
@@ -387,7 +387,7 @@ if __name__ == '__main__':
     parser.add_argument('--mu', default=1., type=float,
                         help='the trade-off hyper-parameter for soft target loss')
     # others
-    parser.add_argument('--select_label', type=bool, default=True)
+    parser.add_argument('--no_select_label', action='store_false')
     parser.add_argument('--stopping_num', type=int, default=5) 
     parser.add_argument('--threshold', type=float, default=0.7)   
     parser.add_argument('--cuda', type=int, default=1)
