@@ -139,7 +139,9 @@ def main(args):
     source_train_iter = ForeverDataIterator(source_train_loader)
     target_train_iter = ForeverDataIterator(target_train_loader) 
   
-    if (args.select_label):
+    if (args.not_select_label):
+            iters = {'source':source_train_iter,'target':target_train_iter}                            
+    else:
 		    # select paseudo labels
 		    selected_idx = pseudo_labeling(args.threshold, target_train_test_loader, tnet)
 		    target_selected_dataset = dataset(root=args.img_root, task=args.target, indexs = selected_idx, transform=train_transform)
@@ -147,9 +149,7 @@ def main(args):
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
 		    target_train_selected_iter = ForeverDataIterator(target_train_selected_loader)
 		    # define dict 
-		    iters = {'source':source_train_iter,'target':target_train_iter, 'target_selected':target_train_selected_iter}                      
-    else:
-            iters = {'source':source_train_iter,'target':target_train_iter}
+		    iters = {'source':source_train_iter,'target':target_train_iter, 'target_selected':target_train_selected_iter}  
 
     # loss function
     mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
@@ -250,7 +250,7 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 		end = time.time()
 		source_img, source_label, _ = next(source_iter)
 		target_img, _, _ = next(target_iter)
-		if (args.select_label):
+		if (not args.not_select_label): # act of selection
 			target_selected_img, _, _ = next(target_selected_iter)
 
 		data_time.update(time.time() - end)
@@ -259,20 +259,21 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 			source_img = source_img.cuda()
 			source_label = source_label.cuda()
 			target_img = target_img.cuda()
-			if (args.select_label):
+			if (not args.not_select_label): # act of selection
 				target_selected_img = target_selected_img.cuda()
 
 		s_source_out, _ = snet(source_img)
 		s_target_out, _ = snet(target_img)
-		if (args.select_label):        
-			s_target_selected_out, _ = snet(target_selected_img)
-			t_target_selected_out, _ = tnet(target_selected_img)
+		if (args.not_select_label):        
+			t_target_out, _= tnet(target_img)
 		else:                        
 			t_target_out, _= tnet(target_img)
+			s_target_selected_out, _ = snet(target_selected_img)
+			t_target_selected_out, _ = tnet(target_selected_img)
 
 		cls_loss = cls(s_source_out, source_label)
 		mcc_loss = mcc(s_target_out)
-		if (args.select_label):           
+		if (args.not_select_label):           
 			kd_loss = st(s_target_selected_out, t_target_selected_out)
 		else:
 			kd_loss = st(s_target_out, t_target_out)                     
@@ -387,7 +388,7 @@ if __name__ == '__main__':
     parser.add_argument('--mu', default=1., type=float,
                         help='the trade-off hyper-parameter for soft target loss')
     # others
-    parser.add_argument('--select_label', action='store_false')
+    parser.add_argument('--not_select_label', action='store_true')
     parser.add_argument('--stopping_num', type=int, default=5) 
     parser.add_argument('--threshold', type=float, default=0.7)   
     parser.add_argument('--cuda', type=int, default=1)
