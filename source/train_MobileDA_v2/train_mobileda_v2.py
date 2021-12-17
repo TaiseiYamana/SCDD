@@ -238,7 +238,7 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 
 	source_iter = iters['source']
 	target_iter = iters['target']
-	if (args.select_label):
+	if (not args.not_select_label):
 		target_selected_iter = iters['target_selected']
 
 	snet = nets['snet']
