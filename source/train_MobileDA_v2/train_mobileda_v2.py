@@ -288,6 +288,7 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 
 		optimizer.zero_grad()
 		loss.backward()
+		nn.utils.clip_grad_norm_(snet.parameters(), 5)        
 		optimizer.step()
 		lr_scheduler.step()
 
