@@ -274,9 +274,9 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 		cls_loss = cls(s_source_out, source_label)
 		mcc_loss = mcc(s_target_out)
 		if (args.not_select_label):           
-			kd_loss = st(s_target_selected_out, t_target_selected_out)
+			kd_loss = st(s_target_out, t_target_out)  
 		else:
-			kd_loss = st(s_target_out, t_target_out)                     
+            kd_loss = st(s_target_selected_out, t_target_selected_out)                   
 		loss = cls_loss + mcc_loss * args.lam + kd_loss * args.mu
 
 		prec1, prec5 = accuracy(s_source_out, source_label, topk=(1,5))
