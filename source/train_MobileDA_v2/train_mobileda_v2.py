@@ -288,7 +288,7 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 
 		optimizer.zero_grad()
 		loss.backward()
-		nn.utils.clip_grad_norm_(snet.parameters(), 5)        
+		nn.utils.clip_grad_norm_(snet.parameters(), args.cg_norm)        
 		optimizer.step()
 		lr_scheduler.step()
 
@@ -381,6 +381,7 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
     parser.add_argument('-p', '--print-freq', default= 100, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
+    parser.add_argument('--cg_norm', default=5.0, type=float, help='max norm of nn.utils.clip_grad_norm_')
     # loss parameters
     parser.add_argument('--mcc_temp', default=2.5, type=float, help='parameter mcc temperature scaling')
     parser.add_argument('--st_temp', default=2.0, type=float, help='parameter soft target temperature scaling')
