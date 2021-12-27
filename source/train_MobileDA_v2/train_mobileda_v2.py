@@ -27,6 +27,7 @@ from common.utils.analysis import collect_feature, tsne, a_distance
 from utils import AverageMeter, accuracy
 from utils import load_pretrained_model, save_checkpoint
 from utils import create_exp_dir, count_parameters_in_MB
+from utils import rm_checkpoint
 
 from kd_losses import *
 from pseudo_labeling import pseudo_labeling
@@ -228,8 +229,10 @@ def main(args):
 
     # print experiment result
     checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))				
-    logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))			
-			
+    logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))
+
+    # rm check point tar
+    rm_checkpoint(args.save_root)
 
 def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 	batch_time = AverageMeter()
