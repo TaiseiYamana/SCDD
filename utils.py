@@ -63,8 +63,6 @@ def rm_checkpoint(save_root):
 	os.remove(save_path)	
 
 
-
-
 def accuracy(output, target, topk=(1,)):
     with torch.no_grad():
         maxk = max(topk)
