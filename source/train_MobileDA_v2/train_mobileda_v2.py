@@ -71,10 +71,12 @@ def main(args):
     if args.dataset == "ImageCLEF":
         args.img_root = ImageCLEF_root
         source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
+        source_test_dataset = dataset(root=args.img_root, task=args.source, transform=test_transform)        
         target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, transform=test_transform)
     else:
         source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
+        source_test_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=test_transform)        
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
 
@@ -89,7 +91,8 @@ def main(args):
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_train_test_loader = DataLoader(target_train_dataset, batch_size = args.batch_size, shuffle = False, num_workers = args.workers)                                                                  
+    source_test_loader = DataLoader(source_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)                                       
+    target_train_test_loader = DataLoader(target_train_dataset, batch_size = args.batch_size, shuffle = False, num_workers = args.workers)                                                                 
     target_test_loader = DataLoader(target_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)  
 
     num_classes = len(source_train_loader.dataset.classes)
@@ -191,8 +194,9 @@ def main(args):
 		    train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args)
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    t_test_top1, t_test_top5 = test(target_train_test_loader, snet, cls, args, phase = 'Target Train')             
-		    t_test_top1, t_test_top5 = test(target_test_loader, snet, cls, args, phase = 'Target Test')                    
+		    _, _ = test(source_test_loader, snet, cls, args, phase = 'Test Source')              
+		    t_test_top1, t_test_top5 = test(target_train_test_loader, snet, cls, args, phase = 'Train Target')             
+		    t_test_top1, t_test_top5 = test(target_test_loader, snet, cls, args, phase = 'Test Target')                    
 
 		    epoch_duration = time.time() - epoch_start_time
 		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
