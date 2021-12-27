@@ -58,10 +58,6 @@ def save_checkpoint(state, is_best, save_root):
 		best_save_path = os.path.join(save_root, 'model_best.pth.tar')
 		shutil.copyfile(save_path, best_save_path)
 
-def rm_checkpoint(save_root):
-	save_path = os.path.join(save_root, 'checkpoint.pth.tar')
-	os.remove(save_path)	
-
 
 def accuracy(output, target, topk=(1,)):
     with torch.no_grad():
