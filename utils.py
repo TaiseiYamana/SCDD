@@ -52,7 +52,7 @@ def transform_time(s):
 
 
 def save_checkpoint(state, is_best, save_root):
-	#save_path = os.path.join(save_root, 'checkpoint.pth.tar')
+	save_path = os.path.join(save_root, 'checkpoint.pth.tar')
 	#torch.save(state, save_path)
 	if is_best:
 		best_save_path = os.path.join(save_root, 'model_best.pth.tar')
