@@ -231,7 +231,7 @@ def main(args):
     logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))
 
     # rm check point tar
-    save_path = os.path.join(save_root, 'checkpoint.pth.tar')
+    save_path = os.path.join(args.save_root, 'checkpoint.pth.tar')
     os.remove(save_path)	
 
 def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
