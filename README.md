@@ -14,7 +14,7 @@
 # Contents
 1. [Introduction](#Introduction)
 2. [Functionality](#Functionality)
-3. [experiment](#Experiment)
+3. [Experiment](#Experiment)
 4. [Citation](#Citation)
 5. [License](#License)
 
@@ -23,7 +23,6 @@
 SCDD is UDA method for lieghtweight model. Lightweight model can be trained by cross domain distillation. This research was published at [APRIS2021](http://sigemb.jp/APRIS/2021/).
 
 ## Functionality
-
 ## Experiment
 ## Citation
 ## License
