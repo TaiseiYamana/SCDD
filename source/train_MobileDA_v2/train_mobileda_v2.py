@@ -295,7 +295,8 @@ def train(iters, nets, optimizer, lr_scheduler, cls, mcc, st, epoch, args):
 
 		optimizer.zero_grad()
 		loss.backward()
-		nn.utils.clip_grad_norm_(snet.parameters(), args.cg_norm)        
+		if(not args.not_clip_grad):
+			nn.utils.clip_grad_norm_(snet.parameters(), args.cg_norm)        
 		optimizer.step()
 		lr_scheduler.step()
 
@@ -398,6 +399,7 @@ if __name__ == '__main__':
                         help='the trade-off hyper-parameter for soft target loss')
     # others
     parser.add_argument('--not_select_label', action='store_true')
+    parser.add_argument('--not_clip_grad', action='store_true')   
     parser.add_argument('--stopping_num', type=int, default=5) 
     parser.add_argument('--threshold', type=float, default=0.7)   
     parser.add_argument('--cuda', type=int, default=1)

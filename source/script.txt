@@ -1,455 +1,101 @@
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SCDD/r50_2_r34' \
 --img_root '/content' \
---note 'W2A/0808' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
+--note 'A2W' \
+--t_arch 'resnet50' \
+--t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r50/A2W/model_best.pth.tar' \
+--s_arch 'resnet34' \
 -d Office31 \
--s W \
--t A \
+-s A \
+-t W \
 -i 500 \
 -b 32 \
 --epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 0.8 \
---mu 0.8 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/0810' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 0.8 \
---mu 1.0 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/0812' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 0.8 \
---mu 1.2 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/0814' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 0.8 \
---mu 1.4 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/0816' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 0.8 \
---mu 1.6 \
---cg_norm 5.
-######################################
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1008' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.0 \
---mu 0.8 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1010' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
+--st_temp 8.0 \
 --wd 0.001 \
 --lam 1.0 \
 --mu 1.0 \
---cg_norm 5.
 
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SCDD/r50_2_r34' \
 --img_root '/content' \
---note 'W2A/1012' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
+--note 'A2D' \
+--t_arch 'resnet50' \
+--t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r50/A2D/model_best.pth.tar' \
+--s_arch 'resnet34' \
 -d Office31 \
--s W \
--t A \
+-s A \
+-t D \
 -i 500 \
 -b 32 \
 --epochs 200 \
---st_temp 4.0 \
+--st_temp 8.0 \
 --wd 0.001 \
 --lam 1.0 \
---mu 1.2 \
---cg_norm 5.
+--mu 1.0 \
 
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SCDD/r50_2_r34' \
 --img_root '/content' \
---note 'W2A/1014' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
+--note 'D2W' \
+--t_arch 'resnet50' \
+--t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r50/D2W/model_best.pth.tar' \
+--s_arch 'resnet34' \
 -d Office31 \
--s W \
--t A \
+-s D \
+-t W \
 -i 500 \
 -b 32 \
 --epochs 200 \
---st_temp 4.0 \
+--st_temp 8.0 \
 --wd 0.001 \
 --lam 1.0 \
---mu 1.4 \
---cg_norm 5.
+--mu 1.0 \
 
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SCDD/r50_2_r34' \
 --img_root '/content' \
---note 'W2A/1016' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
+--note 'D2A' \
+--t_arch 'resnet50' \
+--t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r50/D2A/model_best.pth.tar' \
+--s_arch 'resnet34' \
 -d Office31 \
--s W \
+-s D \
 -t A \
 -i 500 \
 -b 32 \
 --epochs 200 \
---st_temp 4.0 \
+--st_temp 8.0 \
 --wd 0.001 \
 --lam 1.0 \
---mu 1.6 \
---cg_norm 5.
-######################################
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1208' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.2 \
---mu 0.8 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1210' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.2 \
 --mu 1.0 \
---cg_norm 5.
 
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SCDD/r50_2_r34' \
 --img_root '/content' \
---note 'W2A/1212' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
+--note 'W2A' \
+--t_arch 'resnet50' \
+--t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r50/W2A/model_best.pth.tar' \
+--s_arch 'resnet34' \
 -d Office31 \
 -s W \
 -t A \
 -i 500 \
 -b 32 \
 --epochs 200 \
---st_temp 4.0 \
+--st_temp 8.0 \
 --wd 0.001 \
---lam 1.2 \
---mu 1.2 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1214' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.2 \
---mu 1.4 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1216' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.2 \
---mu 1.6 \
---cg_norm 5.
-######################################
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1408' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.4 \
---mu 0.8 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1410' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.4 \
+--lam 1.0 \
 --mu 1.0 \
---cg_norm 5.
 
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
+!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SCDD/r50_2_r34' \
 --img_root '/content' \
---note 'W2A/1412' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
+--note 'W2D' \
+--t_arch 'resnet50' \
+--t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r50/W2D/model_best.pth.tar' \
+--s_arch 'resnet34' \
 -d Office31 \
 -s W \
--t A \
+-t D \
 -i 500 \
 -b 32 \
 --epochs 200 \
---st_temp 4.0 \
+--st_temp 8.0 \
 --wd 0.001 \
---lam 1.4 \
---mu 1.2 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1414' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.4 \
---mu 1.4 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1416' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.4 \
---mu 1.6 \
---cg_norm 5.
-######################################
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1608' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.6 \
---mu 0.8 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1610' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.6 \
+--lam 1.0 \
 --mu 1.0 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1612' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.6 \
---mu 1.2 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1614' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.6 \
---mu 1.4 \
---cg_norm 5.
-
-!CUDA_VISIBLE_DEVICES=0 python3 train_mobileda_v2.py --save_root '/content/drive/MyDrive/ImprovedSCDD/of31/SearchParam/r34_2_alex_2' \
---img_root '/content' \
---note 'W2A/1616' \
---t_arch 'resnet34' \
---t-model-param '/content/drive/MyDrive/ImprovedSCDD/of31/MCC/r34/W2A/model_best.pth.tar' \
---s_arch 'alexnet' \
--d Office31 \
--s W \
--t A \
--i 500 \
--b 32 \
---epochs 200 \
---st_temp 4.0 \
---wd 0.001 \
---lam 1.6 \
---mu 1.6 \
---cg_norm 5.
-######################################
-
