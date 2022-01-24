@@ -205,34 +205,43 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--source', default = 'A', help='source domain(s)')
     parser.add_argument('-t', '--target', default = 'W', help='target domain(s)')
     # model parameters
-    parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
+    parser.add_argument('--t_arch', metavar='ARCH', default='resnet50',
                         choices=architecture_names,
                         help='backbone architecture: ' +
                              ' | '.join(architecture_names) +
-                             ' (default: resnet18)')
-    parser.add_argument('--bottleneck-dim', default=256, type=int,
-                        help='Dimension of bottleneck')
-    parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')                       
+                             ' (default: resnet50)')
+    parser.add_argument('--s_arch', metavar='ARCH', default='resnet18',
+                        choices=architecture_names,
+                        help='backbone architecture: ' +
+                             ' | '.join(architecture_names) +
+                             ' (default: resnet18)')    
+    parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
+    parser.add_argument('--check_point', action='store_true', help='use check point parameter')         
     # training parameters
-    parser.add_argument('-b', '--batch-size', default=36, type=int, help='mini-batch size (default: 32)')
-    parser.add_argument('--lr', '--learning-rate', default=0.005, type=float, help='initial learning rate')
+    parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
+    parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
     parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
-    parser.add_argument('--epochs', default=20, type=int, help='number of total epochs to run')
-    parser.add_argument('-i', '--iters-per-epoch', default=1000, type=int, help='Number of iterations per epoch')
-    parser.add_argument('-p', '--print-freq', default=50, type=int, help='print frequency (default: 50)')
+    parser.add_argument('--epochs', default=50, type=int, help='number of total epochs to run')
+    parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
+    parser.add_argument('-p', '--print-freq', default= 100, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
-    parser.add_argument("--phase", type=str, default='train', choices=['train', 'test', 'analysis'],
-                        help="When phase is 'test', only test the model."
-                             "When phase is 'analysis', only analysis the model.")
-    # mcc parameters
-    parser.add_argument('--temperature', default=2.0, type=float, help='parameter temperature scaling')
-    parser.add_argument('--trade-off', default=1., type=float,
-                        help='the trade-off hyper-parameter for transfer loss')                         
+    parser.add_argument('--cg_norm', default=5.0, type=float, help='max norm of nn.utils.clip_grad_norm_')
+    # loss parameters
+    parser.add_argument('--mcc_temp', default=2.5, type=float, help='parameter mcc temperature scaling')
+    parser.add_argument('--st_temp', default=2.0, type=float, help='parameter soft target temperature scaling')
+    parser.add_argument('--lam', default=1., type=float,
+                        help='the trade-off hyper-parameter for mcc loss')
+    parser.add_argument('--mu', default=1., type=float,
+                        help='the trade-off hyper-parameter for soft target loss')
     # others
+    parser.add_argument('--not_select_label', action='store_true')
+    parser.add_argument('--not_clip_grad', action='store_true')   
+    parser.add_argument('--stopping_num', type=int, default=5) 
+    parser.add_argument('--threshold', type=float, default=0.7)   
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
 
