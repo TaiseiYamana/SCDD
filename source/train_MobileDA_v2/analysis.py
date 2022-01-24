@@ -170,9 +170,9 @@ def main(args):
             #checkpoint = torch.load(args.model_param)
             #load_pretrained_model(net, checkpoint['net'])
         # extract features from both domains
-        feature_extractor = nn.Sequential(tnet.backbone, tnet.bottleneck).to(device)
-        source_feature = collect_feature(source_test_loader, feature_extractor, device)
-        target_feature = collect_feature(target_test_loader, feature_extractor, device)
+        #feature_extractor = nn.Sequential(tnet.backbone, tnet.bottleneck).to(device)
+        source_feature = collect_feature(source_test_loader, tnet, device)
+        target_feature = collect_feature(target_test_loader, tnet, device)
         # plot t-SNE
         tSNE_filename = os.path.join(args.save_root, 'TSNE.png')
         tsne.visualize(source_feature, target_feature, tSNE_filename)
