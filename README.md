@@ -25,9 +25,6 @@ SCDD is UDA method for lieghtweight model. Lightweight model can be trained by c
 ## Functionality
 ## Experiment
 ## Citation
-## License
-
-## Reference
 ```
 @inproceedings{weko_216177_1,
    author	 = "Taisei,Yamana and Yuko,Hara-Azumi",
@@ -40,3 +37,5 @@ SCDD is UDA method for lieghtweight model. Lightweight model can be trained by c
    month	 = "jan"
 }
 ```
+## License
+## Reference
