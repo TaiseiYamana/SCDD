@@ -26,3 +26,17 @@ SCDD is UDA method for lieghtweight model. Lightweight model can be trained by c
 ## Experiment
 ## Citation
 ## License
+
+## Reference
+```
+@inproceedings{weko_216177_1,
+   author	 = "Taisei,Yamana and Yuko,Hara-Azumi",
+   title	 = "Edge Domain Adaptation through Stepwise Cross-Domain Distillation",
+   booktitle	 = "Proceedings of Asia Pacific Conference on Robot IoT System Development and Platform",
+   year 	 = "2022",
+   volume	 = "2021",
+   number	 = "",
+   pages	 = "1--7",
+   month	 = "jan"
+}
+```
