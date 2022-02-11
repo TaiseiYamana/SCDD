@@ -1,7 +1,0 @@
-Drill, ExitSign, Bottle, Glasses, Computer, FileCabinet, Shelf, Toys, Sink,  
-Laptop, Kettle, Folder, Keyboard, Flipflops, Pencil, Bed, Hammer, ToothBrush, Couch, 
-Bike, PostitNotes, Mug, Webcam, DeskLamp, Telephone, Helmet, Mouse, Pen, Monitor, 
-Mop, Sneakers, Notebook, Backpack, AlarmClock, PushPin, PaperClip, Batteries, Radio, 
-Fan, Ruler, Pan, Screwdriver, TrashCan, Printer, Speaker, Eraser, Bucket, Chair, 
-Calendar, Calculator, Flowers, LampShade, Spoon, Candles, Clipboards, Scissors, TV, 
-Curtains, Fork, Soda, Table, Knives, Oven, Refrigerator, Marker
