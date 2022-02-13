@@ -169,10 +169,10 @@ def main(args):
     # plot t-SNE
     tSNE_filename = os.path.join(args.save_root, 'TSNE.png')
     tsne.visualize(source_feature, target_feature, tSNE_filename)
-    logging.info("Saving t-SNE to", tSNE_filename)
+    logging.info("Saving t-SNE to".format(tSNE_filename))
     # calculate A-distance, which is a measure for distribution discrepancy
     A_distance = a_distance.calculate(source_feature, target_feature, device)
-    logging.info("A-distance =", A_distance")
+    logging.info("A-distance =".format(A_distance"))
 
     # plot Confusion Matrix
     CM_filename = os.path.join(args.save_root, 'ConfusionMatrix.png')
