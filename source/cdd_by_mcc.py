@@ -222,8 +222,8 @@ def main(args):
           		            'best_top5': best_top5},
           		            is_best, args.save_root)
 
-		    if stopping_counter == args.stopping_num:
-		    	logging.info('Planned　Stopping Training')
+		    if stopping_counter == args.stopping_epoch_num:
+		    	logging.info('Early stopping')
 		    	break
 
     # print experiment result
@@ -400,7 +400,7 @@ if __name__ == '__main__':
     # others
     parser.add_argument('--not_select_label', action='store_true')
     parser.add_argument('--not_clip_grad', action='store_true')
-    parser.add_argument('--stopping_num', type=int, default=5)
+    parser.add_argument('--stopping_epoch_num', type=int, default=5)
     parser.add_argument('--threshold', type=float, default=0.7)
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()

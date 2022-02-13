@@ -181,8 +181,8 @@ def main(args):
           		            'prec@5': t_test_top5,},
           		            is_best, args.save_root)
 
-		    if stopping_counter == 8:
-		    	logging.info('Planned　Stopping Training')
+		    if stopping_counter == args.stopping_epoch_num:
+		    	logging.info('Early stopping')
 		    	break
 
     # print experiment result
@@ -313,6 +313,7 @@ if __name__ == '__main__':
 
     # others
     parser.add_argument('--cuda', type=int, default=1)
+    parser.add_argument('--stopping_epoch_num', type=int, default=5)
     args = parser.parse_args()
 
     args.save_root = os.path.join(args.save_root, args.note)#./results/pt_of31_A_r50
