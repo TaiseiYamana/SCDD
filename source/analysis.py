@@ -27,12 +27,15 @@ from common.utils.analysis import collect_feature, tsne, a_distance
 from utils import AverageMeter, accuracy
 from utils import load_pretrained_model, save_checkpoint
 from utils import create_exp_dir, count_parameters_in_MB
+from utils import Cal_ConfusionMatrix, plot_cm
 
 from kd_losses import *
 from pseudo_labeling import pseudo_labeling
 from split_dataset import split_dataset
 
 import matplotlib.pyplot as plt
+
+from pycm import ConfusionMatrix
 
 ImageCLEF_root = "/content/drive/MyDrive/datasets/ImageCLEF"
 
@@ -99,60 +102,50 @@ def main(args):
 
 	# create model
     logging.info('----------- Network Initialization --------------')
-    logging.info('Initialize Teacher Model')
-    logging.info('=> using pre-trained model {}'.format(args.t_arch))
-    if ('resnet' in args.t_arch):
-            tbackbone = models.__dict__[args.t_arch](pretrained=True)
-            tnet = modules.Classifier(tbackbone, num_classes).to(device)
+    logging.info('=> using model {}'.format(args.arch))
+    if ('resnet' in args.arch):
+            backbone = models.__dict__[args.arch](pretrained=True)
+            net = modules.Classifier(tbackbone, num_classes).to(device)
     else:
-            tnet = models.__dict__[args.t_arch](num_classes = num_classes, pretrained = True).to(device)
-    tnet_param = torch.load(args.t_model_param)
-    load_pretrained_model(tnet, tnet_param['net'])
-    tnet.eval()
+            net = models.__dict__[args.arch](num_classes = num_classes, pretrained = True).to(device)
+    net_param = torch.load(args.model_param)
+    logging.info('=> load pretrain parameter ')
+    load_pretrained_model(net, net_param['net'])
+    net.eval()
     for param in tnet.parameters():
 		    param.requires_grad = False
     #logging.info('%s', tnet)
     #logging.info("param size = %fMB", count_parameters_in_MB(tnet))
-
-    logging.info('Initialize Student Model')
-    logging.info('=> using pre-trained model {}'.format(args.s_arch))
-    if ('resnet' in args.s_arch):
-		    sbackbone = models.__dict__[args.s_arch](pretrained=True)
-		    snet = modules.Classifier(sbackbone, num_classes).to(device)
-    else:
-            snet = models.__dict__[args.s_arch](num_classes = num_classes, pretrained = True).to(device)
-    #logging.info('%s', snet)
-    #logging.info("param size = %fMB", count_parameters_in_MB(snet))
     logging.info('-----------------------------------------------')
 
-    nets = {'snet':snet, 'tnet':tnet}
+    #nets = {'snet':snet, 'tnet':tnet}
 
     # optimizer and lr scheduler
-    if ('resnet' in args.s_arch):
-		    params = snet.get_parameters()
-    else:
-		    params = [
-            {"params": snet.features.parameters(), "lr": 0.1 * 1},
-            {"params": snet.classifier[:6].parameters(), "lr": 0.1 * 1},
-            {"params": snet.classifier[6].parameters(), "lr": 1.0 * 1}]
+    #if ('resnet' in args.s_arch):
+		    #params = snet.get_parameters()
+    #else:
+		    #params = [
+            #{"params": snet.features.parameters(), "lr": 0.1 * 1},
+            #{"params": snet.classifier[:6].parameters(), "lr": 0.1 * 1},
+            #{"params": snet.classifier[6].parameters(), "lr": 1.0 * 1}]
 
-    optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
-    lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
+    #optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
+    #lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
-    source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader)
+    #source_train_iter = ForeverDataIterator(source_train_loader)
+    #target_train_iter = ForeverDataIterator(target_train_loader)
 
-    if (args.not_select_label):
-            iters = {'source':source_train_iter,'target':target_train_iter}
-    else:
+    #if (args.not_select_label):
+            #iters = {'source':source_train_iter,'target':target_train_iter}
+    #else:
 		    # select paseudo labels
-		    selected_idx = pseudo_labeling(args.threshold, target_train_test_loader, tnet)
-		    target_selected_dataset = dataset(root=args.img_root, task=args.target, indexs = selected_idx, transform=train_transform)
-		    target_train_selected_loader = DataLoader(target_selected_dataset, batch_size=args.batch_size,
+	selected_idx = pseudo_labeling(args.threshold, target_train_test_loader, tnet)
+	target_selected_dataset = dataset(root=args.img_root, task=args.target, indexs = selected_idx, transform=train_transform)
+	target_train_selected_loader = DataLoader(target_selected_dataset, batch_size=args.batch_size,
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
-		    target_train_selected_iter = ForeverDataIterator(target_train_selected_loader)
+	#target_train_selected_iter = ForeverDataIterator(target_train_selected_loader)
 		    # define dict
-		    iters = {'source':source_train_iter,'target':target_train_iter, 'target_selected':target_train_selected_iter}
+		    #iters = {'source':source_train_iter,'target':target_train_iter, 'target_selected':target_train_selected_iter}
 
     # loss function
     mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
@@ -164,23 +157,62 @@ def main(args):
 		    st = st.to(device)
 		    cls = cls.to(device)
 
-    if True:
+    #if True:
         #if args.model_param != None:
             # load model paramater
             #checkpoint = torch.load(args.model_param)
             #load_pretrained_model(net, checkpoint['net'])
         # extract features from both domains
         #feature_extractor = nn.Sequential(tnet.backbone, tnet.bottleneck).to(device)
-        source_feature = collect_feature(source_test_loader, tnet, device)
-        target_feature = collect_feature(target_test_loader, tnet, device)
-        # plot t-SNE
-        tSNE_filename = os.path.join(args.save_root, 'TSNE.png')
-        tsne.visualize(source_feature, target_feature, tSNE_filename)
-        print("Saving t-SNE to", tSNE_filename)
-        # calculate A-distance, which is a measure for distribution discrepancy
-        A_distance = a_distance.calculate(source_feature, target_feature, device)
-        print("A-distance =", A_distance)
-        return
+    source_feature = collect_feature(source_test_loader, tnet, device)
+    target_feature = collect_feature(target_test_loader, tnet, device)
+    # plot t-SNE
+    tSNE_filename = os.path.join(args.save_root, 'TSNE.png')
+    tsne.visualize(source_feature, target_feature, tSNE_filename)
+    logging.info("Saving t-SNE to", tSNE_filename)
+    # calculate A-distance, which is a measure for distribution discrepancy
+    A_distance = a_distance.calculate(source_feature, target_feature, device)
+    logging.info("A-distance =", A_distance")
+
+    # plot Confusion Matrix
+    CM_filename = os.path.join(args.save_root, 'ConfusionMatrix.png')
+    cm_list = test(target_test_loader, net, cls, mcc, 'Target Domain')
+    cm_pd = ConfusionMatrix(actual_vector=cm_list.t, predict_vector=cm_list.y)
+    cm_pd.classes = target_test_dataset.CLASSES
+    plt.figure()
+    plot_cm(cm_pd, annot=True)
+    plt.savefig(CM_filename, bbox_inches='tight')
+
+def test(data_loader, net, cls, mcc, phase):
+	cls_loss = AverageMeter()
+	mcc_loss = AverageMeter()
+	top1   = AverageMeter()
+	top5   = AverageMeter()
+	cm_list = Cal_ConfusionMatrix(num_classes=len(data_loader.dataset.classes))
+
+	net.eval()
+
+	end = time.time()
+	for i, (img, target, _) in enumerate(data_loader, start=1):
+		img = img.cuda()
+		target = target.cuda()
+
+		with torch.inference_mode():
+			out, _ = net(img)
+			cls_loss = cls(out, target)
+			mcc_loss = mcc(target)
+
+		cm_list.update(out ,target)
+		prec1, prec5 = accuracy(out, target, topk=(1,5))
+		cls_loss.update(loss.item(), img.size(0))
+		mcc_loss.update(loss.item(), img.size(0))
+		top1.update(prec1.item(), img.size(0))
+		top5.update(prec5.item(), img.size(0))
+
+	f_l = [cls_loss.avg, mcc_loss.avg, top1.avg, top5.avg]
+    logging.info('-{}- CLS Loss: {:.4f}, MCC Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
+
+	return cm_list
 
 if __name__ == '__main__':
     architecture_names = sorted(
