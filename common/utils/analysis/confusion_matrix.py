@@ -2,6 +2,7 @@ import torch
 import matplotlib
 import pandas as pd
 import seaborn as sns
+import torch.nn.functional as F
 
 matplotlib.use('Agg')
 
