@@ -139,9 +139,9 @@ def main(args):
             #iters = {'source':source_train_iter,'target':target_train_iter}
     #else:
 		    # select paseudo labels
-	selected_idx = pseudo_labeling(args.threshold, target_train_test_loader, tnet)
-	target_selected_dataset = dataset(root=args.img_root, task=args.target, indexs = selected_idx, transform=train_transform)
-	target_train_selected_loader = DataLoader(target_selected_dataset, batch_size=args.batch_size,
+    selected_idx = pseudo_labeling(args.threshold, target_train_test_loader, tnet)
+    target_selected_dataset = dataset(root=args.img_root, task=args.target, indexs = selected_idx, transform=train_transform)
+    target_train_selected_loader = DataLoader(target_selected_dataset, batch_size=args.batch_size,
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
 	#target_train_selected_iter = ForeverDataIterator(target_train_selected_loader)
 		    # define dict
