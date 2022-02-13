@@ -199,7 +199,7 @@ def test(data_loader, net, cls, mcc, phase):
 		with torch.inference_mode():
 			out, _ = net(img)
 			cls_loss = cls(out, target)
-			mcc_loss = mcc(target)
+			mcc_loss = mcc(out)
 
 		cm_list.update(out ,target)
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
