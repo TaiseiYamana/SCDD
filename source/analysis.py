@@ -210,7 +210,7 @@ def test(data_loader, net, cls, mcc, phase):
 		top5.update(prec5.item(), img.size(0))
 
 	f_l = [cls_loss.avg, mcc_loss.avg, top1.avg, top5.avg]
-    logging.info('-{}- CLS Loss: {:.4f}, MCC Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
+	logging.info('-{}- CLS Loss: {:.4f}, MCC Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
 
 	return cm_list
 
