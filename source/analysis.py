@@ -93,9 +93,9 @@ def main(args):
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    source_test_loader = DataLoader(source_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
-    target_train_test_loader = DataLoader(target_train_dataset, batch_size = args.batch_size, shuffle = False, num_workers = args.workers)
-    target_test_loader = DataLoader(target_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
+    source_test_loader = DataLoader(source_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=2)
+    target_train_test_loader = DataLoader(target_train_dataset, batch_size = args.batch_size, shuffle = False, num_workers = 2)
+    target_test_loader = DataLoader(target_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=2)
 
     num_classes = len(source_train_loader.dataset.classes)
 
