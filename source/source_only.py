@@ -121,7 +121,6 @@ def main(args):
     # define loss function
     cls_loss = torch.nn.CrossEntropyLoss()
     if args.cuda:
-		    mcc = mcc_loss.to(device)
 		    cls = cls_loss.to(device)
 
     # define dict
