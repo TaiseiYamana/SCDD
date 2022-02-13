@@ -23,15 +23,12 @@ class Cal_ConfusionMatrix:
         self.t.extend(t)
 
 def plot_cm(cm, normalize=False, title='Confusion matrix', annot=False, cmap='YlGnBu'):
-    import pandas as pd
-    import seaborn as sns
-
     data = cm.matrix
     if normalize:
         title += '(Normalized)'
         data = cm.normalized_matrix
 
     df = pd.DataFrame(data).T.fillna(0)
-    ax = sns.heatmap(df, annot=annot, cmap=cmap, fmt='d')
+    ax = sns.heatmap(df, annot=annot, cmap=cmap, fmt='d', xticklabels = cm.classes, yticklabels = cm.classes)
     ax.set_title(title)
     ax.set(xlabel='Predict', ylabel='Actual')
