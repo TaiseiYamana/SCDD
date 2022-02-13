@@ -182,7 +182,7 @@ def main(args):
     class_num = len(target_test_dataset.CLASSES)
     plt.figure(figsize=(class_num/4.5*1.3, class_num/4.5), dpi=120)
     confusion_matrix.plot_cm(cm_pd, annot=True)
-    logging.info("Saving Confusion Matrix to {}".format(tSNE_filename))
+    logging.info("Saving Confusion Matrix to {}".format(CM_filename))
     plt.savefig(CM_filename, bbox_inches='tight')
 
 def test(data_loader, net, cls, mcc, phase):
