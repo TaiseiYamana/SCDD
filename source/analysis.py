@@ -180,7 +180,7 @@ def main(args):
     cm_pd.classes = target_test_dataset.CLASSES
     #plt.figure()
     class_num = len(target_test_dataset.CLASSES)
-    plt.figure(figsize=(class_num/4*1.4, class_num/4), dpi=100)
+    plt.figure(figsize=(class_num/4*1.3, class_num/4), dpi=100)
     confusion_matrix.plot_cm(cm_pd, annot=True)
     logging.info("Saving Confusion Matrix to {}".format(tSNE_filename))
     plt.savefig(CM_filename, bbox_inches='tight')
