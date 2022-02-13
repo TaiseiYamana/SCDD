@@ -14,7 +14,7 @@ from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
 
-sys.path.append('../..')
+sys.path.append('..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
 
 import common.vision.datasets as datasets
@@ -71,12 +71,12 @@ def main(args):
     if args.dataset == "ImageCLEF":
         args.img_root = ImageCLEF_root
         source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
-        source_test_dataset = dataset(root=args.img_root, task=args.source, transform=test_transform)        
+        source_test_dataset = dataset(root=args.img_root, task=args.source, transform=test_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, transform=test_transform)
     else:
         source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
-        source_test_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=test_transform)        
+        source_test_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=test_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
 
@@ -91,9 +91,9 @@ def main(args):
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    source_test_loader = DataLoader(source_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)                                       
-    target_train_test_loader = DataLoader(target_train_dataset, batch_size = args.batch_size, shuffle = False, num_workers = args.workers)                                                                 
-    target_test_loader = DataLoader(target_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)  
+    source_test_loader = DataLoader(source_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
+    target_train_test_loader = DataLoader(target_train_dataset, batch_size = args.batch_size, shuffle = False, num_workers = args.workers)
+    target_test_loader = DataLoader(target_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
 
     num_classes = len(source_train_loader.dataset.classes)
 
@@ -129,21 +129,21 @@ def main(args):
 
     # optimizer and lr scheduler
     if ('resnet' in args.s_arch):
-		    params = snet.get_parameters() 
+		    params = snet.get_parameters()
     else:
 		    params = [
             {"params": snet.features.parameters(), "lr": 0.1 * 1},
             {"params": snet.classifier[:6].parameters(), "lr": 0.1 * 1},
             {"params": snet.classifier[6].parameters(), "lr": 1.0 * 1}]
-            
+
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
     source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader) 
-  
+    target_train_iter = ForeverDataIterator(target_train_loader)
+
     if (args.not_select_label):
-            iters = {'source':source_train_iter,'target':target_train_iter}                            
+            iters = {'source':source_train_iter,'target':target_train_iter}
     else:
 		    # select paseudo labels
 		    selected_idx = pseudo_labeling(args.threshold, target_train_test_loader, tnet)
@@ -151,8 +151,8 @@ def main(args):
 		    target_train_selected_loader = DataLoader(target_selected_dataset, batch_size=args.batch_size,
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
 		    target_train_selected_iter = ForeverDataIterator(target_train_selected_loader)
-		    # define dict 
-		    iters = {'source':source_train_iter,'target':target_train_iter, 'target_selected':target_train_selected_iter}  
+		    # define dict
+		    iters = {'source':source_train_iter,'target':target_train_iter, 'target_selected':target_train_selected_iter}
 
     # loss function
     mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
@@ -164,7 +164,7 @@ def main(args):
 		    st = st.to(device)
 		    cls = cls.to(device)
 
-    if True: 
+    if True:
         #if args.model_param != None:
             # load model paramater
             #checkpoint = torch.load(args.model_param)
@@ -214,9 +214,9 @@ if __name__ == '__main__':
                         choices=architecture_names,
                         help='backbone architecture: ' +
                              ' | '.join(architecture_names) +
-                             ' (default: resnet18)')    
+                             ' (default: resnet18)')
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
-    parser.add_argument('--check_point', action='store_true', help='use check point parameter')         
+    parser.add_argument('--check_point', action='store_true', help='use check point parameter')
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
@@ -239,9 +239,9 @@ if __name__ == '__main__':
                         help='the trade-off hyper-parameter for soft target loss')
     # others
     parser.add_argument('--not_select_label', action='store_true')
-    parser.add_argument('--not_clip_grad', action='store_true')   
-    parser.add_argument('--stopping_num', type=int, default=5) 
-    parser.add_argument('--threshold', type=float, default=0.7)   
+    parser.add_argument('--not_clip_grad', action='store_true')
+    parser.add_argument('--stopping_num', type=int, default=5)
+    parser.add_argument('--threshold', type=float, default=0.7)
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
 

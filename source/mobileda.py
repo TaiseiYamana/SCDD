@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as T
 from torchvision.models import mobilenet_v3_small, mobilenet_v3_large, alexnet
 
-sys.path.append('../..')
+sys.path.append('..')
 from dalib.adaptation.dcoral import DeepCoralLoss
 
 import common.vision.datasets as datasets
@@ -91,11 +91,11 @@ def main(args):
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_val_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)                                     
+    target_val_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)
     target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader)     
+    target_train_iter = ForeverDataIterator(target_train_loader)
 
     num_classes = len(source_train_loader.dataset.classes)
 
@@ -125,7 +125,7 @@ def main(args):
  		    snet = alexnet(pretrained=True)
  		    snet.classifier[6] = nn.Linear(4096, num_classes)
  		    torch.nn.init.normal_(snet.classifier[6].weight, mean=0, std=5e-3)
- 		    snet.classifier[6].bias.data.fill_(0.01)	            
+ 		    snet.classifier[6].bias.data.fill_(0.01)
     else:
 		    sbackbone = models.__dict__[args.s_arch](pretrained=True)
 		    snet = modules.Classifier(sbackbone, num_classes)
@@ -141,7 +141,7 @@ def main(args):
             {"params": snet.features.parameters(), "lr": 0.1 * 1},
             {"params": snet.classifier.parameters(), "lr": 1.0 * 1}]
     else:
-		    params = snet.get_parameters() 
+		    params = snet.get_parameters()
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
@@ -149,19 +149,19 @@ def main(args):
     dcoral = DeepCoralLoss()
     st = SoftTarget(args.st_temp)
     cls = torch.nn.CrossEntropyLoss()
-  
+
     if (args.select_label):
 		    # select paseudo labels
 		    pseudo_idx = pseudo_labeling(args.threshold, target_train_loader, tnet)
-		    # creaet dataloader  
+		    # creaet dataloader
 		    pseudo_dataset = dataset(root=args.img_root, task=args.target, indexs = pseudo_idx, transform=train_transform)
 		    target_train_loader = DataLoader(pseudo_dataset, batch_size=args.batch_size,
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader) 
+    target_train_iter = ForeverDataIterator(target_train_loader)
 
-    # define dict            
+    # define dict
     iters = {'target':target_train_iter, 'source':source_train_iter}
     nets = {'snet':snet, 'tnet':tnet}
 
@@ -208,25 +208,25 @@ def main(args):
 		    check_point_epoch = checkpoint['epoch']
 		    optimizer.load_state_dict(checkpoint['optimizer'])
 		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
-		    best_top1 = checkpoint['prec@1']       
+		    best_top1 = checkpoint['prec@1']
 		    best_top5 = checkpoint['prec@5']
-                
+
     for epoch in range(1, args.epochs+1):
 		    # skip utill check point
 		    if (args.check_point):
 		    	if (check_point_epoch >= epoch) :
-		    		logging.info("Skip epoch {}".format(epoch)) 
+		    		logging.info("Skip epoch {}".format(epoch))
 		    		continue
-		    	else:                            
+		    	else:
 		    		args.check_point = False
 
 		    epoch_start_time = time.time()
-                               
+
 		    # train one epoch
 		    train(iters, nets, optimizer, lr_scheduler, cls, dcoral, st, epoch, args)
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    t_val_top1, t_val_top5 = test(target_val_loader, snet, cls, args, phase = 'Target Validation')            
+		    t_val_top1, t_val_top5 = test(target_val_loader, snet, cls, args, phase = 'Target Validation')
 		    t_test_top1, t_test_top5 = test(target_test_loader, snet, cls, args, phase = 'Target Test')
 
 		    epoch_duration = time.time() - epoch_start_time
@@ -238,27 +238,27 @@ def main(args):
 		    	best_top1 = t_test_top1
 		    	best_top5 = t_test_top5
 		    	is_best = True
-		    	stopping_counter = 0                
+		    	stopping_counter = 0
 		    else:
 		    	stopping_counter += 1
 
 		    logging.info('Saving models......')
 		    save_checkpoint({'epoch': epoch,
           		            'net': snet.state_dict(),
-          		            'optimizer': optimizer.state_dict(),							  			
-          		            'scheduler': lr_scheduler.state_dict(),                             
+          		            'optimizer': optimizer.state_dict(),
+          		            'scheduler': lr_scheduler.state_dict(),
           		            'prec@1': t_test_top1,
-          		            'prec@5': t_test_top5,}, 
+          		            'prec@5': t_test_top5,},
           		            is_best, args.save_root)
-                              
+
 		    if stopping_counter == args.stopping_num:
 		    	logging.info('Planned　Stopping Training')
 		    	break
 
     # print experiment result
-    checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))				
-    logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))			
-			
+    checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))
+    logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))
+
 
 def train(iters, nets, optimizer, lr_scheduler, cls, dcoral, st, epoch, args):
 	batch_time = AverageMeter()
@@ -291,11 +291,11 @@ def train(iters, nets, optimizer, lr_scheduler, cls, dcoral, st, epoch, args):
 
 		if args.s_arch == 'mobilenet_v3_small' or args.s_arch == 'mobilenet_v3_large' or args.s_arch == 'alexnet':
 			s_source_out = snet(source_img)
-			s_target_out = snet(target_img)           
+			s_target_out = snet(target_img)
 		else:
 			s_source_out, _ = snet(source_img)
 			s_target_out, _ = snet(target_img)
-			
+
 		t_target_out, _= tnet(target_img)
 
 		cls_loss = cls(s_source_out, source_label)
@@ -350,7 +350,7 @@ def test(test_loader, net, cls, args, phase):
 				out = net(img)
 			else:
 				out, _ = net(img)
-			loss = cls(out, target)    
+			loss = cls(out, target)
 
 			prec1, prec5 = accuracy(out, target, topk=(1,5))
 			losses.update(loss.item(), img.size(0))
@@ -393,10 +393,10 @@ if __name__ == '__main__':
     parser.add_argument('--s_arch', metavar='ARCH', default='resnet18',
                         help='backbone architecture: ' +
                              ' | '.join(architecture_names) +
-                             ' (default: resnet18)')    
+                             ' (default: resnet18)')
     parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
     parser.add_argument('--s-model-param', default=None, type=str, help='path name of student model')
-    parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')         
+    parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
@@ -420,8 +420,8 @@ if __name__ == '__main__':
                         help='the trade-off hyper-parameter for soft target loss')
     # others
     parser.add_argument('--select_label', type=bool, default=True)
-    parser.add_argument('--stopping_num', type=int, default=5) 
-    parser.add_argument('--threshold', type=float, default=0.7)   
+    parser.add_argument('--stopping_num', type=int, default=5)
+    parser.add_argument('--threshold', type=float, default=0.7)
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
 

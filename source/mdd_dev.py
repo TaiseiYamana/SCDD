@@ -14,7 +14,7 @@ from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
 
-sys.path.append('../..')
+sys.path.append('..')
 from dalib.modules.domain_discriminator import DomainDiscriminator
 from dalib.adaptation.cdan import ConditionalDomainAdversarialLoss, ImageClassifier
 
@@ -67,12 +67,12 @@ def main(args):
     if args.dataset == "ImageCLEF":
         args.img_root = ImageCLEF_root
         source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
-        source_test_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)        
+        source_test_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, transform=test_transform)
     else:
         source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
-        source_test_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)        
+        source_test_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
 
@@ -85,14 +85,14 @@ def main(args):
     # data loader
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    source_test_loader = DataLoader(source_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)                                    
+    source_test_loader = DataLoader(source_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_train_test_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)                                     
+    target_train_test_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)
     target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader) 
+    target_train_iter = ForeverDataIterator(target_train_loader)
 
     num_classes = len(source_train_loader.dataset.classes)
 
@@ -111,7 +111,7 @@ def main(args):
 
     # optimizer and lr scheduler
     if ('resnet' in args.arch):
-		    params = net.get_parameters() 
+		    params = net.get_parameters()
     else:
 		    params = [
             {"params": net.features.parameters(), "lr": 0.1 * 1},
@@ -127,11 +127,11 @@ def main(args):
     if args.cuda:
 		    mdd = mdd.to(device)
 		    cls = cls.to(device)
-		
+
     # define dict
     iters = {'source':source_train_iter, 'target':target_train_iter}
 
-    best_top1= 0.0    
+    best_top1= 0.0
     best_top5 = 0.0
 
     # check point parameter load
@@ -141,7 +141,7 @@ def main(args):
 		    check_point_epoch = checkpoint['epoch']
 		    optimizer.load_state_dict(checkpoint['optimizer'])
 		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
-		    best_top1 = checkpoint['prec@1']       
+		    best_top1 = checkpoint['prec@1']
 		    best_top5 = checkpoint['prec@5']
 
     stopping_counter = 0
@@ -149,9 +149,9 @@ def main(args):
 		    # skip utill check point
 		    if (args.check_point):
 		    	if (check_point_epoch >= epoch) :
-		    		logging.info("Skip epoch {}".format(epoch)) 
+		    		logging.info("Skip epoch {}".format(epoch))
 		    		continue
-		    	else:                            
+		    	else:
 		    		args.check_point = False
 
 		    # train one epoch
@@ -160,10 +160,10 @@ def main(args):
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    _, _ = test(source_test_loader, net, cls, args, phase = 'Source') 
-		    t_val_top1, t_val_top5 = test(target_train_test_loader, net, cls, args, phase = 'Target Train')            
+		    _, _ = test(source_test_loader, net, cls, args, phase = 'Source')
+		    t_val_top1, t_val_top5 = test(target_train_test_loader, net, cls, args, phase = 'Target Train')
 		    t_test_top1, t_test_top5 = test(target_test_loader, net, cls, args, phase = 'Target Test')
-		
+
 		    epoch_duration = time.time() - epoch_start_time
 		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
 
@@ -176,23 +176,23 @@ def main(args):
 		    	stopping_counter = 0
 		    else:
 		    	stopping_counter += 1
-          
+
 		    logging.info('Saving models......')
 		    save_checkpoint({'epoch': epoch,
           		            'net': net.state_dict(),
-          		            'optimizer': optimizer.state_dict(),							  			
+          		            'optimizer': optimizer.state_dict(),
           		            'scheduler': lr_scheduler.state_dict(),
           		            'prec@1': t_test_top1,
-          		            'prec@5': t_test_top5,}, 
+          		            'prec@5': t_test_top5,},
           		            is_best, args.save_root)
-            
+
 		    if stopping_counter == 8:
 		    	logging.info('Planned　Stopping Training')
 		    	break
-			
+
     # print experiment result
-    checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))		
-    logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))			
+    checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))
+    logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))
 
 def train(iters, net, optimizer, lr_scheduler, cls, mdd, epoch, args):
 	batch_time = AverageMeter()
@@ -206,7 +206,7 @@ def train(iters, net, optimizer, lr_scheduler, cls, mdd, epoch, args):
 	target_iter = iters['target']
 
 	net.train()
-	mdd.train()    
+	mdd.train()
 
 	end = time.time()
 	for i in range(args.iters_per_epoch):
@@ -225,8 +225,8 @@ def train(iters, net, optimizer, lr_scheduler, cls, mdd, epoch, args):
 
 		cls_loss = cls(source_out, source_label)
 		mdd_loss = -mdd(source_out, source_outadv, target_out, target_outadv)
-		loss = cls_loss + mdd_loss * args.trade_off 
-    
+		loss = cls_loss + mdd_loss * args.trade_off
+
 		prec1, prec5 = accuracy(source_out, source_label, topk=(1,5))
 		cls_losses.update(cls_loss.item(), source_img.size(0))
 		mdd_losses.update(mdd_loss.item(), target_img.size(0))
@@ -268,10 +268,10 @@ def test(data_loader, net, cls, args, phase):
 				target = target.cuda()
 
 			out, _ = net(img)
-			clsloss = cls(out, target)	
+			clsloss = cls(out, target)
 
 			prec1, prec5 = accuracy(out, target, topk=(1,5))
-			clslosses.update(clsloss.item(), img.size(0))		
+			clslosses.update(clsloss.item(), img.size(0))
 			top1.update(prec1.item(), img.size(0))
 			top5.update(prec5.item(), img.size(0))
 
@@ -305,7 +305,7 @@ if __name__ == '__main__':
     # model parameters
     parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18')
     parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')
-    parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')                     
+    parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')
     # training parameters
     parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
@@ -325,7 +325,7 @@ if __name__ == '__main__':
     parser.add_argument('--margin', type=float, default=4., help="margin gamma")
     #parser.add_argument('--temperature', default=2., type=float, help='parameter temperature scaling')
     parser.add_argument('--trade-off', default=1., type=float,
-                        help='the trade-off hyper-parameter for transfer loss')                         
+                        help='the trade-off hyper-parameter for transfer loss')
     # others
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
