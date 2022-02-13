@@ -141,7 +141,7 @@ def main(args):
     selected_idx = pseudo_labeling(args.threshold, target_train_test_loader, net)
     target_selected_dataset = dataset(root=args.img_root, task=args.target, indexs = selected_idx, transform=train_transform)
     target_train_selected_loader = DataLoader(target_selected_dataset, batch_size=args.batch_size,
-                                                shuffle=True, num_workers=args.workers, drop_last=True)
+                                                shuffle=True, num_workers=2, drop_last=True)
 	#target_train_selected_iter = ForeverDataIterator(target_train_selected_loader)
 		    # define dict
 		    #iters = {'source':source_train_iter,'target':target_train_iter, 'target_selected':target_train_selected_iter}
@@ -209,7 +209,7 @@ def test(data_loader, net, cls, mcc, phase):
 		top5.update(prec5.item(), img.size(0))
 
 	f_l = [cls_losses.avg, mcc_losses.avg, top1.avg, top5.avg]
-	logging.info('-{}- CLS Loss: {:.4f}, MCC Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
+	logging.info('-{}- CLs Loss: {:.4f}, MCC Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
 
 	return cm_list
 
