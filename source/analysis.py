@@ -180,6 +180,7 @@ def main(args):
     cm_pd.classes = target_test_dataset.CLASSES
     plt.figure()
     confusion_matrix.plot_cm(cm_pd, annot=True)
+    logging.info("Saving Confusion Matrix to {}".format(tSNE_filename))
     plt.savefig(CM_filename, bbox_inches='tight')
 
 def test(data_loader, net, cls, mcc, phase):
