@@ -23,11 +23,11 @@ import common.modules as modules
 from common.utils.data import ForeverDataIterator
 from common.vision.transforms import ResizeImage
 from common.utils.analysis import collect_feature, tsne, a_distance
+from common.utils.confusion_matrix import Cal_ConfusionMatrix, plot_cm
 
 from utils import AverageMeter, accuracy
 from utils import load_pretrained_model, save_checkpoint
 from utils import create_exp_dir, count_parameters_in_MB
-from utils.confusion_matrix import Cal_ConfusionMatrix, plot_cm
 
 from kd_losses import *
 from pseudo_labeling import pseudo_labeling
