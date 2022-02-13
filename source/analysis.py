@@ -203,8 +203,8 @@ def test(data_loader, net, cls, mcc, phase):
 
 		cm_list.update(out ,target)
 		prec1, prec5 = accuracy(out, target, topk=(1,5))
-		cls_loss.update(loss.item(), img.size(0))
-		mcc_loss.update(loss.item(), img.size(0))
+		cls_loss.update(cls_loss.item(), img.size(0))
+		mcc_loss.update(mcc_loss.item(), img.size(0))
 		top1.update(prec1.item(), img.size(0))
 		top5.update(prec5.item(), img.size(0))
 
