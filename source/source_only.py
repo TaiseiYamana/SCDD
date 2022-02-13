@@ -260,7 +260,7 @@ def test(data_loader, net, cls, args, phase):
 			cls_loss = cls(out, target)
 
 			prec1, prec5 = accuracy(out, target, topk=(1,5))
-			cls_losses.update(clsloss.item(), img.size(0))
+			cls_losses.update(cls_loss.item(), img.size(0))
 			top1.update(prec1.item(), img.size(0))
 			top5.update(prec5.item(), img.size(0))
 
