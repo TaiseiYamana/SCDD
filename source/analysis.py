@@ -105,7 +105,7 @@ def main(args):
     logging.info('=> using model {}'.format(args.arch))
     if ('resnet' in args.arch):
             backbone = models.__dict__[args.arch](pretrained=True)
-            net = modules.Classifier(tbackbone, num_classes).to(device)
+            net = modules.Classifier(backbone, num_classes).to(device)
     else:
             net = models.__dict__[args.arch](num_classes = num_classes, pretrained = True).to(device)
     net_param = torch.load(args.model_param)
@@ -237,17 +237,12 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--source', default = 'A', help='source domain(s)')
     parser.add_argument('-t', '--target', default = 'W', help='target domain(s)')
     # model parameters
-    parser.add_argument('--t_arch', metavar='ARCH', default='resnet50',
+    parser.add_argument('--arch', metavar='ARCH', default='resnet50',
                         choices=architecture_names,
                         help='backbone architecture: ' +
                              ' | '.join(architecture_names) +
                              ' (default: resnet50)')
-    parser.add_argument('--s_arch', metavar='ARCH', default='resnet18',
-                        choices=architecture_names,
-                        help='backbone architecture: ' +
-                             ' | '.join(architecture_names) +
-                             ' (default: resnet18)')
-    parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
+    parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')
     parser.add_argument('--check_point', action='store_true', help='use check point parameter')
     # training parameters
     parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
