@@ -315,7 +315,7 @@ if __name__ == '__main__':
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
-    parser.add_argument('--epochs', default=200, type=int, help='number of total epochs to run')
+    parser.add_argument('--epochs', default=100, type=int, help='number of total epochs to run')
     parser.add_argument('-i', '--iters-per-epoch', default=1000, type=int, help='Number of iterations per epoch')
     parser.add_argument('-p', '--print-freq', default=100, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
@@ -328,7 +328,7 @@ if __name__ == '__main__':
                         help='the trade-off hyper-parameter for transfer loss')
     # others
     parser.add_argument('--cuda', type=int, default=1)
-    parser.add_argument('--stopping_epoch_num', type=int, default=5)    
+    parser.add_argument('--stopping_epoch_num', type=int, default=5)
     args = parser.parse_args()
 
     args.save_root = os.path.join(args.save_root, args.note)#./results/pt_of31_A_r50
