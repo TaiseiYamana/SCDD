@@ -240,12 +240,12 @@ def train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args):
 		end = time.time()
 
 		if i % args.print_freq == 0:
-			log_str = ('Epoch[{0}]:[{1:03}/{2:03}]'
-					   'Time:{batch_time.val:.4f}'
-					   'Data:{data_time.val:.4f}'
-					   'Cls:{cls_losses.val:.4f}({cls_losses.avg:.4f})'
-					   'MCC:{mcc_losses.val:.4f}({mcc_losses.avg:.4f})'
-					   'prec@1:{top1.val:.2f}({top1.avg:.2f})'
+			log_str = ('Epoch[{0}]:[{1:03}/{2:03}]  '
+					   'Time:{batch_time.val:.4f}  '
+					   'Data:{data_time.val:.4f}  '
+					   'Cls:{cls_losses.val:.4f}({cls_losses.avg:.4f})  '
+					   'MCC:{mcc_losses.val:.4f}({mcc_losses.avg:.4f})  '
+					   'prec@1:{top1.val:.2f}({top1.avg:.2f})  '
 					   'prec@5:{top5.val:.2f}({top5.avg:.2f})'.format(
 					   epoch, i, args.iters_per_epoch, batch_time=batch_time, data_time=data_time,
 					   cls_losses=cls_losses, mcc_losses=mcc_losses, top1=top1, top5=top5))
