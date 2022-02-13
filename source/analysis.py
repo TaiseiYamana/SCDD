@@ -22,8 +22,7 @@ import common.vision.models as models
 import common.modules as modules
 from common.utils.data import ForeverDataIterator
 from common.vision.transforms import ResizeImage
-from common.utils.analysis import collect_feature, tsne, a_distance
-from common.utils.confusion_matrix import Cal_ConfusionMatrix, plot_cm
+from common.utils.analysis import collect_feature, tsne, a_distance, confusion_matrix
 
 from utils import AverageMeter, accuracy
 from utils import load_pretrained_model, save_checkpoint
@@ -180,7 +179,7 @@ def main(args):
     cm_pd = ConfusionMatrix(actual_vector=cm_list.t, predict_vector=cm_list.y)
     cm_pd.classes = target_test_dataset.CLASSES
     plt.figure()
-    plot_cm(cm_pd, annot=True)
+    confusion_matrix.plot_cm(cm_pd, annot=True)
     plt.savefig(CM_filename, bbox_inches='tight')
 
 def test(data_loader, net, cls, mcc, phase):
@@ -188,7 +187,7 @@ def test(data_loader, net, cls, mcc, phase):
 	mcc_loss = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
-	cm_list = Cal_ConfusionMatrix(num_classes=len(data_loader.dataset.classes))
+	cm_list = confusion_matrix.Cal_ConfusionMatrix(num_classes=len(data_loader.dataset.classes))
 
 	net.eval()
 
