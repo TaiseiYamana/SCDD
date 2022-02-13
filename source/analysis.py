@@ -111,7 +111,7 @@ def main(args):
     logging.info('=> load pretrain parameter ')
     load_pretrained_model(net, net_param['net'])
     net.eval()
-    for param in tnet.parameters():
+    for param in net.parameters():
 		    param.requires_grad = False
     #logging.info('%s', tnet)
     #logging.info("param size = %fMB", count_parameters_in_MB(tnet))
