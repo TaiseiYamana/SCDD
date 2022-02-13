@@ -151,7 +151,7 @@ def main(args):
 
 		    # train one epoch
 		    epoch_start_time = time.time()
-		    train(iters, net, optimizer, lr_scheduler, cls, mcc, epoch, args)
+		    train(iters, net, optimizer, lr_scheduler, cls, epoch, args)
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
