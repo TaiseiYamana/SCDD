@@ -93,9 +93,9 @@ def main(args):
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    source_test_loader = DataLoader(source_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=2)
-    target_train_test_loader = DataLoader(target_train_dataset, batch_size = args.batch_size, shuffle = False, num_workers = 2)
-    target_test_loader = DataLoader(target_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=2)
+    source_test_loader = DataLoader(source_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
+    target_train_test_loader = DataLoader(target_train_dataset, batch_size = args.batch_size, shuffle = False, num_workers = args.workers)
+    target_test_loader = DataLoader(target_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
 
     num_classes = len(source_train_loader.dataset.classes)
 
@@ -141,7 +141,7 @@ def main(args):
     selected_idx = pseudo_labeling(args.threshold, target_train_test_loader, net)
     target_selected_dataset = dataset(root=args.img_root, task=args.target, indexs = selected_idx, transform=train_transform)
     target_train_selected_loader = DataLoader(target_selected_dataset, batch_size=args.batch_size,
-                                                shuffle=True, num_workers=2, drop_last=True)
+                                                shuffle=True, num_workers=args.workers, drop_last=True)
 	#target_train_selected_iter = ForeverDataIterator(target_train_selected_loader)
 		    # define dict
 		    #iters = {'source':source_train_iter,'target':target_train_iter, 'target_selected':target_train_selected_iter}
@@ -251,7 +251,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
-    parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
+    parser.add_argument('-j', '--workers', default=2, type=int, help='number of data loading workers (default: 4)')
     parser.add_argument('--epochs', default=50, type=int, help='number of total epochs to run')
     parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
     parser.add_argument('-p', '--print-freq', default= 100, type=int, help='print frequency (default: 50)')
