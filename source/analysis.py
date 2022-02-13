@@ -175,10 +175,11 @@ def main(args):
 
     # plot Confusion Matrix
     CM_filename = os.path.join(args.save_root, 'ConfusionMatrix.png')
-    cm_list = test(target_test_loader, net, cls, mcc, 'Target Domain')
+    cm_list = test(target_test_loader, net, cls, mcc,  args.t + 'Domain')
     cm_pd = ConfusionMatrix(actual_vector=cm_list.t, predict_vector=cm_list.y)
     cm_pd.classes = target_test_dataset.CLASSES
     plt.figure()
+    plt.tight_layout()
     confusion_matrix.plot_cm(cm_pd, annot=True)
     logging.info("Saving Confusion Matrix to {}".format(tSNE_filename))
     plt.savefig(CM_filename, bbox_inches='tight')
