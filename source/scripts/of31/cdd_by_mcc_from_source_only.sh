@@ -22,8 +22,8 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -t W \
 -b 64 \
 -i 500 \
---lam 1. \ # mcc
---mu 1. \ # kd
+--lam 1. \
+--mu 1. \
 --mcc_temp 2. \
 --st_temp 4.
 
