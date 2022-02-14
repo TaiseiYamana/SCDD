@@ -129,6 +129,8 @@ def main(args):
 		    cls = cls.to(device)
 
 
+    print(type(cls))
+
     source_feature = collect_feature(source_test_loader, net, device)
     target_feature = collect_feature(target_test_loader, net, device)
     # plot t-SNE
@@ -161,6 +163,10 @@ def main(args):
     CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix_normalize.png')
     plt.savefig(CM_filename, bbox_inches='tight')
     plt.clf()
+
+def Visualize(data_loader: DataLoader, net: nn.Module, device: torch.device,
+                            cls, mcc, *args):
+
 
 def test(data_loader, net, cls, mcc, phase):
 	cls_losses = AverageMeter()
