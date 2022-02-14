@@ -277,7 +277,7 @@ if __name__ == '__main__':
     #parser.add_argument('--not_clip_grad', action='store_true')
     #parser.add_argument('--stopping_num', type=int, default=5)
     parser.add_argument('--threshold', type=float, default=0.7)
-    parser.add_argument('--cm_normalize', action='store_true')
+    #parser.add_argument('--cm_normalize', action='store_true')
     parser.add_argument('--cm_title', type = str, default = 'Confusion Matrix')
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
