@@ -164,8 +164,8 @@ def main(args):
     plt.savefig(CM_filename, bbox_inches='tight')
     plt.clf()
 
-def Visualize(data_loader: DataLoader, net: nn.Module, device: torch.device,
-                            cls, mcc, *args):
+#def Visualize(data_loader: DataLoader, net: nn.Module, device: torch.device,
+                            #cls, mcc, *args):
 
 
 def test(data_loader, net, cls, mcc, phase):
