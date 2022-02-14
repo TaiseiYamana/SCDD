@@ -175,7 +175,7 @@ def main(args):
 
     # plot Confusion Matrix
     CM_foldername = os.path.join(args.save_root, 'ConfusionMatrix')
-    create_exp_dir(args.CM_foldername)
+    create_exp_dir(CM_foldername)
     CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix.png')
     logging.info("Saving Confusion Matrix to {}".format(CM_filename))
     cm_list = test(target_test_loader, net, cls, mcc,  args.target + ' Domain')
