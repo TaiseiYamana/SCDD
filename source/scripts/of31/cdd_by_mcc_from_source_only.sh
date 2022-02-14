@@ -8,7 +8,8 @@ CUDA_VISIBLE_DEVICES=0 python3 source_only.py --save_root '/content/drive/MyDriv
 -d Office31 \
 -s A \
 -t W \
--b 64
+-b 64 \
+-i 500
 
 CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDrive/SCDD/of31/r50_2_alex/from_mcc' \
 --img_root '/content' \
@@ -20,6 +21,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -s A \
 -t W \
 -b 64 \
+-i 500 \
 --lam 1. \ # mcc
 --mu 1. \ # kd
 --mcc_temp 2. \

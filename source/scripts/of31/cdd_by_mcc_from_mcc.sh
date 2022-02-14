@@ -9,6 +9,7 @@ CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/o
 -s A \
 -t W \
 -b 64 \
+-i 500 \
 --temperature 2. \
 --trade_off 1. \
 
@@ -22,6 +23,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -s A \
 -t W \
 -b 64 \
+-i 500 \
 --lam 1. \ # mcc
 --mu 1. \ # kd
 --mcc_temp 2. \
