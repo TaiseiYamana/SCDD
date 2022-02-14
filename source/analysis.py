@@ -160,7 +160,7 @@ def Plot_ConfusionMatrix(cm_pc, save_root):
     plt.clf()
 
     CM_pngname = os.path.join(save_root, 'ConfusionMatrix_normalize.png')
-    #CM_csvname = os.path.join(save_root, 'ConfusionMatrix_normalize.png.csv')   
+    #CM_csvname = os.path.join(save_root, 'ConfusionMatrix_normalize.png.csv')
     plt.figure(figsize=(class_num/2.5*1.3, class_num/3), dpi=120)
     confusion_matrix.plot_cm(cm_pc, normalize = True, title = args.cm_title, annot = True)
     logging.info("Saving Confusion Matrix to {}".format(CM_filename))
@@ -228,8 +228,8 @@ if __name__ == '__main__':
                              ' | '.join(architecture_names) +
                              ' (default: resnet50)')
     # other parameters
-    parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')
-    parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
+    parser.add_argument('--model_param', default=None, type=str, help='path name of teacher model')
+    parser.add_argument('-b', '--batch_size', default=64, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('-j', '--workers', default=2, type=int, help='number of data loading workers (default: 4)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
     parser.add_argument('--mcc_temp', default=2.5, type=float, help='parameter mcc temperature scaling')

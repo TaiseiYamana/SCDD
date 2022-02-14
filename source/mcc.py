@@ -305,23 +305,23 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--target', default = 'W', help='target domain(s)')
     # model parameters
     parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18')
-    parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')
+    parser.add_argument('--model_param', default=None, type=str, help='path name of teacher model')
     parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')
     # training parameters
-    parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
-    parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
-    parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
-    parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
+    parser.add_argument('-b', '--batch_size', default=32, type=int, help='mini-batch size (default: 32)')
+    parser.add_argument('--lr', '--learning_rate', default=0.01, type=float, help='initial learning rate')
+    parser.add_argument('--lr_gamma', default=0.001, type=float, help='parameter for lr scheduler')
+    parser.add_argument('--lr_decay', default=0.75, type=float, help='parameter for lr scheduler')
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
-    parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
+    parser.add_argument('--wd', '--weight_decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
     parser.add_argument('--epochs', default=100, type=int, help='number of total epochs to run')
-    parser.add_argument('-i', '--iters-per-epoch', default=1000, type=int, help='Number of iterations per epoch')
-    parser.add_argument('-p', '--print-freq', default=100, type=int, help='print frequency (default: 50)')
+    parser.add_argument('-i', '--iters_per_epoch', default=1000, type=int, help='Number of iterations per epoch')
+    parser.add_argument('-p', '--print_freq', default=100, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
     # mcc parameters
     parser.add_argument('--temperature', default=2., type=float, help='parameter temperature scaling')
-    parser.add_argument('--trade-off', default=1., type=float,
+    parser.add_argument('--trade_off', default=1., type=float,
                         help='the trade-off hyper-parameter for transfer loss')
     # others
     parser.add_argument('--cuda', type=int, default=1)
