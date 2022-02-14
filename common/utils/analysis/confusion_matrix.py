@@ -25,15 +25,17 @@ class Cal_ConfusionMatrix:
 def plot_cm(cm, normalize=False, title='Confusion matrix', annot=False, cmap='YlGnBu'):
     data = cm.matrix
     fmt = 'd'
+    label_list = []
+    
     if normalize:
         data = cm.normalized_matrix
         fmt = '.2f'
-        
+
     for item in cm.classes:
         item_mod = item.replace("_"," ")
         label_list.append(item_mod)
 
     df = pd.DataFrame(data).T.fillna(0)
-    ax = sns.heatmap(df, annot=annot, cmap=cmap, fmt='d', xticklabels = label_list, yticklabels = label_list)
+    ax = sns.heatmap(df, annot=annot, cmap=cmap, fmt= fmt, xticklabels = label_list, yticklabels = label_list)
     ax.set_title(title)
     ax.set(xlabel='Predict', ylabel='Actual')
