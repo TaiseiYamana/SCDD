@@ -25,7 +25,6 @@ class Cal_ConfusionMatrix:
 def plot_cm(cm, normalize=False, title='Confusion matrix', annot=False, cmap='YlGnBu'):
     data = cm.matrix
     if normalize:
-        title += '(Normalized)'
         data = cm.normalized_matrix
 
     label_list = []
