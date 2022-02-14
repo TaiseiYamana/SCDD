@@ -148,12 +148,12 @@ def main(args):
 
     # loss function
     mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
-    st = SoftTarget(args.st_temp)
+    #st = SoftTarget(args.st_temp)
     cls = torch.nn.CrossEntropyLoss()
 
     if args.cuda:
 		    mcc = mcc.to(device)
-		    st = st.to(device)
+		    #st = st.to(device)
 		    cls = cls.to(device)
 
     #if True:
