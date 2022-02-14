@@ -156,7 +156,7 @@ def main(args):
 
     CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix_normalize.png')
     logging.info("Saving Confusion Matrix to {}".format(CM_filename))
-    plt.figure(figsize=(class_num/2.8*1.3, class_num/3), dpi=120)
+    plt.figure(figsize=(class_num/2.5*1.3, class_num/3), dpi=120)
     confusion_matrix.plot_cm(cm_pd, normalize = True, title = args.cm_title, annot = True)
     CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix_normalize.png')
     plt.savefig(CM_filename, bbox_inches='tight')
