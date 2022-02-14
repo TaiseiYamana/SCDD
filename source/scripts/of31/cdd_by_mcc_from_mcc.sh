@@ -11,7 +11,7 @@ CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/o
 -b 64 \
 -i 500 \
 --temperature 2. \
---trade_off 1. \
+--trade_off 1.
 
 CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDrive/SCDD/of31/r50_2_alex/from_mcc' \
 --img_root '/content' \
