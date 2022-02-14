@@ -130,6 +130,7 @@ def main(args):
 
     source_feature = collect_feature(source_test_loader, net, device)
     target_feature = collect_feature(target_test_loader, net, device)
+
     # plot Confusion Matrix
     CM_foldername = os.path.join(args.save_root, 'ConfusionMatrix')
     create_exp_dir(CM_foldername)
@@ -149,18 +150,22 @@ def Plot_ConfusionMatrix(cm_pc, save_root):
 
     class_num = len(cm_pc.classes)
 
-    CM_filename = os.path.join(save_root, 'ConfusionMatrix.png')
+    CM_pngname = os.path.join(save_root, 'ConfusionMatrix.png')
+    #CM_csvname = os.path.join(save_root, 'ConfusionMatrix.csv')
     plt.figure(figsize=(class_num/4.5*1.3, class_num/4.5), dpi=120)
     confusion_matrix.plot_cm(cm_pc, normalize = False, title = args.cm_title, annot = True)
     logging.info("Saving Confusion Matrix to {}".format(CM_filename))
-    plt.savefig(CM_filename, bbox_inches='tight')
+    #cm_pc.save_csv(CM_csvname)
+    plt.savefig(CM_pngname, bbox_inches='tight')
     plt.clf()
 
-    CM_filename = os.path.join(save_root, 'ConfusionMatrix_normalize.png')
+    CM_pngname = os.path.join(save_root, 'ConfusionMatrix_normalize.png')
+    #CM_csvname = os.path.join(save_root, 'ConfusionMatrix_normalize.png.csv')   
     plt.figure(figsize=(class_num/2.5*1.3, class_num/3), dpi=120)
     confusion_matrix.plot_cm(cm_pc, normalize = True, title = args.cm_title, annot = True)
     logging.info("Saving Confusion Matrix to {}".format(CM_filename))
-    plt.savefig(CM_filename, bbox_inches='tight')
+    #cm_pc.save_csv(CM_csvname, normalize=True)
+    plt.savefig(CM_pngname, bbox_inches='tight')
     plt.clf()
 
 def test(data_loader, net, cls, mcc, phase):
