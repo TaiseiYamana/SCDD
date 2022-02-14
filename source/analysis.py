@@ -177,14 +177,14 @@ def main(args):
     CM_foldername = os.path.join(args.save_root, 'ConfusionMatrix')
     create_exp_dir(CM_foldername)
     CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix.png')
-    logging.info("Saving Confusion Matrix to {}".format(CM_filename))
     cm_list = test(target_test_loader, net, cls, mcc,  args.target + ' Domain')
     cm_pd = ConfusionMatrix(actual_vector=cm_list.t, predict_vector=cm_list.y)
-
     cm_pd.classes = target_test_dataset.CLASSES
     class_num = len(target_test_dataset.CLASSES)
+
     plt.figure(figsize=(class_num/4.5*1.3, class_num/4.5), dpi=120)
     confusion_matrix.plot_cm(cm_pd, normalize = False, title = args.cm_title, annot = True)
+    logging.info("Saving Confusion Matrix to {}".format(CM_filename))
     plt.savefig(CM_filename, bbox_inches='tight')
     plt.clf()
 
@@ -192,6 +192,7 @@ def main(args):
     logging.info("Saving Confusion Matrix to {}".format(CM_filename))
     plt.figure(figsize=(class_num/3*1.3, class_num/3), dpi=120)
     confusion_matrix.plot_cm(cm_pd, normalize = True, title = args.cm_title, annot = True)
+    CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix_normalize.png')
     plt.savefig(CM_filename, bbox_inches='tight')
     plt.clf()
 
