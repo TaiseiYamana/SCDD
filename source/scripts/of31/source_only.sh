@@ -1,14 +1,25 @@
 # Office31
 # A2W
-CUDA_VISIBLE_DEVICES=0 python3 source_only.py --save_root '/content/drive/MyDrive/SCDD/of31/alex/source_only' \
+#CUDA_VISIBLE_DEVICES=0 python3 source_only.py --save_root '/content/drive/MyDrive/SCDD/of31/alex/source_only' \
+#--img_root '/content' \
+#--note 'A2W' \
+#--arch 'resnet50' \
+#-d Office31 \
+#-s A \
+#-t W \
+#-b 64 \
+#-i 500
+
+CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/of31/alexnet/source_only' \
 --img_root '/content' \
 --note 'A2W' \
---arch 'resnet50' \
+--arch 'alexnet' \
 -d Office31 \
 -s A \
 -t W \
 -b 64 \
--i 500
+-i 500 \
+--trade_off 0.
 
 # D2W
 # W2D
