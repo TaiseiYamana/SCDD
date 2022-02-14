@@ -186,12 +186,12 @@ def main(args):
     plt.savefig(CM_filename, bbox_inches='tight')
     plt.clf()
 
-    logging.info("Saving Confusion Matrix to {}".format(CM_filename))
-    CM_filename = os.path.join(args.save_root, 'ConfusionMatrix_normalize.png')
-    plt.figure(figsize=(class_num/4.5*1.3, class_num/4.5), dpi=120)
-    confusion_matrix.plot_cm(cm_pd, normalize = True, title = args.cm_title, annot = True)
-    plt.savefig(CM_filename, bbox_inches='tight')
-    plt.clf()
+    #logging.info("Saving Confusion Matrix to {}".format(CM_filename))
+    #CM_filename = os.path.join(args.save_root, 'ConfusionMatrix_normalize.png')
+    #plt.figure(figsize=(class_num/4.5*1.3, class_num/4.5), dpi=120)
+    #confusion_matrix.plot_cm(cm_pd, normalize = True, title = args.cm_title, annot = True)
+    #plt.savefig(CM_filename, bbox_inches='tight')
+    #plt.clf()
 
 def test(data_loader, net, cls, mcc, phase):
 	cls_losses = AverageMeter()
