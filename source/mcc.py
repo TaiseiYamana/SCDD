@@ -319,9 +319,6 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--iters-per-epoch', default=1000, type=int, help='Number of iterations per epoch')
     parser.add_argument('-p', '--print-freq', default=100, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
-    parser.add_argument("--phase", type=str, default='train', choices=['train', 'test', 'analysis'],
-                        help="When phase is 'test', only test the model."
-                             "When phase is 'analysis', only analysis the model.")
     # mcc parameters
     parser.add_argument('--temperature', default=2., type=float, help='parameter temperature scaling')
     parser.add_argument('--trade-off', default=1., type=float,
