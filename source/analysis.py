@@ -128,9 +128,6 @@ def main(args):
 		    mcc = mcc.to(device)
 		    cls = cls.to(device)
 
-
-    print(type(cls))
-
     source_feature = collect_feature(source_test_loader, net, device)
     target_feature = collect_feature(target_test_loader, net, device)
     # plot t-SNE
@@ -141,15 +138,52 @@ def main(args):
     A_distance = a_distance.calculate(source_feature, target_feature, device)
     logging.info("A-distance = {}".format(A_distance))
 
-    # plot Confusion Matrix
+
     CM_foldername = os.path.join(args.save_root, 'ConfusionMatrix')
     create_exp_dir(CM_foldername)
-    CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix.png')
     cm_list = test(target_test_loader, net, cls, mcc,  args.target + ' Domain')
     cm_pd = ConfusionMatrix(actual_vector=cm_list.t, predict_vector=cm_list.y)
     cm_pd.classes = target_test_dataset.CLASSES
+    print(type(cm_pd))
+
+
+    #Save_ConfusionMatrix(target_test_loader, net, cls, mcc, CM_foldername, args.target, device, args)
+    # plot Confusion Matrix
+    #CM_foldername = os.path.join(args.save_root, 'ConfusionMatrix')
+    #cm_list = test(target_test_loader, net, cls, mcc,  args.target + ' Domain')
+    #cm_pd = ConfusionMatrix(actual_vector=cm_list.t, predict_vector=cm_list.y)
+    #cm_pd.classes = target_test_dataset.CLASSES
+    #class_num = len(target_test_dataset.CLASSES)
+
+    #create_exp_dir(CM_foldername)
+    #CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix.png')
+
+    #plt.figure(figsize=(class_num/4.5*1.3, class_num/4.5), dpi=120)
+    #confusion_matrix.plot_cm(cm_pd, normalize = False, title = args.cm_title, annot = True)
+    #logging.info("Saving Confusion Matrix to {}".format(CM_filename))
+    #plt.savefig(CM_filename, bbox_inches='tight')
+    #plt.clf()
+
+    #CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix_normalize.png')
+    #logging.info("Saving Confusion Matrix to {}".format(CM_filename))
+    #plt.figure(figsize=(class_num/2.5*1.3, class_num/3), dpi=120)
+    #confusion_matrix.plot_cm(cm_pd, normalize = True, title = args.cm_title, annot = True)
+    #CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix_normalize.png')
+    #plt.savefig(CM_filename, bbox_inches='tight')
+    #plt.clf()
+
+def Save_ConfusionMatrix(data_loader: DataLoader, net: nn.Module, cls: nn.Module, mcc: nn.Module, save_root: str, domain: str, device: torch.device):
+
+    #CM_foldername = os.path.join(args.save_root, 'ConfusionMatrix')
+    #create_exp_dir(CM_foldername)
+
+    #cm_list = test(target_test_loader, net, cls, mcc,  args.target + ' Domain')
+    #cm_pd = ConfusionMatrix(actual_vector=cm_list.t, predict_vector=cm_list.y)
+    #cm_pd.classes = target_test_dataset.CLASSES
+
     class_num = len(target_test_dataset.CLASSES)
 
+    CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix.png')
     plt.figure(figsize=(class_num/4.5*1.3, class_num/4.5), dpi=120)
     confusion_matrix.plot_cm(cm_pd, normalize = False, title = args.cm_title, annot = True)
     logging.info("Saving Confusion Matrix to {}".format(CM_filename))
@@ -163,10 +197,6 @@ def main(args):
     CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix_normalize.png')
     plt.savefig(CM_filename, bbox_inches='tight')
     plt.clf()
-
-#def Visualize(data_loader: DataLoader, net: nn.Module, device: torch.device,
-                            #cls, mcc, *args):
-
 
 def test(data_loader, net, cls, mcc, phase):
 	cls_losses = AverageMeter()
