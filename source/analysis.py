@@ -174,7 +174,9 @@ def main(args):
     logging.info("A-distance = {}".format(A_distance))
 
     # plot Confusion Matrix
-    CM_filename = os.path.join(args.save_root, 'ConfusionMatrix.png')
+    CM_foldername = os.path.join(args.save_root, 'ConfusionMatrix')
+    create_exp_dir(args.CM_foldername)
+    CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix.png')
     logging.info("Saving Confusion Matrix to {}".format(CM_filename))
     cm_list = test(target_test_loader, net, cls, mcc,  args.target + ' Domain')
     cm_pd = ConfusionMatrix(actual_vector=cm_list.t, predict_vector=cm_list.y)
@@ -186,7 +188,7 @@ def main(args):
     plt.savefig(CM_filename, bbox_inches='tight')
     plt.clf()
 
-    CM_filename = os.path.join(args.save_root, 'ConfusionMatrix_normalize.png')
+    CM_filename = os.path.join(CM_foldername, 'ConfusionMatrix_normalize.png')
     logging.info("Saving Confusion Matrix to {}".format(CM_filename))
     plt.figure(figsize=(class_num/3*1.3, class_num/3), dpi=120)
     confusion_matrix.plot_cm(cm_pd, normalize = True, title = args.cm_title, annot = True)
