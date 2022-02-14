@@ -113,56 +113,22 @@ def main(args):
     net.eval()
     for param in net.parameters():
 		    param.requires_grad = False
-    #logging.info('%s', tnet)
-    #logging.info("param size = %fMB", count_parameters_in_MB(tnet))
     logging.info('-----------------------------------------------')
 
-    #nets = {'snet':snet, 'tnet':tnet}
-
-    # optimizer and lr scheduler
-    #if ('resnet' in args.s_arch):
-		    #params = snet.get_parameters()
-    #else:
-		    #params = [
-            #{"params": snet.features.parameters(), "lr": 0.1 * 1},
-            #{"params": snet.classifier[:6].parameters(), "lr": 0.1 * 1},
-            #{"params": snet.classifier[6].parameters(), "lr": 1.0 * 1}]
-
-    #optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
-    #lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
-
-    #source_train_iter = ForeverDataIterator(source_train_loader)
-    #target_train_iter = ForeverDataIterator(target_train_loader)
-
-    #if (args.not_select_label):
-            #iters = {'source':source_train_iter,'target':target_train_iter}
-    #else:
-		    # select paseudo labels
     selected_idx = pseudo_labeling(args.threshold, target_train_test_loader, net)
     target_selected_dataset = dataset(root=args.img_root, task=args.target, indexs = selected_idx, transform=train_transform)
     target_train_selected_loader = DataLoader(target_selected_dataset, batch_size=args.batch_size,
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
-	#target_train_selected_iter = ForeverDataIterator(target_train_selected_loader)
-		    # define dict
-		    #iters = {'source':source_train_iter,'target':target_train_iter, 'target_selected':target_train_selected_iter}
 
     # loss function
     mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
-    #st = SoftTarget(args.st_temp)
     cls = torch.nn.CrossEntropyLoss()
 
     if args.cuda:
 		    mcc = mcc.to(device)
-		    #st = st.to(device)
 		    cls = cls.to(device)
 
-    #if True:
-        #if args.model_param != None:
-            # load model paramater
-            #checkpoint = torch.load(args.model_param)
-            #load_pretrained_model(net, checkpoint['net'])
-        # extract features from both domains
-        #feature_extractor = nn.Sequential(tnet.backbone, tnet.bottleneck).to(device)
+
     source_feature = collect_feature(source_test_loader, net, device)
     target_feature = collect_feature(target_test_loader, net, device)
     # plot t-SNE
