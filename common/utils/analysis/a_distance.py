@@ -21,7 +21,7 @@ class ANet(nn.Module):
 
 
 def calculate(source_feature: torch.Tensor, target_feature: torch.Tensor,
-              device, progress=True, training_epochs=10):
+              device, progress=False, training_epochs=10):
     """
     Calculate the :math:`\mathcal{A}`-distance, which is a measure for distribution discrepancy.
 
@@ -80,4 +80,3 @@ def calculate(source_feature: torch.Tensor, target_feature: torch.Tensor,
             print("epoch {} accuracy: {} A-dist: {}".format(epoch, meter.avg, a_distance))
 
     return a_distance
-
