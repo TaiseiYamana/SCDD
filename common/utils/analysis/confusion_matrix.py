@@ -24,10 +24,11 @@ class Cal_ConfusionMatrix:
 
 def plot_cm(cm, normalize=False, title='Confusion matrix', annot=False, cmap='YlGnBu'):
     data = cm.matrix
+    fmt = 'd'
     if normalize:
         data = cm.normalized_matrix
-
-    label_list = []
+        fmt = '.2f'
+        
     for item in cm.classes:
         item_mod = item.replace("_"," ")
         label_list.append(item_mod)

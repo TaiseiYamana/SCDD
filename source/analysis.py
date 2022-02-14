@@ -186,12 +186,12 @@ def main(args):
     plt.savefig(CM_filename, bbox_inches='tight')
     plt.clf()
 
-    #logging.info("Saving Confusion Matrix to {}".format(CM_filename))
-    #CM_filename = os.path.join(args.save_root, 'ConfusionMatrix_normalize.png')
-    #plt.figure(figsize=(class_num/4.5*1.3, class_num/4.5), dpi=120)
-    #confusion_matrix.plot_cm(cm_pd, normalize = True, title = args.cm_title, annot = True)
-    #plt.savefig(CM_filename, bbox_inches='tight')
-    #plt.clf()
+    logging.info("Saving Confusion Matrix to {}".format(CM_filename))
+    CM_filename = os.path.join(args.save_root, 'ConfusionMatrix_normalize.png')
+    plt.figure(figsize=(class_num/4.5*1.3, class_num/4.5), dpi=120)
+    confusion_matrix.plot_cm(cm_pd, normalize = True, title = args.cm_title, annot = True)
+    plt.savefig(CM_filename, bbox_inches='tight')
+    plt.clf()
 
 def test(data_loader, net, cls, mcc, phase):
 	cls_losses = AverageMeter()
@@ -220,7 +220,7 @@ def test(data_loader, net, cls, mcc, phase):
 		top5.update(prec5.item(), img.size(0))
 
 	f_l = [cls_losses.avg, mcc_losses.avg, top1.avg, top5.avg]
-	logging.info('{} CLs Loss: {:.4f}, MCC Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
+	logging.info('{}- CLs Loss: {:.4f}, MCC Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
 
 	return cm_list
 
