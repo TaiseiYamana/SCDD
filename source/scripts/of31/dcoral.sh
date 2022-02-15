@@ -8,7 +8,6 @@ CUDA_VISIBLE_DEVICES=0 python3 dcoral.py --save_root '/content/drive/MyDrive/SCD
 -s A \
 -t W \
 -i 500 \
---temperature 2. \
 --trade_off 0.75
 
 # D2W
