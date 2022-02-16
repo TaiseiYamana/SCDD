@@ -14,8 +14,8 @@ from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
 
-sys.path.append('../..')
-from dalib.adaptation.mcc import MinimumClassConfusionLoss
+sys.path.append('..')
+from dalib.adaptation.dcoral import DeepCoralLoss
 
 import common.vision.datasets as datasets
 import common.vision.models as models
@@ -71,12 +71,12 @@ def main(args):
     if args.dataset == "ImageCLEF":
         args.img_root = ImageCLEF_root
         source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
-        source_test_dataset = dataset(root=args.img_root, task=args.source, transform=test_transform)        
+        source_test_dataset = dataset(root=args.img_root, task=args.source, transform=test_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, transform=test_transform)
     else:
         source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
-        source_test_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=test_transform)        
+        source_test_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=test_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
 
@@ -91,9 +91,9 @@ def main(args):
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    source_test_loader = DataLoader(source_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)                                       
-    target_train_test_loader = DataLoader(target_train_dataset, batch_size = args.batch_size, shuffle = False, num_workers = args.workers)                                                                 
-    target_test_loader = DataLoader(target_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)  
+    source_test_loader = DataLoader(source_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
+    target_train_test_loader = DataLoader(target_train_dataset, batch_size = args.batch_size, shuffle = False, num_workers = args.workers)
+    target_test_loader = DataLoader(target_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
 
     num_classes = len(source_train_loader.dataset.classes)
 
@@ -129,21 +129,21 @@ def main(args):
 
     # optimizer and lr scheduler
     if ('resnet' in args.s_arch):
-		    params = snet.get_parameters() 
+		    params = snet.get_parameters()
     else:
 		    params = [
             {"params": snet.features.parameters(), "lr": 0.1 * 1},
             {"params": snet.classifier[:6].parameters(), "lr": 0.1 * 1},
             {"params": snet.classifier[6].parameters(), "lr": 1.0 * 1}]
-            
+
     optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
     lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
 
     source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader) 
-  
+    target_train_iter = ForeverDataIterator(target_train_loader)
+
     if (args.not_select_label):
-            iters = {'source':source_train_iter,'target':target_train_iter}                            
+            iters = {'source':source_train_iter,'target':target_train_iter}
     else:
 		    # select paseudo labels
 		    selected_idx = pseudo_labeling(args.threshold, target_train_test_loader, tnet)
@@ -151,36 +151,196 @@ def main(args):
 		    target_train_selected_loader = DataLoader(target_selected_dataset, batch_size=args.batch_size,
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
 		    target_train_selected_iter = ForeverDataIterator(target_train_selected_loader)
-		    # define dict 
-		    iters = {'source':source_train_iter,'target':target_train_iter, 'target_selected':target_train_selected_iter}  
+		    # define dict
+		    iters = {'source':source_train_iter,'target':target_train_iter, 'target_selected':target_train_selected_iter}
 
     # loss function
-    mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
+    dcoral = DeepCoralLoss()
     st = SoftTarget(args.st_temp)
     cls = torch.nn.CrossEntropyLoss()
 
     if args.cuda:
-		    mcc = mcc.to(device)
+		    dcoral = dcoral.to(device)
 		    st = st.to(device)
 		    cls = cls.to(device)
 
-    if True: 
-        #if args.model_param != None:
-            # load model paramater
-            #checkpoint = torch.load(args.model_param)
-            #load_pretrained_model(net, checkpoint['net'])
-        # extract features from both domains
-        #feature_extractor = nn.Sequential(tnet.backbone, tnet.bottleneck).to(device)
-        source_feature = collect_feature(source_test_loader, tnet, device)
-        target_feature = collect_feature(target_test_loader, tnet, device)
-        # plot t-SNE
-        tSNE_filename = os.path.join(args.save_root, 'TSNE.png')
-        tsne.visualize(source_feature, target_feature, tSNE_filename)
-        print("Saving t-SNE to", tSNE_filename)
-        # calculate A-distance, which is a measure for distribution discrepancy
-        A_distance = a_distance.calculate(source_feature, target_feature, device)
-        print("A-distance =", A_distance)
-        return
+    best_top1= 0.0
+    best_top5 = 0.0
+    stopping_counter = 0
+
+    # check point parameter load
+    if (args.check_point):
+		    s_model_param = os.path.join(args.save_root, 'checkpoint.pth.tar')
+		    checkpoint = torch.load(s_model_param)
+		    load_pretrained_model(snet, checkpoint['net'])
+		    check_point_epoch = checkpoint['epoch']
+		    optimizer.load_state_dict(checkpoint['optimizer'])
+		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
+		    best_top1 = checkpoint['best_top1']
+		    best_top5 = checkpoint['best_top5']
+
+    for epoch in range(1, args.epochs+1):
+		    # skip utill check point
+		    if (args.check_point):
+		    	if (check_point_epoch >= epoch) :
+		    		logging.info("Epoch {} Skipped".format(epoch))
+		    		continue
+		    	else:
+		    		args.check_point = False
+
+		    epoch_start_time = time.time()
+
+		    # train one epoch
+		    train(iters, nets, optimizer, lr_scheduler, cls, dcoral, st, epoch, args)
+		    # evaluate on testing set
+		    logging.info('Testing the models......')
+		    _, _ = test(source_test_loader, snet, cls, args, phase = 'Test Source')
+		    t_test_top1, t_test_top5 = test(target_train_test_loader, snet, cls, args, phase = 'Train Target')
+		    t_test_top1, t_test_top5 = test(target_test_loader, snet, cls, args, phase = 'Test Target')
+
+		    epoch_duration = time.time() - epoch_start_time
+		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
+
+		    # save model
+		    is_best = False
+		    if t_test_top1 > best_top1:
+		    	best_top1 = t_test_top1
+		    	best_top5 = t_test_top5
+		    	is_best = True
+		    	stopping_counter = 0
+		    else:
+		    	stopping_counter += 1
+
+		    logging.info('Saving models......')
+		    save_checkpoint({'epoch': epoch,
+          		            'net': snet.state_dict(),
+          		            'optimizer': optimizer.state_dict(),
+          		            'scheduler': lr_scheduler.state_dict(),
+          		            'prec@1': t_test_top1,
+          		            'prec@5': t_test_top5,
+          		            'best_top1': best_top1,
+          		            'best_top5': best_top5},
+          		            is_best, args.save_root)
+
+		    if stopping_counter == args.stopping_epoch_num:
+		    	logging.info('Early stopping')
+		    	break
+
+    # print experiment result
+    checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))
+    logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))
+
+    # rm check point tar
+    save_path = os.path.join(args.save_root, 'checkpoint.pth.tar')
+    os.remove(save_path)
+
+def train(iters, nets, optimizer, lr_scheduler, cls, dcoral, st, epoch, args):
+	batch_time = AverageMeter()
+	data_time  = AverageMeter()
+	cls_losses = AverageMeter()
+	dcoral_losses  = AverageMeter()
+	kd_losses  = AverageMeter()
+	top1       = AverageMeter()
+	top5       = AverageMeter()
+
+	source_iter = iters['source']
+	target_iter = iters['target']
+	if (not args.not_select_label):
+		target_selected_iter = iters['target_selected']
+
+	snet = nets['snet']
+	tnet = nets['tnet']
+
+	snet.train()
+
+	for i in range(args.iters_per_epoch):
+		end = time.time()
+		source_img, source_label, _ = next(source_iter)
+		target_img, _, _ = next(target_iter)
+		if (not args.not_select_label): # act of selection
+			target_selected_img, _, _ = next(target_selected_iter)
+
+		data_time.update(time.time() - end)
+
+		if args.cuda:
+			source_img = source_img.cuda()
+			source_label = source_label.cuda()
+			target_img = target_img.cuda()
+			if (not args.not_select_label): # act of selection
+				target_selected_img = target_selected_img.cuda()
+
+		s_source_out, _ = snet(source_img)
+		s_target_out, _ = snet(target_img)
+		if (args.not_select_label):
+			t_target_out, _= tnet(target_img)
+		else:
+			t_target_out, _= tnet(target_img)
+			s_target_selected_out, _ = snet(target_selected_img)
+			t_target_selected_out, _ = tnet(target_selected_img)
+
+		cls_loss = cls(s_source_out, source_label)
+		dcoral_loss = dcoral(s_source_out, s_target_out)
+		if (args.not_select_label):
+			kd_loss = st(s_target_out, t_target_out)
+		else:
+			kd_loss = st(s_target_selected_out, t_target_selected_out)
+		loss = cls_loss + dcoral_loss * args.lam + kd_loss * args.mu
+
+		prec1, prec5 = accuracy(s_source_out, source_label, topk=(1,5))
+		cls_losses.update(cls_loss.item(), source_img.size(0))
+		dcoral_losses.update(mcc_loss.item(), target_img.size(0))
+		kd_losses.update(kd_loss.item(), target_img.size(0))
+		top1.update(prec1.item(), source_img.size(0))
+		top5.update(prec5.item(), source_img.size(0))
+
+		optimizer.zero_grad()
+		loss.backward()
+		if(not args.not_clip_grad):
+			nn.utils.clip_grad_norm_(snet.parameters(), args.cg_norm)
+		optimizer.step()
+		lr_scheduler.step()
+
+		batch_time.update(time.time() - end)
+
+		if i % args.print_freq == 0:
+			log_str = ('Epoch[{0}]:[{1:03}/{2:03}] '
+					   'Time:{batch_time.val:.4f} '
+					   'Data:{data_time.val:.4f}  '
+					   'Cls:{cls_losses.val:.4f}({cls_losses.avg:.4f})  '
+					   'DCORAL:{docral_losses.val:.4f}({dcoral_losses.avg:.4f})  '
+					   'KD:{kd_losses.val:.4f}({kd_losses.avg:.4f})  '
+					   'prec@1:{top1.val:.2f}({top1.avg:.2f})  '
+					   'prec@5:{top5.val:.2f}({top5.avg:.2f})'.format(
+					   epoch, i, args.iters_per_epoch, batch_time=batch_time, data_time=data_time,
+					   cls_losses=cls_losses, dcoral_losses=dcoral_losses, kd_losses=kd_losses, top1=top1, top5=top5))
+			logging.info(log_str)
+
+
+def test(test_loader, net, cls, args, phase):
+	losses = AverageMeter()
+	top1   = AverageMeter()
+	top5   = AverageMeter()
+
+	net.eval()
+
+	with torch.inference_mode():
+		for i, (img, target, _) in enumerate(test_loader, start=1):
+			if args.cuda:
+				img = img.cuda()
+				target = target.cuda()
+
+			out, _ = net(img)
+			loss = cls(out, target)
+
+			prec1, prec5 = accuracy(out, target, topk=(1,5))
+			losses.update(loss.item(), img.size(0))
+			top1.update(prec1.item(), img.size(0))
+			top5.update(prec5.item(), img.size(0))
+
+		f_l = [losses.avg, top1.avg, top5.avg]
+		logging.info('-{}- Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
+
+	return top1.avg, top5.avg
 
 if __name__ == '__main__':
     architecture_names = sorted(
@@ -214,34 +374,33 @@ if __name__ == '__main__':
                         choices=architecture_names,
                         help='backbone architecture: ' +
                              ' | '.join(architecture_names) +
-                             ' (default: resnet18)')    
-    parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
-    parser.add_argument('--check_point', action='store_true', help='use check point parameter')         
+                             ' (default: resnet18)')
+    parser.add_argument('--t_model_param', default=None, type=str, help='path name of teacher model')
+    parser.add_argument('--check_point', action='store_true', help='use check point parameter')
     # training parameters
-    parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
-    parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
-    parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
-    parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
+    parser.add_argument('-b', '--batch_size', default=64, type=int, help='mini-batch size (default: 32)')
+    parser.add_argument('--lr', '--learning_rate', default=0.01, type=float, help='initial learning rate')
+    parser.add_argument('--lr_gamma', default=0.001, type=float, help='parameter for lr scheduler')
+    parser.add_argument('--lr_decay', default=0.75, type=float, help='parameter for lr scheduler')
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
-    parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
+    parser.add_argument('--wd', '--weight_decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
     parser.add_argument('--epochs', default=50, type=int, help='number of total epochs to run')
-    parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
+    parser.add_argument('-i', '--iters_per_epoch', default=100, type=int, help='Number of iterations per epoch')
     parser.add_argument('-p', '--print-freq', default= 100, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
     parser.add_argument('--cg_norm', default=5.0, type=float, help='max norm of nn.utils.clip_grad_norm_')
     # loss parameters
-    parser.add_argument('--mcc_temp', default=2.5, type=float, help='parameter mcc temperature scaling')
-    parser.add_argument('--st_temp', default=2.0, type=float, help='parameter soft target temperature scaling')
+    parser.add_argument('--st_temp', default=4.0, type=float, help='parameter soft target temperature scaling')
+    parser.add_argument('--mu', default=0.9, type=float,
+                        help='the trade-off hyper-parameter for dcoral loss')
     parser.add_argument('--lam', default=1., type=float,
-                        help='the trade-off hyper-parameter for mcc loss')
-    parser.add_argument('--mu', default=1., type=float,
                         help='the trade-off hyper-parameter for soft target loss')
     # others
     parser.add_argument('--not_select_label', action='store_true')
-    parser.add_argument('--not_clip_grad', action='store_true')   
-    parser.add_argument('--stopping_num', type=int, default=5) 
-    parser.add_argument('--threshold', type=float, default=0.7)   
+    parser.add_argument('--not_clip_grad', action='store_true')
+    parser.add_argument('--stopping_epoch_num', type=int, default=5)
+    parser.add_argument('--threshold', type=float, default=0.7)
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
 

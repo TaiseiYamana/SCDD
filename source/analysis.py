@@ -14,7 +14,7 @@ from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
 
-sys.path.append('../..')
+sys.path.append('..')
 from dalib.adaptation.mcc import MinimumClassConfusionLoss
 
 import common.vision.datasets as datasets
@@ -22,7 +22,7 @@ import common.vision.models as models
 import common.modules as modules
 from common.utils.data import ForeverDataIterator
 from common.vision.transforms import ResizeImage
-from common.utils.analysis import collect_feature, tsne, a_distance
+from common.utils.analysis import collect_feature, tsne, a_distance, confusion_matrix
 
 from utils import AverageMeter, accuracy
 from utils import load_pretrained_model, save_checkpoint
@@ -33,6 +33,8 @@ from pseudo_labeling import pseudo_labeling
 from split_dataset import split_dataset
 
 import matplotlib.pyplot as plt
+
+from pycm import ConfusionMatrix
 
 ImageCLEF_root = "/content/drive/MyDrive/datasets/ImageCLEF"
 
@@ -71,10 +73,12 @@ def main(args):
     if args.dataset == "ImageCLEF":
         args.img_root = ImageCLEF_root
         source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
+        source_test_dataset = dataset(root=args.img_root, task=args.source, transform=test_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, transform=test_transform)
     else:
         source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
+        source_test_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=test_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
 
@@ -89,67 +93,111 @@ def main(args):
                                      shuffle=True, num_workers=args.workers, drop_last=True)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_train_test_loader = DataLoader(target_train_dataset, batch_size = args.batch_size, shuffle = False, num_workers = args.workers)                                                                  
-    target_test_loader = DataLoader(target_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)  
+    source_test_loader = DataLoader(source_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
+    target_train_test_loader = DataLoader(target_train_dataset, batch_size = args.batch_size, shuffle = False, num_workers = args.workers)
+    target_test_loader = DataLoader(target_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
 
     num_classes = len(source_train_loader.dataset.classes)
 
 	# create model
     logging.info('----------- Network Initialization --------------')
-    logging.info('Initialize Teacher Model')
-    logging.info('=> using pre-trained model {}'.format(args.t_arch))
-    if ('resnet' in args.t_arch):
-            tbackbone = models.__dict__[args.t_arch](pretrained=True)
-            tnet = modules.Classifier(tbackbone, num_classes).to(device)
+    logging.info('=> using model {}'.format(args.arch))
+    if ('resnet' in args.arch):
+            backbone = models.__dict__[args.arch](pretrained=True)
+            net = modules.Classifier(backbone, num_classes).to(device)
     else:
-            tnet = models.__dict__[args.t_arch](num_classes = num_classes, pretrained = True).to(device)
-    tnet_param = torch.load(args.t_model_param)
-    load_pretrained_model(tnet, tnet_param['net'])
-    tnet.eval()
-    for param in tnet.parameters():
+            net = models.__dict__[args.arch](num_classes = num_classes, pretrained = True).to(device)
+    net_param = torch.load(args.model_param)
+    logging.info('=> load pretrain parameter ')
+    load_pretrained_model(net, net_param['net'])
+    net.eval()
+    for param in net.parameters():
 		    param.requires_grad = False
-    #logging.info('%s', tnet)
-    #logging.info("param size = %fMB", count_parameters_in_MB(tnet))
-
-    logging.info('Initialize Student Model')
-    logging.info('=> using pre-trained model {}'.format(args.s_arch))
-    if ('resnet' in args.s_arch):
-		    sbackbone = models.__dict__[args.s_arch](pretrained=True)
-		    snet = modules.Classifier(sbackbone, num_classes).to(device)
-    else:
-            snet = models.__dict__[args.s_arch](num_classes = num_classes, pretrained = True).to(device)
-    #logging.info('%s', snet)
-    #logging.info("param size = %fMB", count_parameters_in_MB(snet))
     logging.info('-----------------------------------------------')
 
-    nets = {'snet':snet, 'tnet':tnet}
-
-    # optimizer and lr scheduler
-    if ('resnet' in args.s_arch):
-		    params = snet.get_parameters() 
-    else:
-		    params = [
-            {"params": snet.features.parameters(), "lr": 0.1 * 1},
-            {"params": snet.classifier[:6].parameters(), "lr": 0.1 * 1},
-            {"params": snet.classifier[6].parameters(), "lr": 1.0 * 1}]
-            
-    optimizer = SGD(params, args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
-    lr_scheduler = LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
-
-    source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader) 
-  
-    if (args.select_label):
-		    # select paseudo labels
-		    selected_idx = pseudo_labeling(args.threshold, target_train_test_loader, tnet)
-		    target_selected_dataset = dataset(root=args.img_root, task=args.target, indexs = selected_idx, transform=train_transform)
-		    target_train_selected_loader = DataLoader(target_selected_dataset, batch_size=args.batch_size,
+    selected_idx = pseudo_labeling(args.threshold, target_train_test_loader, net)
+    target_selected_dataset = dataset(root=args.img_root, task=args.target, indexs = selected_idx, transform=train_transform)
+    target_train_selected_loader = DataLoader(target_selected_dataset, batch_size=args.batch_size,
                                                 shuffle=True, num_workers=args.workers, drop_last=True)
-		    target_train_selected_iter = ForeverDataIterator(target_train_selected_loader)
-		    # define dict 
-		    iters = {'source':source_train_iter,'target':target_train_iter, 'target_selected':target_train_selected_iter}                      
-    else:
-            iters = {'source':source_train_iter,'target':target_train_iter}
+
+    # loss function
+    mcc = MinimumClassConfusionLoss(temperature=args.mcc_temp)
+    cls = torch.nn.CrossEntropyLoss()
+
+    if args.cuda:
+		    mcc = mcc.to(device)
+		    cls = cls.to(device)
+
+    source_feature = collect_feature(source_test_loader, net, device)
+    target_feature = collect_feature(target_test_loader, net, device)
+
+    # plot Confusion Matrix
+    CM_foldername = os.path.join(args.save_root, 'ConfusionMatrix')
+    create_exp_dir(CM_foldername)
+    cm_list = test(target_test_loader, net, cls, mcc,  args.target + ' Domain')
+    cm_pc = ConfusionMatrix(actual_vector=cm_list.t, predict_vector=cm_list.y)
+    cm_pc.classes = target_test_dataset.CLASSES
+    Plot_ConfusionMatrix(cm_pc, CM_foldername)
+    # plot t-SNE
+    tSNE_filename = os.path.join(args.save_root, 'TSNE.png')
+    tsne.visualize(source_feature, target_feature, tSNE_filename)
+    logging.info("Saving t-SNE to {}".format(tSNE_filename))
+    # calculate A-distance, which is a measure for distribution discrepancy
+    A_distance = a_distance.calculate(source_feature, target_feature, device)
+    logging.info("A-distance = {}".format(A_distance))
+
+def Plot_ConfusionMatrix(cm_pc, save_root):
+
+    class_num = len(cm_pc.classes)
+
+    CM_pngname = os.path.join(save_root, 'ConfusionMatrix.png')
+    #CM_csvname = os.path.join(save_root, 'ConfusionMatrix.csv')
+    plt.figure(figsize=(class_num/4.5*1.3, class_num/4.5), dpi=120)
+    confusion_matrix.plot_cm(cm_pc, normalize = False, title = args.cm_title, annot = True)
+    logging.info("Saving Confusion Matrix to {}".format(CM_filename))
+    #cm_pc.save_csv(CM_csvname)
+    plt.savefig(CM_pngname, bbox_inches='tight')
+    plt.clf()
+
+    CM_pngname = os.path.join(save_root, 'ConfusionMatrix_normalize.png')
+    #CM_csvname = os.path.join(save_root, 'ConfusionMatrix_normalize.png.csv')
+    plt.figure(figsize=(class_num/2.5*1.3, class_num/3), dpi=120)
+    confusion_matrix.plot_cm(cm_pc, normalize = True, title = args.cm_title, annot = True)
+    logging.info("Saving Confusion Matrix to {}".format(CM_filename))
+    #cm_pc.save_csv(CM_csvname, normalize=True)
+    plt.savefig(CM_pngname, bbox_inches='tight')
+    plt.clf()
+
+def test(data_loader, net, cls, mcc, phase):
+	cls_losses = AverageMeter()
+	mcc_losses = AverageMeter()
+	top1   = AverageMeter()
+	top5   = AverageMeter()
+	cm_list = confusion_matrix.Cal_ConfusionMatrix(num_classes=len(data_loader.dataset.classes))
+
+	net.eval()
+
+	end = time.time()
+	for i, (img, target, _) in enumerate(data_loader, start=1):
+		img = img.cuda()
+		target = target.cuda()
+
+		with torch.inference_mode():
+			out, _ = net(img)
+			cls_loss = cls(out, target)
+			mcc_loss = mcc(out)
+
+		cm_list.update(out ,target)
+		prec1, prec5 = accuracy(out, target, topk=(1,5))
+		cls_losses.update(cls_loss.item(), img.size(0))
+		mcc_losses.update(mcc_loss.item(), img.size(0))
+		top1.update(prec1.item(), img.size(0))
+		top5.update(prec5.item(), img.size(0))
+
+	f_l = [cls_losses.avg, mcc_losses.avg, top1.avg, top5.avg]
+	logging.info('{}- CLs Loss: {:.4f}, MCC Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
+
+	return cm_list
 
 if __name__ == '__main__':
     architecture_names = sorted(
@@ -174,47 +222,28 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--source', default = 'A', help='source domain(s)')
     parser.add_argument('-t', '--target', default = 'W', help='target domain(s)')
     # model parameters
-    parser.add_argument('--t_arch', metavar='ARCH', default='resnet50',
+    parser.add_argument('--arch', metavar='ARCH', default='resnet50',
                         choices=architecture_names,
                         help='backbone architecture: ' +
                              ' | '.join(architecture_names) +
                              ' (default: resnet50)')
-    parser.add_argument('--s_arch', metavar='ARCH', default='resnet18',
-                        choices=architecture_names,
-                        help='backbone architecture: ' +
-                             ' | '.join(architecture_names) +
-                             ' (default: resnet18)')    
-    parser.add_argument('--t-model-param', default=None, type=str, help='path name of teacher model')
-    parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')         
-    # training parameters
-    parser.add_argument('-b', '--batch-size', default=64, type=int, help='mini-batch size (default: 32)')
-    parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
-    parser.add_argument('--lr-gamma', default=0.001, type=float, help='parameter for lr scheduler')
-    parser.add_argument('--lr-decay', default=0.75, type=float, help='parameter for lr scheduler')
-    parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
-    parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
-    parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
-    parser.add_argument('--epochs', default=50, type=int, help='number of total epochs to run')
-    parser.add_argument('-i', '--iters-per-epoch', default=500, type=int, help='Number of iterations per epoch')
-    parser.add_argument('-p', '--print-freq', default= 100, type=int, help='print frequency (default: 50)')
+    # other parameters
+    parser.add_argument('--model_param', default=None, type=str, help='path name of teacher model')
+    parser.add_argument('-b', '--batch_size', default=64, type=int, help='mini-batch size (default: 32)')
+    parser.add_argument('-j', '--workers', default=2, type=int, help='number of data loading workers (default: 4)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
-    # loss parameters
     parser.add_argument('--mcc_temp', default=2.5, type=float, help='parameter mcc temperature scaling')
-    parser.add_argument('--st_temp', default=2.0, type=float, help='parameter soft target temperature scaling')
-    parser.add_argument('--lam', default=1., type=float,
-                        help='the trade-off hyper-parameter for mcc loss')
-    parser.add_argument('--mu', default=1., type=float,
-                        help='the trade-off hyper-parameter for soft target loss')
+
     # others
-    parser.add_argument('--select_label', type=bool, default=True)
-    parser.add_argument('--stopping_num', type=int, default=5) 
-    parser.add_argument('--threshold', type=float, default=0.7)   
+    parser.add_argument('--not_select_label', action='store_true')
+    parser.add_argument('--threshold', type=float, default=0.7)
+    parser.add_argument('--cm_title', type = str, default = 'Confusion Matrix')
     parser.add_argument('--cuda', type=int, default=1)
     args = parser.parse_args()
 
-    args.save_root = os.path.join(args.save_root, args.note)#./results/pt_of31_A_r50
-    args.img_root = os.path.join(args.img_root, args.dataset)#./datasets/Office31
-    create_exp_dir(args.save_root) #save-rootの作成
+    args.save_root = os.path.join(args.save_root, args.note)
+    args.img_root = os.path.join(args.img_root, args.dataset)
+    create_exp_dir(args.save_root)
 
     log_format = '%(message)s'
     logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=log_format)
@@ -222,5 +251,4 @@ if __name__ == '__main__':
     fh.setFormatter(logging.Formatter(log_format))
     logging.getLogger().addHandler(fh)
 
-    main(args)            
-    
+    main(args)

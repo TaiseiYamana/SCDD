@@ -14,9 +14,7 @@ from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
 
-sys.path.append('../..')
-from dalib.adaptation.dcoral import DeepCoralLoss
-
+sys.path.append('..')
 import common.vision.datasets as datasets
 import common.vision.models as models
 import common.modules as modules
@@ -66,12 +64,12 @@ def main(args):
     if args.dataset == "ImageCLEF":
         args.img_root = ImageCLEF_root
         source_train_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
-        source_test_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)        
+        source_test_dataset = dataset(root=args.img_root, task=args.source, transform=train_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, transform=test_transform)
     else:
         source_train_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
-        source_test_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)        
+        source_test_dataset = dataset(root=args.img_root, task=args.source, download=True, transform=train_transform)
         target_train_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=train_transform)
         target_test_dataset = dataset(root=args.img_root, task=args.target, download=True, transform=test_transform)
 
@@ -84,14 +82,14 @@ def main(args):
     # data loader
     source_train_loader = DataLoader(source_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    source_test_loader = DataLoader(source_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)                                    
+    source_test_loader = DataLoader(source_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
     target_train_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,
                                      shuffle=True, num_workers=args.workers, drop_last=True)
-    target_train_test_loader = DataLoader(target_train_dataset, batch_size=64,shuffle=False, num_workers=args.workers)                                     
-    target_test_loader = DataLoader(target_test_dataset, batch_size=64, shuffle=False, num_workers=args.workers)
+    target_train_test_loader = DataLoader(target_train_dataset, batch_size=args.batch_size,shuffle=False, num_workers=args.workers)
+    target_test_loader = DataLoader(target_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
 
     source_train_iter = ForeverDataIterator(source_train_loader)
-    target_train_iter = ForeverDataIterator(target_train_loader) 
+    target_train_iter = ForeverDataIterator(target_train_loader)
 
     num_classes = len(source_train_loader.dataset.classes)
 
@@ -110,7 +108,7 @@ def main(args):
 
     # optimizer and lr scheduler
     if ('resnet' in args.arch):
-		    params = net.get_parameters() 
+		    params = net.get_parameters()
     else:
 		    params = [
             {"params": net.features.parameters(), "lr": 0.1 * 1},
@@ -122,15 +120,13 @@ def main(args):
 
     # define loss function
     cls_loss = torch.nn.CrossEntropyLoss()
-    dcoral = DeepCoralLoss()
     if args.cuda:
 		    cls = cls_loss.to(device)
-		    dcoral = dcoral.to(device)            
-		
+
     # define dict
     iters = {'source':source_train_iter, 'target':target_train_iter}
 
-    best_top1= 0.0    
+    best_top1= 0.0
     best_top5 = 0.0
 
     # check point parameter load
@@ -140,7 +136,7 @@ def main(args):
 		    check_point_epoch = checkpoint['epoch']
 		    optimizer.load_state_dict(checkpoint['optimizer'])
 		    lr_scheduler.load_state_dict(checkpoint['scheduler'])
-		    best_top1 = checkpoint['prec@1']       
+		    best_top1 = checkpoint['prec@1']
 		    best_top5 = checkpoint['prec@5']
 
     stopping_counter = 0
@@ -148,21 +144,21 @@ def main(args):
 		    # skip utill check point
 		    if (args.check_point):
 		    	if (check_point_epoch >= epoch) :
-		    		logging.info("Skip epoch {}".format(epoch)) 
+		    		logging.info("Skip epoch {}".format(epoch))
 		    		continue
-		    	else:                            
+		    	else:
 		    		args.check_point = False
 
 		    # train one epoch
 		    epoch_start_time = time.time()
-		    train(iters, net, optimizer, lr_scheduler, cls, dcoral, epoch, args)
+		    train(iters, net, optimizer, lr_scheduler, cls, epoch, args)
 
 		    # evaluate on testing set
 		    logging.info('Testing the models......')
-		    _, _ = test(source_test_loader, net, cls, args, phase = 'Source') 
-		    t_val_top1, t_val_top5 = test(target_train_test_loader, net, cls, args, phase = 'Target Train')            
+		    _, _ = test(source_test_loader, net, cls, args, phase = 'Source')
+		    t_val_top1, t_val_top5 = test(target_train_test_loader, net, cls, args, phase = 'Target Train')
 		    t_test_top1, t_test_top5 = test(target_test_loader, net, cls, args, phase = 'Target Test')
-		
+
 		    epoch_duration = time.time() - epoch_start_time
 		    logging.info('Epoch time: {}s'.format(int(epoch_duration)))
 
@@ -175,29 +171,28 @@ def main(args):
 		    	stopping_counter = 0
 		    else:
 		    	stopping_counter += 1
-          
+
 		    logging.info('Saving models......')
 		    save_checkpoint({'epoch': epoch,
           		            'net': net.state_dict(),
-          		            'optimizer': optimizer.state_dict(),							  			
+          		            'optimizer': optimizer.state_dict(),
           		            'scheduler': lr_scheduler.state_dict(),
           		            'prec@1': t_test_top1,
-          		            'prec@5': t_test_top5,}, 
+          		            'prec@5': t_test_top5,},
           		            is_best, args.save_root)
-            
-		    if stopping_counter == 8:
-		    	logging.info('Planned　Stopping Training')
-		    	break
-			
-    # print experiment result
-    checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))		
-    logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))			
 
-def train(iters, net, optimizer, lr_scheduler, cls, dcoral, epoch, args):
+		    if stopping_counter == args.stopping_epoch_num:
+		    	logging.info('Early stopping')
+		    	break
+
+    # print experiment result
+    checkpoint = torch.load(os.path.join(args.save_root, 'model_best.pth.tar'))
+    logging.info('{}: {}->{} \nTopAcc:{:.2f} ({} epoch)'.format(args.dataset, args.source, args.target, checkpoint['prec@1'], checkpoint['epoch']))
+
+def train(iters, net, optimizer, lr_scheduler, cls, epoch, args):
 	batch_time = AverageMeter()
 	data_time  = AverageMeter()
 	cls_losses = AverageMeter()
-	dcoral_losses  = AverageMeter()
 	top1       = AverageMeter()
 	top5       = AverageMeter()
 
@@ -221,13 +216,10 @@ def train(iters, net, optimizer, lr_scheduler, cls, dcoral, epoch, args):
 		source_out, _ = net(source_img)
 		target_out, _ = net(target_img)
 
-		cls_loss = cls(source_out, source_label)
-		dcoral_loss = dcoral(source_out,target_out)
-		loss = cls_loss + dcoral_loss * args.trade_off 
-    
+		loss = cls(source_out, source_label)
+
 		prec1, prec5 = accuracy(source_out, source_label, topk=(1,5))
-		cls_losses.update(cls_loss.item(), source_img.size(0))
-		dcoral_losses.update(dcoral_loss.item(), target_img.size(0))
+		cls_losses.update(loss.item(), source_img.size(0))
 		top1.update(prec1.item(), source_img.size(0))
 		top5.update(prec5.item(), source_img.size(0))
 
@@ -240,19 +232,19 @@ def train(iters, net, optimizer, lr_scheduler, cls, dcoral, epoch, args):
 		end = time.time()
 
 		if i % args.print_freq == 0:
-			log_str = ('Epoch[{0}]:[{1:03}/{2:03}]'
-					   'Time:{batch_time.val:.4f}'
-					   'Data:{data_time.val:.4f}'
-					   'Cls:{cls_losses.val:.4f}({cls_losses.avg:.4f})'
-					   'DCORAL:{dcoral_losses.val:.4f}({dcoral_losses.avg:.4f})'
-					   'prec@1:{top1.val:.2f}({top1.avg:.2f})'
+			log_str = ('Epoch[{0}]:[{1:03}/{2:03}]  '
+					   'Time:{batch_time.val:.4f}  '
+					   'Data:{data_time.val:.4f}  '
+					   'Cls:{cls_losses.val:.4f}({cls_losses.avg:.4f})  '
+					   'prec@1:{top1.val:.2f}({top1.avg:.2f})  '
 					   'prec@5:{top5.val:.2f}({top5.avg:.2f})'.format(
 					   epoch, i, args.iters_per_epoch, batch_time=batch_time, data_time=data_time,
-					   cls_losses=cls_losses, dcoral_losses=dcoral_losses, top1=top1, top5=top5))
+					   cls_losses=cls_losses, top1=top1, top5=top5))
 			logging.info(log_str)
 
+
 def test(data_loader, net, cls, args, phase):
-	clslosses = AverageMeter()
+	cls_losses = AverageMeter()
 	top1   = AverageMeter()
 	top5   = AverageMeter()
 
@@ -263,16 +255,16 @@ def test(data_loader, net, cls, args, phase):
 			if args.cuda:
 				img = img.cuda()
 				target = target.cuda()
-			out, _ = net(img)
 
-			clsloss = cls(out, target)	
+			out, _ = net(img)
+			cls_loss = cls(out, target)
 
 			prec1, prec5 = accuracy(out, target, topk=(1,5))
-			clslosses.update(clsloss.item(), img.size(0))		
+			cls_losses.update(cls_loss.item(), img.size(0))
 			top1.update(prec1.item(), img.size(0))
 			top5.update(prec5.item(), img.size(0))
 
-		f_l = [clslosses.avg, top1.avg, top5.avg]
+		f_l = [cls_losses.avg, top1.avg, top5.avg]
 		logging.info('-{}- Cls Loss: {:.4f}, Prec@1: {:.2f}, Prec@5: {:.2f}'.format(phase,*f_l))
 
 	return top1.avg, top5.avg
@@ -302,7 +294,7 @@ if __name__ == '__main__':
     # model parameters
     parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18')
     parser.add_argument('--model-param', default=None, type=str, help='path name of teacher model')
-    parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')                     
+    parser.add_argument('--check_point', default=False, type=bool, help='use check point parameter')
     # training parameters
     parser.add_argument('-b', '--batch-size', default=32, type=int, help='mini-batch size (default: 32)')
     parser.add_argument('--lr', '--learning-rate', default=0.01, type=float, help='initial learning rate')
@@ -311,18 +303,13 @@ if __name__ == '__main__':
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-3, type=float, help='weight decay (default: 1e-3)')
     parser.add_argument('-j', '--workers', default=4, type=int, help='number of data loading workers (default: 4)')
-    parser.add_argument('--epochs', default=200, type=int, help='number of total epochs to run')
+    parser.add_argument('--epochs', default=100, type=int, help='number of total epochs to run')
     parser.add_argument('-i', '--iters-per-epoch', default=1000, type=int, help='Number of iterations per epoch')
     parser.add_argument('-p', '--print-freq', default=100, type=int, help='print frequency (default: 50)')
     parser.add_argument('--seed', default=1, type=int, help='seed for initializing training. ')
-    parser.add_argument("--phase", type=str, default='train', choices=['train', 'test', 'analysis'],
-                        help="When phase is 'test', only test the model."
-                             "When phase is 'analysis', only analysis the model.")
-    # mcc parameters
-    parser.add_argument('--trade-off', default=1., type=float,
-                        help='the trade-off hyper-parameter for transfer loss')                         
     # others
     parser.add_argument('--cuda', type=int, default=1)
+    parser.add_argument('--stopping_epoch_num', type=int, default=5)
     args = parser.parse_args()
 
     args.save_root = os.path.join(args.save_root, args.note)#./results/pt_of31_A_r50
