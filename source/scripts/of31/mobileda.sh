@@ -35,7 +35,6 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_dcoral.py --save_root '/content/drive/My
 -i 500 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
 --st_temp 4.
 
 # D2W
@@ -74,7 +73,6 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_dcoral.py --save_root '/content/drive/My
 -i 500 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
 --st_temp 4.
 
 # W2D
@@ -113,7 +111,6 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_dcoral.py --save_root '/content/drive/My
 -i 500 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
 --st_temp 4.
 
 # A2D
@@ -152,7 +149,6 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_dcoral.py --save_root '/content/drive/My
 -i 500 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
 --st_temp 4.
 
 # D2A
@@ -191,7 +187,6 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_dcoral.py --save_root '/content/drive/My
 -i 500 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
 --st_temp 4.
 
 # W2A
@@ -230,5 +225,4 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_dcoral.py --save_root '/content/drive/My
 -i 500 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
 --st_temp 4.
