@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as T
 
 sys.path.append('..')
-from dalib.adaptation.mcc import DeepCoralLoss
+from dalib.adaptation.dcoral import DeepCoralLoss
 
 import common.vision.datasets as datasets
 import common.vision.models as models
