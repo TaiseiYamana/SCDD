@@ -51,13 +51,15 @@ $ bash scripts/of31/analysis.sh
 Mdoel : `AlexNet`, Dataset : `Office-31` \
 Comparison method : `source_only`, `cdd_by_mcc_from_mcc`
 - Display of T-SNE
-    <tr>
-    <td><figure><img src=".github/tsne_source_only.png", width="300">
-    <figcaption>source_only</figcaption></figure></td>
-    <td><figure><img src=".github/tsne_cdd_by_mcc_from_mcc.png", width="300">
-    <figcaption>cdd_by_mcc_from_mcc</figcaption></figure></td>
-    </tr>
 
+(left:source_only, right : cdd_by_mcc_from_mcc)
+<div>
+    <tr>
+    <td><img src=".github/tsne_source_only.png", width="300"></td>
+    <td><img src=".github/tsne_cdd_by_mcc_from_mcc.png", width="300">
+    </td>
+    </tr>
+</div>
 
 ## Requirements
 - python 3.7
