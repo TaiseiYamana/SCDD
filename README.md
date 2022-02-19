@@ -29,12 +29,12 @@ $ cd SCDD/source
 ### Training
 Running the shell script file in `/source/scripts/` will start the learning process. You can simply specify the hyper-parameters listed in `/source/xxx.py` or manually change them.
 
-Conducting Source only (normal training)
+- Conducting Source only (normal training)
 ```
 $ bash scripts/of31/source_only.sh
 ```
 Mdoel : `AlexNet`, Dataset : `Office-31`
-Conducting Cross Domain Distillation (cdd)
+- Conducting Cross Domain Distillation (cdd)
 ```
 $ bash scripts/of31/cdd_by_mcc_from_mcc.sh
 ```
