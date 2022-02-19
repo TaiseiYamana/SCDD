@@ -52,7 +52,7 @@ Mdoel : `AlexNet`, Dataset : `Office-31` \
 Comparison method : `source_only`, `cdd_by_mcc_from_mcc`
 - Display of T-SNE
 
-(left:source_only, right : cdd_by_mcc_from_mcc)
+(Left : source_only, Right : cdd_by_mcc_from_mcc)
 <div>
     <tr>
     <td><img src=".github/tsne_source_only.png", width="300"></td>
@@ -65,7 +65,7 @@ Comparison method : `source_only`, `cdd_by_mcc_from_mcc`
 
 - Display of Confusion Matrix
 
-(left:source_only, right : cdd_by_mcc_from_mcc)
+(Left : source_only, Right : cdd_by_mcc_from_mcc)
 <div>
     <tr>
     <td><img src=".github/cm_source_only.png", width="300"></td>
