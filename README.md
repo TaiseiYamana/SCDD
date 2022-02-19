@@ -61,6 +61,19 @@ Comparison method : `source_only`, `cdd_by_mcc_from_mcc`
     </tr>
 </div>
 
+<p style="text-indent:1em;"></p>
+
+- Display of Confusion Matrix
+
+(left:source_only, right : cdd_by_mcc_from_mcc)
+<div>
+    <tr>
+    <td><img src=".github/cm_source_only.png", width="300"></td>
+    <td><img src=".github/cm_cdd_by_mcc_from_mcc.png", width="300">
+    </td>
+    </tr>
+</div>
+
 ## Requirements
 - python 3.7
 - pytorch 1.3.1
