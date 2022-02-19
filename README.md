@@ -96,6 +96,6 @@ Please cite these papers in your publications if it helps your research.
 Links to the paper:
 - [Edge Domain Adaptation through Stepwise Cross-Domain Distillation](https://ipsj.ixsq.nii.ac.jp/ej/?action=pages_view_main&active_action=repository_view_main_item_detail&item_id=216177&item_no=1&page_id=13&block_id=8)
 ## License
-## Acknowledgements and Reference
-[TLlib](https://github.com/thuml/Transfer-Learning-Library)
+## Acknowledgements and reference
+[TLlib](https://github.com/thuml/Transfer-Learning-Library) \
 [Knowledge-Distillation-Zoo](https://github.com/AberHu/Knowledge-Distillation-Zoo)
