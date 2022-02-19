@@ -42,7 +42,7 @@ Student model : `AlexNet`, Teacher model : `ResNet50`,\
 Dataset : `Office-31`
 
 ### Analysis
-- Running the '/source/analysis.py' can  visualize the cross-domain feature representation of the trained model using T-SNE. At the same time, it creates a confusion matrix for the target domain.
+- Running the '/source/analysis.py' can  visualize the cross-domain feature representation of the trained model using T-SNE. At the same time, confusion matrix for the target domain is created.
 
 - A sample of the code can be run in analysis.sh.
 ```
