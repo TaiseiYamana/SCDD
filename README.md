@@ -34,7 +34,7 @@ $ cd SCDD/source
 $ bash scripts/of31/source_only.sh
 ```
 Mdoel : `AlexNet`, Dataset : `Office-31`
-- Conducting Cross domain distillation
+- Conducting Cross Domain Distillation (cdd)
 ```
 $ bash scripts/of31/cdd_by_mcc_from_mcc.sh
 ```
@@ -48,15 +48,15 @@ Dataset : `Office-31`
 ```
 $ bash scripts/of31/analysis.sh
 ```
-
+Mdoel : `AlexNet`, Dataset : `Office-31` \
+Comparison method : `source_only`, `cdd_by_mcc_from_mcc`
 - Display of T-SNE
     <tr>
-    <td><img src=".github/tsne_source_only.png", width="300"></td>
-    <figcaption>Source only</figcaption>
-    <td><img src=".github/tsne_cdd_by_mcc_from_mcc.png", width="300"></td>
-    <figcaption>Cross domain distillation</figcaption>
+    <td><figure><img src=".github/tsne_source_only.png", width="300">
+    <figcaption>source_only</figcaption></figure></td>
+    <td><figure><img src=".github/tsne_cdd_by_mcc_from_mcc.png", width="300">
+    <figcaption>cdd_by_mcc_from_mcc</figcaption></figure></td>
     </tr>
-
 
 
 ## Requirements
