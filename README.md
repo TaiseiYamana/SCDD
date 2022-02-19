@@ -21,20 +21,20 @@ This research was published at [APRIS2021](http://sigemb.jp/APRIS/2021/) and pap
 
 ## Functionality
 ## Experiment
-- Clone this repository and make the current directory `/source`.
+Clone this repository and make the current directory `/source`.
 ```
 $ git clone https://github.com/TaiseiYamana/SCDD.git
 $ cd SCDD/source
 ```
 ### Training
-- Running the shell script file in `/source/scripts/` will start the learning process. You can simply specify the hyper-parameters listed in `/source/xxx.py` or manually change them.
+Running the shell script file in `/source/scripts/` will start the learning process. You can simply specify the hyper-parameters listed in `/source/xxx.py` or manually change them.
 
-- Conducting Source only (normal training)
+Conducting Source only (normal training)
 ```
 $ bash scripts/of31/source_only.sh
 ```
 Mdoel : `AlexNet`, Dataset : `Office-31`
-- Conducting Cross Domain Distillation (cdd)
+Conducting Cross Domain Distillation (cdd)
 ```
 $ bash scripts/of31/cdd_by_mcc_from_mcc.sh
 ```
@@ -42,7 +42,7 @@ Student model : `AlexNet`, Teacher model : `ResNet50`,\
 Dataset : `Office-31`
 
 ### Analysis
-- Running the '/source/analysis.py' can  visualize the cross-domain feature representation of the trained model using T-SNE. At the same time, confusion matrix for the target domain is created.
+Running the '/source/analysis.py' can  visualize the cross-domain feature representation of the trained model using T-SNE. At the same time, confusion matrix for the target domain is created.
 
 - A sample of the code can be run in analysis.sh.
 ```
