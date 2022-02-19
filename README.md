@@ -94,7 +94,7 @@ Please cite these papers in your publications if it helps your research.
 }
 ```
 Links to the papers:
-- Edge Domain Adaptation through Stepwise Cross-Domain Distillation(https://ipsj.ixsq.nii.ac.jp/ej/?action=pages_view_main&active_action=repository_view_main_item_detail&item_id=216177&item_no=1&page_id=13&block_id=8)
+- [Edge Domain Adaptation through Stepwise Cross-Domain Distillation](https://ipsj.ixsq.nii.ac.jp/ej/?action=pages_view_main&active_action=repository_view_main_item_detail&item_id=216177&item_no=1&page_id=13&block_id=8)
 ## License
 ## Reference
 [TLlib](https://github.com/thuml/Transfer-Learning-Library)
