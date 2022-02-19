@@ -76,8 +76,8 @@ Comparison method : `source_only`, `cdd_by_mcc_from_mcc`
 
 ## Requirements
 - python 3.7
-- pytorch 1.3.1
-- torchvision 0.42
+- pytorch 1.10.0
+- torchvision  0.11.1
 
 ## Citation
 Please cite these papers in your publications if it helps your research.
