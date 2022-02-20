@@ -48,7 +48,7 @@ A sample of the code can be run with analysis.sh.
 ```
 $ bash scripts/of31/analysis.sh
 ```
-Mdoel : `AlexNet`, Dataset : `Office-31` \
+Mdoel : `AlexNet`, Dataset : `Office-31`, Domain Shift : `A→W`\
 Comparison method : `source_only`, `cdd_by_mcc_from_mcc`
 - Display of T-SNE
 
