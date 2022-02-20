@@ -42,7 +42,7 @@ $ bash scripts/of31/source_only.sh
 The teacher model is pre-domain adapted by MCC, which is then used to train the student model by cross-domain distillation.
 
 Student model : `AlexNet`, Teacher model : `ResNet50`,\
-Dataset : `Office-31`
+Dataset : `Office-Home`
 ```
 $ bash scripts/of31/cdd_by_mcc_from_mcc.sh
 ```
