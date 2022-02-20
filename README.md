@@ -50,6 +50,23 @@ Dataset : `Office-Home`
 $ bash scripts/of31/cdd_by_mcc_from_mcc.sh
 ```
 
+#### Other methods
+##### Deep-CORAL
+paper : https://arxiv.org/abs/1607.01719
+```
+$ bash scripts/of31/dcoral.sh
+```
+##### MCC (Minimum Class Confusion)
+paper : https://arxiv.org/abs/1912.03699
+```
+$ bash scripts/of31/mcc.sh
+```
+##### MobileDA
+paper : https://ieeexplore.ieee.org/document/9016215
+```
+$ bash scripts/of31/mobileda.sh
+```
+
 #### Stepwise Cross Domain Distillation (SCDD) Experiment
 Conduct cross domain distillation via a Teacher Assistant which is mid-size between teacher and student.
 
