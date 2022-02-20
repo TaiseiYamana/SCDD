@@ -51,8 +51,7 @@ $ bash scripts/of31/cdd_by_mcc_from_mcc.sh
 ```
 
 #### Other methods
-##### Deep-CORAL
-paper : https://arxiv.org/abs/1607.01719
+##### Deep-CORAL paper : https://arxiv.org/abs/1607.01719
 ```
 $ bash scripts/of31/dcoral.sh
 ```
