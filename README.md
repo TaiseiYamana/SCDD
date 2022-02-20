@@ -27,7 +27,7 @@ $ git clone https://github.com/TaiseiYamana/SCDD.git
 $ cd SCDD/source
 ```
 ### Training
-Running the shell script file in `/source/scripts/` will start the learning process. You can simply specify the hyper-parameters listed in `/source/xxx.py` or manually change them.
+Run the shell script file in `/source/scripts/` to start the training process. You can simply specify the hyper-parameters listed in `/source/xxx.py` or manually change them.
 
 - Conducting Source only (normal training)
 ```
@@ -42,7 +42,7 @@ Student model : `AlexNet`, Teacher model : `ResNet50`,\
 Dataset : `Office-31`
 
 ### Analysis
-Running the '/source/analysis.py' can  visualize the cross-domain feature representation of the trained model using T-SNE. At the same time, confusion matrix for the target domain is created.
+Run the '/source/analysis.py' to visualize the cross-domain feature representation of the trained model using T-SNE. At the same time, confusion matrix for the target domain is created.
 
 A sample of the code can be run with analysis.sh.
 ```
