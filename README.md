@@ -48,8 +48,23 @@ $ bash scripts/of31/cdd_by_mcc_from_mcc.sh
 ```
 
 #### Stepwise Cross Domain Distillation (SCDD) Experiment
-Student model : `ResNet18`, Teacher model : `ResNet50`, Teacher Assistant : `ResNet34`\
-Dataset : `Office-31`
+Conduct cross domain distillation via a Teacher Assistant which is mid-size between teacher and student.
+
+Student model : `ResNet18`, Teacher model : `ResNet50`, Teacher Assistant (TA) : `ResNet34`\
+Dataset : `Office-home`
+
+- SCDD
+
+```
+$ bash scripts/ofhome/scdd.h
+```
+
+- SCDD w/o TA
+
+```
+$ bash scripts/ofhome/scdd_nota.h
+```
+
 
 ### Analysis
 Run the '/source/analysis.py' to visualize the cross-domain feature representation of the trained model using T-SNE. At the same time, confusion matrix for the target domain is created.
