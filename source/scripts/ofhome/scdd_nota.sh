@@ -27,7 +27,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -i 1000 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
+--mcc_temp 2.5 \
 --st_temp 8.
 
 ##########################################################################################
@@ -59,7 +59,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -i 1000 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
+--mcc_temp 2.5 \
 --st_temp 8.
 
 ##########################################################################################
@@ -91,7 +91,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -i 1000 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
+--mcc_temp 2.5 \
 --st_temp 8.
 
 ##########################################################################################
@@ -123,7 +123,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -i 1000 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
+--mcc_temp 2.5 \
 --st_temp 8.
 
 ##########################################################################################
@@ -155,7 +155,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -i 1000 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
+--mcc_temp 2.5 \
 --st_temp 8.
 
 ##########################################################################################
@@ -187,7 +187,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -i 1000 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
+--mcc_temp 2.5 \
 --st_temp 8.
 
 ##########################################################################################
@@ -219,7 +219,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -i 1000 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
+--mcc_temp 2.5 \
 --st_temp 8.
 
 ##########################################################################################
@@ -251,7 +251,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -i 1000 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
+--mcc_temp 2.5 \
 --st_temp 8.
 
 ##########################################################################################
@@ -283,7 +283,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -i 1000 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
+--mcc_temp 2.5 \
 --st_temp 8.
 
 ##########################################################################################
@@ -315,7 +315,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -i 1000 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
+--mcc_temp 2.5 \
 --st_temp 8.
 
 ##########################################################################################
@@ -347,7 +347,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -i 1000 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
+--mcc_temp 2.5 \
 --st_temp 8.
 
 ##########################################################################################
@@ -379,5 +379,5 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 -i 1000 \
 --lam 1. \
 --mu 1. \
---mcc_temp 2. \
+--mcc_temp 2.5 \
 --st_temp 8.
