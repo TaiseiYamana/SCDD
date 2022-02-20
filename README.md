@@ -21,12 +21,15 @@ This research was published at [APRIS2021](http://sigemb.jp/APRIS/2021/) and pap
 ## Functionality
 ## Experiment
 Clone this repository and move the current directory to `/source`.
+
 ```
 $ git clone https://github.com/TaiseiYamana/SCDD.git
 $ cd SCDD/source
 ```
 ### Training
 Run the shell script file in `/source/scripts/` to start the training process. You can simply specify the hyper-parameters listed in `/source/xxx.py` or manually change them.
+
+The shell script has a data path defined for execution on google colab. You can extract and run `SCDD.ipynb` on google colab for immediate experimentation, but please redefine the data path according to your personal usage.
 
 ##### Source only
 
