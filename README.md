@@ -8,25 +8,42 @@
 
 # Contents
 1. [Introduction](#Introduction)
-2. [Functionality](#Functionality)
+2. About this repository's folders and files
 3. [Experiment](#Experiment)
 4. [Citation](#Citation)
 5. [Acknowledgements](#Acknowledgements)
 
 ## Introduction
 
-SCDD is UDA method for lightweight model. Lightweight model can be trained by cross domain distillation.
+SCDD is UDA method for lightweight model. Lightweight model can be trained by cross domain distillation. This method is a cross-domain distillation focused on improving MobileDA.
 This research was published at [APRIS2021](http://sigemb.jp/APRIS/2021/) and paper can be downloaded at [IPSJ](https://ipsj.ixsq.nii.ac.jp/ej/?action=pages_view_main&active_action=repository_view_main_item_detail&item_id=216177&item_no=1&page_id=13&block_id=8).
 
-## Functionality
+## About this repository's folders and files
+Name | Description |
+:----- | ----- |
+common | Datasets, model definitions, code needed for analysis, etc. from TLlib |
+dalib | UDA loss definitions from TLlib |
+examples | Sample executable code of TLlib |
+kd_losses |　KD loss definitions from KD-Zoo |
+param_search | Codes for parameter search using ray|
+pycm | Library for computing confusion matrices from pycm|
+source |Source code for SCDD|
+pseudo_labeling.py | Codes that generate pseudo labels|
+split_dataset.py | Codes that splits a dataset into for training and for testing |
+utils.py | Loss, accuracy counter from KD-Zoo|
+
+
 ## Experiment
 Clone this repository and move the current directory to `/source`.
+
 ```
 $ git clone https://github.com/TaiseiYamana/SCDD.git
 $ cd SCDD/source
 ```
 ### Training
 Run the shell script file in `/source/scripts/` to start the training process. You can simply specify the hyper-parameters listed in `/source/xxx.py` or manually change them.
+
+The shell script has a data path defined for execution on google colab. You can extract and run `SCDD.ipynb` on google colab for immediate experimentation, but please redefine the data path according to your personal usage.
 
 ##### Source only
 
@@ -42,14 +59,46 @@ $ bash scripts/of31/source_only.sh
 The teacher model is pre-domain adapted by MCC, which is then used to train the student model by cross-domain distillation.
 
 Student model : `AlexNet`, Teacher model : `ResNet50`,\
-Dataset : `Office-31`
+Dataset : `Office-Home`
 ```
 $ bash scripts/of31/cdd_by_mcc_from_mcc.sh
 ```
 
+#### Other methods
+##### Deep-CORAL
+paper : https://arxiv.org/abs/1607.01719
+```
+$ bash scripts/of31/dcoral.sh
+```
+##### MCC (Minimum Class Confusion)
+paper : https://arxiv.org/abs/1912.03699
+```
+$ bash scripts/of31/mcc.sh
+```
+##### MobileDA
+paper : https://ieeexplore.ieee.org/document/9016215
+```
+$ bash scripts/of31/mobileda.sh
+```
+
 #### Stepwise Cross Domain Distillation (SCDD) Experiment
-Student model : `ResNet18`, Teacher model : `ResNet50`, Teacher Assistant : `ResNet34`\
-Dataset : `Office-31`
+Conduct cross domain distillation via a Teacher Assistant which is mid-size between teacher and student.
+
+Student model : `ResNet18`, Teacher model : `ResNet50`, Teacher Assistant (TA) : `ResNet34`\
+Dataset : `Office-home`
+
+##### SCDD
+
+```
+$ bash scripts/ofhome/scdd.h
+```
+
+##### SCDD w/o TA
+
+```
+$ bash scripts/ofhome/scdd_nota.h
+```
+
 
 ### Analysis
 Run the '/source/analysis.py' to visualize the cross-domain feature representation of the trained model using T-SNE. At the same time, confusion matrix for the target domain is created.

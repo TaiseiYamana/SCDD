@@ -12,6 +12,7 @@ CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/o
 --temperature 2. \
 --trade_off 1.
 
+##########################################################################################
 # D2W
 CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/of31/alexnet/mcc' \
 --img_root '/content' \
@@ -25,6 +26,7 @@ CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/o
 --temperature 2. \
 --trade_off 1.
 
+##########################################################################################
 # W2D
 CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/of31/alexnet/mcc' \
 --img_root '/content' \ß
@@ -38,6 +40,7 @@ CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/o
 --temperature 2. \
 --trade_off 1.
 
+##########################################################################################
 # A2D
 CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/of31/alexnet/mcc' \
 --img_root '/content' \
@@ -51,6 +54,7 @@ CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/o
 --temperature 2. \
 --trade_off 1.
 
+##########################################################################################
 # D2A
 CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/of31/alexnet/mcc' \
 --img_root '/content' \
@@ -64,6 +68,7 @@ CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/o
 --temperature 2. \
 --trade_off 1.
 
+##########################################################################################
 # W2A
 CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/of31/alexnet/mcc' \
 --img_root '/content' \
