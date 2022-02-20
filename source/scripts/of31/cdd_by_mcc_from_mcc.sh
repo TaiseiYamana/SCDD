@@ -29,6 +29,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 --mcc_temp 2. \
 --st_temp 4.
 
+##########################################################################################
 # D2W
 # pretrain teacher
 CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/of31/r50/mcc' \
@@ -59,6 +60,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 --mcc_temp 2. \
 --st_temp 4.
 
+##########################################################################################
 # W2D
 # pretrain teacher
 CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/of31/r50/mcc' \
@@ -89,6 +91,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 --mcc_temp 2. \
 --st_temp 4.
 
+##########################################################################################
 # A2D
 CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/of31/r50/mcc' \
 --img_root '/content' \
@@ -118,6 +121,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 --mcc_temp 2. \
 --st_temp 4.
 
+##########################################################################################
 # D2A
 # pretrain teacher
 CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/of31/r50/mcc' \
@@ -148,6 +152,7 @@ CUDA_VISIBLE_DEVICES=0 python3 cdd_with_mcc.py --save_root '/content/drive/MyDri
 --mcc_temp 2. \
 --st_temp 4.
 
+##########################################################################################
 # W2A
 # pretrain teacher
 CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/of31/r50/mcc' \

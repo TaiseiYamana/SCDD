@@ -21,6 +21,7 @@ CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/o
 -i 500 \
 --trade_off 0.
 
+##########################################################################################
 # D2W
 #CUDA_VISIBLE_DEVICES=0 python3 source_only.py --save_root '/content/drive/MyDrive/SCDD/of31/alex/source_only' \
 #--img_root '/content' \
@@ -43,6 +44,7 @@ CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/o
 -i 500 \
 --trade_off 0.
 
+##########################################################################################
 # W2D
 #CUDA_VISIBLE_DEVICES=0 python3 source_only.py --save_root '/content/drive/MyDrive/SCDD/of31/alex/source_only' \
 #--img_root '/content' \
@@ -65,6 +67,7 @@ CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/o
 -i 500 \
 --trade_off 0.
 
+##########################################################################################
 # A2D
 #CUDA_VISIBLE_DEVICES=0 python3 source_only.py --save_root '/content/drive/MyDrive/SCDD/of31/alex/source_only' \
 #--img_root '/content' \
@@ -87,6 +90,7 @@ CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/o
 -i 500 \
 --trade_off 0.
 
+##########################################################################################
 # D2A
 #CUDA_VISIBLE_DEVICES=0 python3 source_only.py --save_root '/content/drive/MyDrive/SCDD/of31/alex/source_only' \
 #--img_root '/content' \
@@ -109,6 +113,7 @@ CUDA_VISIBLE_DEVICES=0 python3 mcc.py --save_root '/content/drive/MyDrive/SCDD/o
 -i 500 \
 --trade_off 0.
 
+##########################################################################################
 # W2A
 #CUDA_VISIBLE_DEVICES=0 python3 source_only.py --save_root '/content/drive/MyDrive/SCDD/of31/alex/source_only' \
 #--img_root '/content' \
