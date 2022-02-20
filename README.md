@@ -20,7 +20,7 @@ This research was published at [APRIS2021](http://sigemb.jp/APRIS/2021/) and pap
 
 ## Functionality
 ## Experiment
-Clone this repository and make the current directory `/source`.
+Clone this repository and move the current directory to `/source`.
 ```
 $ git clone https://github.com/TaiseiYamana/SCDD.git
 $ cd SCDD/source
@@ -28,14 +28,18 @@ $ cd SCDD/source
 ### Training
 Run the shell script file in `/source/scripts/` to start the training process. You can simply specify the hyper-parameters listed in `/source/xxx.py` or manually change them.
 
-- Conducting Source only (normal training)
+##### Source only
+
+Normal training with labeled source domain datasets.
 
 Mdoel : `AlexNet`, Dataset : `Office-31`
 ```
 $ bash scripts/of31/source_only.sh
 ```
 
-- Conducting Cross Domain Distillation (cdd)
+##### Cross Domain Distillation (cdd)
+
+The teacher model is pre-domain adapted by MCC, which is then used to train the student model by cross-domain distillation.
 
 Student model : `AlexNet`, Teacher model : `ResNet50`,\
 Dataset : `Office-31`
@@ -43,6 +47,9 @@ Dataset : `Office-31`
 $ bash scripts/of31/cdd_by_mcc_from_mcc.sh
 ```
 
+#### Stepwise Cross Domain Distillation (SCDD) Experiment
+Student model : `ResNet18`, Teacher model : `ResNet50`, Teacher Assistant : `ResNet34`\
+Dataset : `Office-31`
 
 ### Analysis
 Run the '/source/analysis.py' to visualize the cross-domain feature representation of the trained model using T-SNE. At the same time, confusion matrix for the target domain is created.
@@ -57,6 +64,7 @@ $ bash scripts/of31/analysis.sh
 
 - Display of T-SNE
 
+Blue : source domain (A), Red : target domain (W) \
 (Left : source_only, Right : cdd_by_mcc_from_mcc)
 <div>
     <tr>
