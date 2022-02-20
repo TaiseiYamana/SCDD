@@ -11,7 +11,7 @@
 2. [Functionality](#Functionality)
 3. [Experiment](#Experiment)
 4. [Citation](#Citation)
-5. [Reference](#Acknowledgements)
+5. [Acknowledgements](#Acknowledgements)
 
 ## Introduction
 
