@@ -53,13 +53,13 @@ Conduct cross domain distillation via a Teacher Assistant which is mid-size betw
 Student model : `ResNet18`, Teacher model : `ResNet50`, Teacher Assistant (TA) : `ResNet34`\
 Dataset : `Office-home`
 
-- SCDD
+##### SCDD
 
 ```
 $ bash scripts/ofhome/scdd.h
 ```
 
-- SCDD w/o TA
+##### SCDD w/o TA
 
 ```
 $ bash scripts/ofhome/scdd_nota.h
