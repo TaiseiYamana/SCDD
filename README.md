@@ -160,4 +160,7 @@ Links to the paper:
 
 ## Acknowledgements
 [TLlib](https://github.com/thuml/Transfer-Learning-Library) \
-[Knowledge-Distillation-Zoo](https://github.com/AberHu/Knowledge-Distillation-Zoo)
+[Knowledge-Distillation-Zoo](https://github.com/AberHu/Knowledge-Distillation-Zoo) \
+[pycm](https://github.com/sepandhaghighi/pycm) \
+[ray](https://github.com/ray-project/ray) \
+[In Defense of Pseudo-Labeling](https://github.com/nayeemrizve/ups)
