@@ -8,7 +8,7 @@
 
 # Contents
 1. [Introduction](#Introduction)
-2. About this repository's folders and files
+2. [About this repository's folders and files](#(About this repository's folders and files))
 3. [Experiment](#Experiment)
 4. [Citation](#Citation)
 5. [Acknowledgements](#Acknowledgements)
