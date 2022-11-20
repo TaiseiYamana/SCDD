@@ -18,7 +18,7 @@
 SCDD is UDA method for lightweight model. Lightweight model can be trained by cross domain distillation. This method is a cross-domain distillation focused on improving MobileDA.
 This research was published at [APRIS2021](http://sigemb.jp/APRIS/2021/) and paper can be downloaded at [IPSJ](https://ipsj.ixsq.nii.ac.jp/ej/?action=pages_view_main&active_action=repository_view_main_item_detail&item_id=216177&item_no=1&page_id=13&block_id=8).
 
-## (About this repository's folders and files
+## About this repository's folders and files
 Name | Description |
 :----- | ----- |
 common | Datasets, model definitions, code needed for analysis, etc. from TLlib |
